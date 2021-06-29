@@ -1,0 +1,15 @@
+{
+  "name": "res",
+  "url": "",
+  "license": "MIT",
+  "tags": [],
+  "description": "Restrictive Entertainment System",
+  "version": "0.1.0",
+  "classPath": "",
+  "releasenote": "Initial release",
+  "contributors": ["miriti"],
+  "dependencies": {
+    "ase": ""
+  },
+  "main": ""
+}
