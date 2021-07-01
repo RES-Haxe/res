@@ -2,7 +2,7 @@ package res;
 
 import haxe.io.Bytes;
 
-class Tilemap {
+class Tilemap implements Renderable {
 	var res:Res;
 	var map:Array<Array<Int>>;
 
@@ -105,7 +105,7 @@ class Tilemap {
 					if (paletteIndex != 0) {
 						final sampleIndex:Int = paletteIndex - 1;
 
-						final color:Int = paletteSample.get(sampleIndex).format(ARGB);
+						final color:Int = paletteSample.get(sampleIndex).format(res.pixelFormat);
 
 						frameBuffer.setInt32(pixelPos, color);
 					}

@@ -16,12 +16,12 @@ class Res {
 
 	public var frameBuffer(get, never):Bytes;
 
-	function get_frameBuffer():Bytes
+	inline function get_frameBuffer():Bytes
 		return _frameBuffer;
 
 	public var frameWidth(get, never):Int;
 
-	function get_frameWidth():Int {
+	inline function get_frameWidth():Int {
 		switch (_resolution) {
 			case TILES(tileSize, hTiles, _):
 				return tileSize * hTiles;
@@ -39,18 +39,18 @@ class Res {
 
 	public var palette(get, never):Palette;
 
-	function get_palette():Palette
+	inline function get_palette():Palette
 		return _palette;
 
 	public var tileSize(get, never):Int;
 
-	function get_tileSize():Int {
+	inline function get_tileSize():Int {
 		return _tileSize;
 	}
 
 	public var hTiles(get, never):Int;
 
-	function get_hTiles():Int
+	inline function get_hTiles():Int
 		return _hTiles;
 
 	public var vTiles(get, never):Int;
@@ -58,11 +58,23 @@ class Res {
 	function get_vTiles():Int
 		return _vTiles;
 
+	public var pixelFormat(get, never):PixelFormat;
+
+	inline function get_pixelFormat():PixelFormat
+		return _pixelFormat;
+
 	public var pixelSize(get, never):Int;
 
-	function get_pixelSize():Int
+	inline function get_pixelSize():Int
 		return _pixelSize;
 
+	public var scene:Scene;
+
+	/**
+		@param resolution Tiles size and the number of them horizontally and vertically
+		@param palette Global palette
+		@param pixelFormat
+	 */
 	public function new(resolution:Resolution, palette:Palette, pixelFormat:PixelFormat = RGBA) {
 		_resolution = resolution;
 
@@ -86,12 +98,20 @@ class Res {
 		_frameBuffer = Bytes.alloc(frameWidth * frameHeight * _pixelSize);
 	}
 
+	/**
+		Clear the frame buffer filling it with a color
+
+		@param colorIndex color index in the palette
+	 */
 	public function clear(colorIndex:Int = 1) {
 		for (pos in 0...frameWidth * frameHeight) {
 			_frameBuffer.setInt32(pos * _pixelSize, _palette.get(colorIndex).format(_pixelFormat));
 		}
 	}
 
+	/**
+		Create a tileset
+	 */
 	public function createTileset():Tileset {
 		return new Tileset(this);
 	}
@@ -142,11 +162,38 @@ class Res {
 		return new PaletteSample(palette, indecies);
 	}
 
-	public function update(dt:Float) {}
+	/**
+		Create a sprite
+	 */
+	public function createSprite(tileset:Tileset, xPow:Int = 1, yPow:Int = 1, ?paletteSample:PaletteSample, ?indecies:Array<Int>):Sprite {
+		if (paletteSample == null && indecies != null)
+			paletteSample = createPaletteSample(indecies);
 
-	public function renderTilemap(tilemap:Tilemap) {
-		tilemap.render(_frameBuffer, frameWidth, frameHeight);
+		return new Sprite(this, tileset, xPow, yPow, paletteSample);
 	}
 
-	public function render() {}
+	/**
+		Create a sprite list
+	 */
+	public function createSpriteList(?initialList:Array<Sprite>):SpriteList {
+		return new SpriteList(this, initialList);
+	}
+
+	/**
+		Perform an update
+
+		@param dt Time delta in seconds
+	 */
+	public function update(dt:Float) {
+		if (scene != null)
+			scene.update(dt);
+	}
+
+	public function render() {
+		if (scene != null) {
+			for (renderable in scene.renderList) {
+				renderable.render(_frameBuffer, frameWidth, frameHeight);
+			}
+		}
+	}
 }
