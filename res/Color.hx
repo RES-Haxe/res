@@ -28,6 +28,12 @@ abstract Color(Int) from Int to Int from UInt to UInt {
 		return this & 0xFF;
 	}
 
+	public var luminance(get, never):Float;
+
+	inline function get_luminance():Float {
+		return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+	}
+
 	public inline function format(pixelFormat:PixelFormat):Color {
 		switch (pixelFormat) {
 			case ARGB:

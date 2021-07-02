@@ -9,9 +9,25 @@ class Palette {
 		return _colors;
 	}
 
-	public var indecies(get, never):Array<Int>;
+	var _byLuminance:Array<Int>;
 
-	function get_indecies():Array<Int> {
+	public var byLuminance(get, never):Array<Int>;
+
+	inline function get_byLuminance() {
+		return _byLuminance;
+	}
+
+	public var brightestIndex(get, never):Int;
+
+	inline function get_brightestIndex():Int
+		return _byLuminance[_byLuminance.length - 1];
+
+	public var darkestIndex(get, never):Int;
+
+	inline function get_darkestIndex():Int
+		return _byLuminance[0];
+
+	public function getIndecies():Array<Int> {
 		return [for (n in 0..._colors.length) n + 1];
 	};
 
@@ -28,5 +44,16 @@ class Palette {
 
 	public function new(rgbColors:Array<Int>) {
 		this._colors = rgbColors.map(col -> Color.fromInt24(col));
+
+		_byLuminance = getIndecies();
+		_byLuminance.sort((idxa, idxb) -> {
+			if (_colors[idxa].luminance == _colors[idxb].luminance)
+				return 0;
+
+			if (_colors[idxa].luminance > _colors[idxb].luminance)
+				return 1;
+			else
+				return -1;
+		});
 	}
 }

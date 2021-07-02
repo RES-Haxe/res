@@ -1,12 +1,9 @@
 package res;
 
-import haxe.macro.Context;
-import sys.io.File;
-
 class Rom {
 	public static macro function init(src:String, out:String) {
-		Context.onGenerate((_) -> {
-			File.append('log.log', false).writeString('${Sys.args()}\n');
+		haxe.macro.Context.onGenerate((_) -> {
+			sys.io.File.append('log.log', false).writeString('${Sys.args()}\n');
 
 			if (Sys.args().indexOf("--no-output") == -1) {
 				trace('Creating ROM');
@@ -18,7 +15,7 @@ class Rom {
 
 				var files:List<haxe.zip.Entry> = new List<haxe.zip.Entry>();
 
-				var log = File.append('/home/michael/res-openfl-test/log.log');
+				var log = sys.io.File.append('/home/michael/res-openfl-test/log.log');
 
 				var defines:Map<String, String> = haxe.macro.Context.getDefines();
 
