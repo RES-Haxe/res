@@ -6,15 +6,11 @@ class Textmap extends Tilemap {
 	private var _charMap:Map<Int, Int> = [];
 
 	@:allow(res)
-	private function new(res:Res, hTiles:Int, vTiles:Int, data:Bytes, srcWidth:Int, srcHeight:Int, characters:String, ?paletteSample:PaletteSample) {
-		var fontTileset = res.createTileset();
-
-		fontTileset.fromBytes(data, srcWidth, srcHeight);
-
-		super(res, fontTileset, hTiles, vTiles, paletteSample);
+	private function new(res:Res, tileset:Tileset, hTiles:Int, vTiles:Int, characters:String, ?firstTileIndex:Int = 0, ?paletteSample:PaletteSample) {
+		super(res, tileset, hTiles, vTiles, paletteSample);
 
 		for (ci in 0...characters.length) {
-			_charMap[characters.charCodeAt(ci)] = ci + 1;
+			_charMap[characters.charCodeAt(ci)] = firstTileIndex + ci + 1;
 		}
 	}
 

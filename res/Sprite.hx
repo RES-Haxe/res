@@ -4,6 +4,8 @@ class Sprite {
 	public var x:Float;
 	public var y:Float;
 
+	public var priority:Null<Int> = null;
+
 	public final frames:Array<SpriteFrame> = [];
 
 	public var hTiles:Int;

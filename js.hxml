@@ -1,0 +1,5 @@
+common.hxml
+-lib ase
+--main res.Res
+-D js-es=6
+--js bin/res.js

@@ -1,6 +1,7 @@
 package res;
 
 import haxe.io.Bytes;
+import res.helpers.Funcs.wrapi;
 
 class Tilemap implements Renderable {
 	var res:Res;
@@ -28,25 +29,13 @@ class Tilemap implements Renderable {
 	public var scrollX(default, set):Int = 0;
 
 	function set_scrollX(val:Int):Int {
-		if (val < 0)
-			val = pixelWidth + (val % pixelWidth);
-
-		if (val > pixelWidth)
-			val = val % pixelWidth;
-
-		return scrollX = val;
+		return scrollX = wrapi(val, pixelWidth);
 	}
 
 	public var scrollY(default, set):Int = 0;
 
 	function set_scrollY(val:Int):Int {
-		if (val < 0)
-			val = pixelHeight + (val % pixelHeight);
-
-		if (val > pixelHeight)
-			val = val % pixelHeight;
-
-		return scrollY = val;
+		return scrollY = wrapi(val, pixelHeight);
 	}
 
 	@:allow(res)

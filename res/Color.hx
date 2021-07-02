@@ -1,5 +1,8 @@
 package res;
 
+/**
+	RGBA color
+ */
 abstract Color(Int) from Int to Int from UInt to UInt {
 	public var r(get, never):Int;
 
@@ -38,7 +41,7 @@ abstract Color(Int) from Int to Int from UInt to UInt {
 
 	public static inline function fromInt24(int:Int, alpha:Int = 255):Color {
 		var col:Color = int << 8;
-        col.setRGBA(col.r, col.g, col.b, alpha);
+		col.setRGBA(col.r, col.g, col.b, alpha);
 		return col;
 	}
 

@@ -1,7 +1,9 @@
 package res;
 
-import ase.Ase;
+import format.png.Reader;
+import format.png.Tools;
 import haxe.io.Bytes;
+import haxe.io.BytesInput;
 
 class Tileset {
 	var res:Res;
@@ -13,7 +15,7 @@ class Tileset {
 	function get_numTiles():Int
 		return tiles.length;
 
-    @:allow(res)
+	@:allow(res)
 	private function new(res:Res) {
 		this.res = res;
 	}
@@ -39,24 +41,36 @@ class Tileset {
 		}
 	}
 
-	public function loadAseprite(bytes:Bytes) {
-		final ase = Ase.fromBytes(bytes);
+	public function loadPNG(bytes:Bytes) {
+		// FIXME: The code is horrible. Need to rewrite
+		var pngReader = new Reader(new BytesInput(bytes));
+		var pngData = pngReader.read();
 
-		// TODO: Check if the ase file has correct format
+		var header = Tools.getHeader(pngData);
+		var palette = Tools.getPalette(pngData);
 
-		fromBytes(ase.frames[0].cel(0).pixelData, ase.width, ase.height);
-	}
+		var indexBytes = Bytes.alloc(header.width * header.height);
 
-	public function createAsepriteTemplate(hTiles:Int, vTiles:Int, paletteSample:PaletteSample):Ase {
-		final palette:Array<Int> = paletteSample.colors;
-		palette.unshift(0x00000000);
+		var colors:Array<Int> = [];
 
-		final spriteWidth:Int = hTiles * res.tileSize;
-		final spriteHeight:Int = vTiles * res.tileSize;
+		var bi = new BytesInput(palette);
 
-		final tpl:Ase = Ase.create(spriteWidth, spriteHeight, INDEXED, palette);
-		tpl.header.gridWidth = tpl.header.gridHeight = res.tileSize;
-		tpl.addLayer('Tiles');
-		return tpl;
+		for (_ in 0...Std.int(bi.length / 3)) {
+			var col = Color.fromInt24(bi.readUInt24());
+
+			colors.push(Color.fromARGB(col.a, col.b, col.g, col.r));
+		}
+
+		var pixels = new BytesInput(Tools.extract32(pngData));
+
+		for (n in 0...Std.int(pixels.length / 4)) {
+			var px = pixels.readInt32();
+
+			var index = colors.indexOf(px);
+
+			indexBytes.set(n, index == -1 ? 0 : index);
+		}
+
+		fromBytes(indexBytes, header.width, header.height);
 	}
 }

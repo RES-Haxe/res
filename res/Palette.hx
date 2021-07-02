@@ -9,6 +9,12 @@ class Palette {
 		return _colors;
 	}
 
+	public var indecies(get, never):Array<Int>;
+
+	function get_indecies():Array<Int> {
+		return [for (n in 0..._colors.length) n + 1];
+	};
+
 	public inline function rnd():Color {
 		return _colors[Math.floor(Math.random() * _colors.length)];
 	}

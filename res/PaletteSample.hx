@@ -21,11 +21,11 @@ class PaletteSample {
 
 	private var _palette:Palette;
 
-	public function get(index:Int):Color {
+	public inline function get(index:Int):Color {
 		return _palette.get(_indecies[index]);
 	}
 
-	public function new(palette:Palette, indecies:Array<Int>) {
+	public inline function new(palette:Palette, indecies:Array<Int>) {
 		this._indecies = indecies;
 		this._palette = palette;
 	}
