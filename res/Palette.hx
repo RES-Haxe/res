@@ -31,8 +31,8 @@ class Palette {
 		return [for (n in 0..._colors.length) n + 1];
 	};
 
-	public inline function rnd():Color {
-		return _colors[Math.floor(Math.random() * _colors.length)];
+	public inline function rnd():Int {
+		return 1 + Math.floor(Math.random() * _colors.length);
 	}
 
 	/**
@@ -47,10 +47,9 @@ class Palette {
 
 		_byLuminance = getIndecies();
 		_byLuminance.sort((idxa, idxb) -> {
-			if (_colors[idxa].luminance == _colors[idxb].luminance)
+			if (get(idxa).luminance == get(idxb).luminance)
 				return 0;
-
-			if (_colors[idxa].luminance > _colors[idxb].luminance)
+			if (get(idxa).luminance > get(idxb).luminance)
 				return 1;
 			else
 				return -1;

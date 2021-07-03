@@ -1,6 +1,5 @@
 package res;
 
-import haxe.io.Bytes;
 import res.helpers.Funcs.wrapi;
 
 class SpriteList implements Renderable {
@@ -36,7 +35,7 @@ class SpriteList implements Renderable {
 		sortSprites();
 	}
 
-	public function render(frameBuffer:Bytes, frameWidth:Int, frameHeight:Int) {
+	public function render(frameBuffer:FrameBuffer) {
 		for (sprite in sprites) {
 			final frame = sprite.currentFrame;
 
@@ -61,12 +60,10 @@ class SpriteList implements Renderable {
 
 						final sampleIndex:Int = tile.indecies.get(tileLine * res.tileSize + tileCol);
 						if (sampleIndex != 0) {
-							final color = sprite.paletteSample.get(sampleIndex - 1);
+							final screenX:Int = wrapi(fromX + col, frameBuffer.frameWidth);
+							final screenY:Int = wrapi(fromY + scanline, frameBuffer.frameHeight);
 
-							final screenX:Int = wrapi(fromX + col, frameWidth);
-							final screenY:Int = wrapi(fromY + scanline, frameHeight);
-
-							frameBuffer.setInt32((screenY * frameWidth + screenX) * res.pixelSize, color.format(res.pixelFormat));
+							frameBuffer.setIndex(screenX, screenY, sprite.paletteSample.indecies[sampleIndex - 1]);
 						}
 					}
 				}

@@ -31,7 +31,7 @@ class Console extends Scene {
 		if (value != null)
 			commandInput = value;
 
-		consoleText.textAt(0, res.vTiles - 1, '>' + commandInput + (blink ? CURSOR : ''));
+		consoleText.textAt(0, consoleText.vTiles - 1, '>' + commandInput + (blink ? CURSOR : ''));
 	}
 
 	@:allow(res)
@@ -47,6 +47,8 @@ class Console extends Scene {
 		});
 
 		consoleText = res.createDefaultTextmap([res.palette.brightestIndex]);
+
+		consoleText.scrollY = consoleText.pixelHeight - res.frameBuffer.frameHeight;
 
 		renderList.push(consoleText);
 
@@ -77,7 +79,7 @@ class Console extends Scene {
 
 	public function clear(?params:Array<String>) {
 		log.resize(0);
-		for (line in 0...res.vTiles - 1)
+		for (line in 0...consoleText.vTiles - 1)
 			consoleText.textAt(0, line, '');
 	}
 
@@ -112,9 +114,9 @@ class Console extends Scene {
 	public function println(s:String) {
 		var lines:Array<String> = [];
 
-		while (s.length > res.hTiles) {
-			lines.push(s.substr(0, res.hTiles));
-			s = s.substr(res.hTiles);
+		while (s.length > consoleText.hTiles) {
+			lines.push(s.substr(0, consoleText.hTiles));
+			s = s.substr(consoleText.hTiles);
 		}
 
 		if (s != '')
@@ -123,7 +125,7 @@ class Console extends Scene {
 		for (line in lines)
 			log.push(line);
 
-		var line = res.vTiles - 2;
+		var line = consoleText.vTiles - 2;
 		var index = log.length - 1;
 
 		while (index >= 0 && line >= 0) {

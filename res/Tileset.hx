@@ -8,6 +8,8 @@ import haxe.io.BytesInput;
 class Tileset {
 	var res:Res;
 
+	public final tileSize:Int;
+
 	public final tiles:Array<Tile> = [];
 
 	public var numTiles(get, never):Int;
@@ -16,8 +18,8 @@ class Tileset {
 		return tiles.length;
 
 	@:allow(res)
-	private function new(res:Res) {
-		this.res = res;
+	private function new(tileSize:Int) {
+		this.tileSize = tileSize;
 	}
 
 	public inline function get(index:Int):Tile
@@ -32,10 +34,10 @@ class Tileset {
 		if (bytes.length != srcWidth * srcHeight)
 			throw 'Invalid data size: expecting ${srcWidth * srcHeight}, got: ${bytes.length}';
 
-		for (tileY in 0...Std.int(srcHeight / res.tileSize)) {
-			for (tileX in 0...Std.int(srcWidth / res.tileSize)) {
-				final tile = new Tile(res);
-				tile.yank(bytes, srcWidth, srcHeight, tileX * res.tileSize, tileY * res.tileSize);
+		for (tileY in 0...Std.int(srcHeight / tileSize)) {
+			for (tileX in 0...Std.int(srcWidth / tileSize)) {
+				final tile = new Tile(tileSize);
+				tile.yank(bytes, srcWidth, srcHeight, tileX * tileSize, tileY * tileSize);
 				tiles.push(tile);
 			}
 		}

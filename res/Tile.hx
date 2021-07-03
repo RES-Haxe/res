@@ -3,7 +3,8 @@ package res;
 import haxe.io.Bytes;
 
 class Tile {
-	var res:Res;
+	public final size:Int;
+
 	var _indecies:Bytes;
 
 	public var indecies(get, never):Bytes;
@@ -11,18 +12,18 @@ class Tile {
 	function get_indecies():Bytes
 		return _indecies;
 
-	public function new(res:Res) {
-		this.res = res;
+	public function new(tileSize:Int) {
+		size = tileSize;
 
-		_indecies = Bytes.alloc(res.tileSize * res.tileSize);
+		_indecies = Bytes.alloc(size * size);
 	}
 
 	public function yank(from:Bytes, srcWidth:Int, srcHeight:Int, srcX:Int, srcY:Int) {
-		for (scanline in 0...res.tileSize) {
-			final pos:Int = scanline * res.tileSize;
+		for (scanline in 0...size) {
+			final pos:Int = scanline * size;
 			final srcPos:Int = (srcY * srcWidth) + (scanline * srcWidth) + srcX;
 
-			_indecies.blit(pos, from, srcPos, res.tileSize);
+			_indecies.blit(pos, from, srcPos, size);
 		}
 	}
 }

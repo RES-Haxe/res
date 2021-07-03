@@ -9,8 +9,8 @@ class Tilemap implements Renderable {
 
 	var tileset:Tileset;
 
-	var hTiles:Int;
-	var vTiles:Int;
+	public final hTiles:Int;
+	public final vTiles:Int;
 
 	public var onScanline:Int->Void;
 
@@ -19,12 +19,12 @@ class Tilemap implements Renderable {
 	public var pixelWidth(get, never):Int;
 
 	function get_pixelWidth():Int
-		return hTiles * res.tileSize;
+		return hTiles * tileset.tileSize;
 
 	public var pixelHeight(get, never):Int;
 
 	function get_pixelHeight():Int
-		return vTiles * res.tileSize;
+		return vTiles * tileset.tileSize;
 
 	public var scrollX(default, set):Int = 0;
 
@@ -58,45 +58,41 @@ class Tilemap implements Renderable {
 		if (tileLine >= 0 && tileLine < map.length && tileCol >= 0 && tileCol < map[tileLine].length)
 			map[tileLine][tileCol] = tileIndex;
 		else
-			throw 'Out of tile map bounds';
+			throw 'Out of tile map bounds (col: $tileCol, line: $tileLine, size: $hTiles x $vTiles)';
 	}
 
-	public function render(frameBuffer:Bytes, frameWidth:Int, frameHeight:Int) {
-		for (screenScanline in 0...frameHeight) {
+	public function render(frameBuffer:FrameBuffer) {
+		for (screenScanline in 0...frameBuffer.frameHeight) {
 			if (onScanline != null)
 				onScanline(screenScanline);
 			var tileScanline:Int = screenScanline + scrollY;
-			var tileLineIndex:Int = Std.int(tileScanline / res.tileSize);
+			var tileLineIndex:Int = Std.int(tileScanline / tileset.tileSize);
 
 			if (tileLineIndex >= map.length)
 				tileLineIndex = tileLineIndex % map.length;
 
-			final inTileScanline:Int = tileScanline % res.tileSize;
+			final inTileScanline:Int = tileScanline % tileset.tileSize;
 
-			for (screenCol in 0...frameWidth) {
+			for (screenCol in 0...frameBuffer.frameWidth) {
 				var tileCol:Int = screenCol + scrollX;
-				var tileColIndex:Int = Std.int(tileCol / res.tileSize);
+				var tileColIndex:Int = Std.int(tileCol / tileset.tileSize);
 
 				if (tileColIndex >= map[tileLineIndex].length)
 					tileColIndex = tileColIndex % map[tileLineIndex].length;
 
-				final inTileCol:Int = tileCol % res.tileSize;
+				final inTileCol:Int = tileCol % tileset.tileSize;
 
 				final tileIndex = map[tileLineIndex][tileColIndex];
 
 				if (tileIndex > 0 && tileIndex - 1 < tileset.numTiles) {
 					final tile = tileset.get(tileIndex - 1);
 
-					final pixelPos:Int = (screenScanline * frameWidth + screenCol) * res.pixelSize;
+					final tileColorIndex:Int = tile.indecies.get(inTileScanline * tileset.tileSize + inTileCol);
 
-					final paletteIndex:Int = tile.indecies.get(inTileScanline * res.tileSize + inTileCol);
+					if (tileColorIndex != 0) {
+						final paletteColorIndex:Int = paletteSample.indecies[tileColorIndex - 1];
 
-					if (paletteIndex != 0) {
-						final sampleIndex:Int = paletteIndex - 1;
-
-						final color:Int = paletteSample.get(sampleIndex).format(res.pixelFormat);
-
-						frameBuffer.setInt32(pixelPos, color);
+						frameBuffer.setIndex(screenCol, screenScanline, paletteColorIndex);
 					}
 				}
 			}

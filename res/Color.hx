@@ -63,6 +63,9 @@ abstract Color(Int) from Int to Int from UInt to UInt {
 		this = fromRGBA(r, g, b, a);
 	}
 
+	public function toString():String
+		return StringTools.hex(this, 8);
+
 	public function new(rgba:Int = 0) {
 		this = rgba;
 	}
