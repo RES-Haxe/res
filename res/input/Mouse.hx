@@ -1,5 +1,7 @@
 package res.input;
 
+import res.helpers.Funcs.wrapi;
+
 class Mouse {
 	public var enabled:Bool = true;
 
@@ -13,8 +15,12 @@ class Mouse {
 		this.res = res;
 	}
 
-	public inline function set(x, y) {
-		this.x = x;
-		this.y = y;
+	public function push(button:MouseButton) {}
+
+	public function release(button:MouseButton) {}
+
+	public inline function moveTo(x:Int, y:Int) {
+		this.x = wrapi(x, res.frameBuffer.frameWidth);
+		this.y = wrapi(y, res.frameBuffer.frameHeight);
 	}
 }

@@ -18,13 +18,18 @@ class Keyboard {
 		_listeners.remove(cb);
 	}
 
-	public function keyDown(keyCode:Int, charCode:Int) {
+	public function keyDown(keyCode:Int) {
 		for (listener in _listeners)
-			listener(KEY_DOWN(keyCode, charCode));
+			listener(KEY_DOWN(keyCode));
 	}
 
-	public function keyUp(keyCode:Int, charCode:Int) {
+	public function keyPress(charCode:Int) {
 		for (listener in _listeners)
-			listener(KEY_UP(keyCode, charCode));
+			listener(KEY_PRESS(charCode));
+	}
+
+	public function keyUp(keyCode:Int) {
+		for (listener in _listeners)
+			listener(KEY_UP(keyCode));
 	}
 }

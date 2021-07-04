@@ -28,8 +28,8 @@ class FrameBuffer {
 		this.pixelFormat = pixelFormat;
 
 		pixelByteSize = switch (pixelFormat) {
-			case ARGB | RGBA: 4;
 			case RGB: 3;
+			case _: 4;
 		};
 
 		indexBuffer = Bytes.alloc(frameWidth * frameHeight);

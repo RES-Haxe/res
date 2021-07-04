@@ -28,14 +28,61 @@ abstract Color(Int) from Int to Int from UInt to UInt {
 		return this & 0xFF;
 	}
 
+	public var rf(get, never):Float;
+
+	inline function get_rf()
+		return r / 255;
+
+	public var gf(get, never):Float;
+
+	inline function get_gf()
+		return g / 255;
+
+	public var bf(get, never):Float;
+
+	inline function get_bf()
+		return b / 255;
+
+	public var af(get, never):Float;
+
+	inline function get_af()
+		return a / 255;
+
 	public var luminance(get, never):Float;
 
+	/**
+		`L = 0.2126 * R + 0.7152 * G + 0.0722 * B` where R, G and B are defined as:
+
+		```
+		if RsRGB <= 0.03928 then R = RsRGB/12.92 else R = ((RsRGB+0.055)/1.055) ^ 2.4
+		if GsRGB <= 0.03928 then G = GsRGB/12.92 else G = ((GsRGB+0.055)/1.055) ^ 2.4
+		if BsRGB <= 0.03928 then B = BsRGB/12.92 else B = ((BsRGB+0.055)/1.055) ^ 2.4
+		```
+
+		and RsRGB, GsRGB, and BsRGB are defined as:
+
+		```
+		RsRGB = R8bit/255
+		GsRGB = G8bit/255
+		BsRGB = B8bit/255
+		```
+
+		From: https://www.w3.org/WAI/GL/wiki/Relative_luminance
+	 */
 	inline function get_luminance():Float {
-		return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+		final lr:Float = rf <= 0.3928 ? rf / 12.92 : Math.pow((rf + 0.055) / 1.055, 2.4);
+		final lg:Float = gf <= 0.3928 ? gf / 12.92 : Math.pow((gf + 0.055) / 1.055, 2.4);
+		final lb:Float = bf <= 0.3928 ? bf / 12.92 : Math.pow((bf + 0.055) / 1.055, 2.4);
+
+		return 0.2126 * lr + 0.7152 * lg + 0.0722 * lb;
 	}
 
 	public inline function format(pixelFormat:PixelFormat):Color {
 		switch (pixelFormat) {
+			case BGRA:
+				return fromARGB(b, g, r, a);
+			case ABGR:
+				return fromARGB(a, b, g, r);
 			case ARGB:
 				return fromARGB(a, r, g, b);
 			case RGB:

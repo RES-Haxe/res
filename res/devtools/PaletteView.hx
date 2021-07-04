@@ -24,7 +24,9 @@ class PaletteRender implements Renderable {
 }
 
 class PaletteView extends Scene {
-	public function new(res:Res, palette:Palette) {
-		super([new PaletteRender(res, palette)]);
+	public function new(res:Res) {
+		super(res);
+
+		renderList.push(new PaletteRender(res, res.palette));
 	}
 }

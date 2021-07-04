@@ -16,7 +16,6 @@ class Console extends Scene {
 	static final CURSOR:String = '_';
 
 	var consoleText:Textmap;
-	var res:Res;
 
 	final commands:Map<String, ConsoleCommand> = [];
 
@@ -35,10 +34,8 @@ class Console extends Scene {
 	}
 
 	@:allow(res)
-	function new(res:Res) {
-		super();
-
-		this.res = res;
+	private function new(res:Res) {
+		super(res);
 
 		addCommand('clear', 'Clear console', clear);
 		addCommand('help', 'Show help for commands', help);
@@ -52,29 +49,26 @@ class Console extends Scene {
 
 		renderList.push(consoleText);
 
-		res.keyboard.listen((ev) -> {
-			if (res.scene == this) {
-				switch (ev) {
-					case KEY_DOWN(keyCode, charCode):
-						// trace(keyCode);
-						switch (keyCode) {
-							case 8:
-								updateInput(commandInput.substr(0, -1));
-							case 13:
-								if (commandInput.trim() != '') {
-									execute(commandInput.trim());
-									updateInput('');
-								}
-							case _:
-								if (charCode != 0) {
-									if (charCode != '`'.code)
-										updateInput(commandInput += charCode.fromCharCode());
-								}
-						}
-					case _:
+		updateInput('');
+	}
+
+	override function keyDown(keyCode:Int) {
+		switch (keyCode) {
+			case 8:
+				updateInput(commandInput.substr(0, -1));
+			case 13:
+				if (commandInput.trim() != '') {
+					execute(commandInput.trim());
+					updateInput('');
 				}
-			}
-		});
+		}
+	}
+
+	override function keyPress(charCode:Int) {
+		if (charCode != '`'.code)
+			updateInput(commandInput += charCode.fromCharCode());
+		else
+			res.popScene();
 	}
 
 	public function clear(?params:Array<String>) {

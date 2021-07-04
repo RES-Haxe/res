@@ -8,54 +8,32 @@ import res.data.BuiltInData;
 import res.devtools.Console;
 import res.devtools.PaletteView;
 import res.devtools.TilesetView;
+import res.devtools.sprites.SpritesMenu;
 import res.input.Controller;
 import res.input.Keyboard;
+import res.input.KeyboardEvent;
 import res.input.Mouse;
 
 using Math;
+using Type;
 
 @:expose('Res') class Res {
-	private var _resolution:Resolution;
-	private var _palette:Palette;
-	private var _tileSize:Int;
-	private var _hTiles:Int;
-	private var _vTiles:Int;
-
+	public final console:Console;
+	public final controllers:Array<Controller> = [for (_ in 0...4) new Controller()];
 	public final frameBuffer:FrameBuffer;
+	public final hTiles:Int;
 	public final keyboard:Keyboard;
-
 	public final mouse:Mouse;
-
+	public final palette:Palette;
+	public final resolution:Resolution;
+	public final tileSize:Int;
 	public final tilesets:Map<String, Tileset> = [];
+	public final vTiles:Int;
 
-	private final _controllers:Array<Controller> = [for (_ in 0...4) new Controller()];
+	private var _defaultFontTileset:Tileset;
+	private var defaultFont:BuiltInFontData;
 
-	public var controllers(get, never):Array<Controller>;
-
-	function get_controllers() {
-		return _controllers;
-	}
-
-	public var palette(get, never):Palette;
-
-	inline function get_palette():Palette
-		return _palette;
-
-	public var tileSize(get, never):Int;
-
-	inline function get_tileSize():Int {
-		return _tileSize;
-	}
-
-	public var hTiles(get, never):Int;
-
-	inline function get_hTiles():Int
-		return _hTiles;
-
-	public var vTiles(get, never):Int;
-
-	function get_vTiles():Int
-		return _vTiles;
+	private final _scenes:Map<String, Scene> = [];
 
 	private final _sceneHistory:Array<Scene> = [];
 
@@ -67,26 +45,22 @@ using Math;
 		return _scene;
 	}
 
-	private var console:Console;
-
-	var defaultFont:BuiltInFontData;
-
 	/**
 		@param resolution Tiles size and the number of them horizontally and vertically
 		@param palette Global palette
 		@param pixelFormat
 	 */
 	public function new(resolution:Resolution, palette:Palette, ?pixelFormat:PixelFormat = RGBA, ?romBytes:Bytes, ?defaultFont:BuiltInFontData) {
-		_resolution = resolution;
+		this.resolution = resolution;
 
 		switch (resolution) {
 			case TILES(tileSize, hTiles, vTiles):
-				_tileSize = tileSize;
-				_hTiles = hTiles;
-				_vTiles = vTiles;
+				this.tileSize = tileSize;
+				this.hTiles = hTiles;
+				this.vTiles = vTiles;
 		}
 
-		_palette = palette;
+		this.palette = palette;
 
 		var frameSize:{w:Int, h:Int} = switch (resolution) {
 			case TILES(tileSize, hTiles, vTiles):
@@ -118,7 +92,7 @@ using Math;
 		});
 
 		console.addCommand('palette', 'Show palette', (_) -> {
-			setScene(new PaletteView(this, palette));
+			setScene(PaletteView);
 		});
 
 		console.addCommand('tileset', 'View tileset', (args) -> {
@@ -129,7 +103,7 @@ using Math;
 				}
 			} else if (args.length == 1) {
 				if (tilesets.exists(args[0])) {
-					setScene(new TilesetView(this, tilesets[args[0]]));
+					setScene(TilesetView, [tilesets[args[0]]]);
 				} else {
 					console.println('`${args[0]}` 404');
 				}
@@ -137,21 +111,35 @@ using Math;
 				console.println('Too many arguments');
 		});
 
-		keyboard.listen((event) -> {
-			switch (event) {
-				case KEY_DOWN(_, charCode):
-					if (charCode == '`'.code) {
-						if (scene != console)
-							setScene(console);
-						else
-							popScene();
-					}
-				case _:
-			}
+		console.addCommand('sprites', 'Sprites', (_) -> {
+			setScene(SpritesMenu);
 		});
+
+		keyboard.listen(keyboardListener);
 
 		if (romBytes != null)
 			loadROM(romBytes);
+	}
+
+	function keyboardListener(event:KeyboardEvent) {
+		switch (event) {
+			case KEY_DOWN(keyCode):
+				if (scene != null)
+					scene.keyDown(keyCode);
+
+			case KEY_PRESS(charCode):
+				if (charCode == '`'.code) {
+					if (scene != console)
+						setScene(console);
+				} else {
+					if (scene != null)
+						scene.keyPress(charCode);
+				}
+
+			case KEY_UP(keyCode):
+				if (scene != null)
+					scene.keyUp(keyCode);
+		}
 	}
 
 	/**
@@ -282,11 +270,44 @@ using Math;
 		}
 	}
 
-	public function setScene(scene:Scene, ?replace:Bool = false) {
-		if (_scene != null && replace == false)
+	/**
+		Set current scene
+
+		@param sceneClass Class of the scene to create
+		@param sceneInstance Scene instance to set. sceneClass will be ignored is set
+		@param args Scene class constructor arguments
+		@param forceCreate Force create a new instance, instead of using a cached one
+		@param historyReplace Replace the current scene in history, instead of adding a new entry
+	 */
+	public function setScene(?sceneClass:Class<Scene>, ?sceneInstance:Scene = null, ?args:Array<Dynamic>, ?forceCreate:Bool = false,
+			?historyReplace:Bool = false):Scene {
+		if (_scene != null && historyReplace == false)
 			_sceneHistory.push(_scene);
 
-		_scene = scene;
+		var scene:Scene = sceneInstance;
+
+		if (sceneInstance != null)
+			sceneClass = scene.getClass();
+
+		var sceneClassName:String = sceneClass.getClassName();
+
+		if (!forceCreate && sceneInstance == null) {
+			if (_scenes.exists(sceneClassName))
+				scene = _scenes[sceneClassName];
+		}
+
+		if (scene == null) {
+			if (args == null)
+				args = [];
+
+			args.unshift(this);
+
+			scene = sceneClass.createInstance(args);
+		}
+
+		_scenes[sceneClassName] = scene;
+
+		return _scene = scene;
 	}
 
 	public function popScene():Scene {
@@ -317,6 +338,4 @@ using Math;
 	}
 
 	static function main() {}
-
-	var _defaultFontTileset:Tileset;
 }

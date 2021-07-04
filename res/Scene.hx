@@ -1,13 +1,20 @@
 package res;
 
 class Scene {
+	@:allow(res)
+	var res:Res;
+
 	public final renderList:Array<Renderable> = [];
 
-	public function new(?initialList:Array<Renderable>) {
-		if (initialList != null)
-			for (item in initialList)
-				renderList.push(item);
+	public function new(res:Res) {
+		this.res = res;
 	}
+
+	public function keyDown(keyCode:Int) {}
+
+	public function keyPress(charCode:Int) {}
+
+	public function keyUp(keyCode:Int) {}
 
 	public function update(dt:Float) {}
 }

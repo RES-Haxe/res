@@ -2,7 +2,7 @@ package res.devtools;
 
 class TilesetView extends Scene {
 	public function new(res:Res, tileset:Tileset) {
-		super();
+		super(res);
 
 		var indecies = res.palette.byLuminance.copy();
 		indecies.reverse();
