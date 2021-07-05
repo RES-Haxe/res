@@ -1,9 +1,6 @@
 package res;
 
-import format.png.Reader;
-import format.png.Tools;
 import haxe.io.Bytes;
-import haxe.io.BytesInput;
 
 class Tileset {
 	var res:Res;
@@ -25,6 +22,11 @@ class Tileset {
 	public inline function get(index:Int):Tile
 		return tiles[index];
 
+	public function pushTile(data:Bytes) {
+		final tile = new Tile(tileSize, data);
+		tiles.push(tile);
+	}
+
 	/**
 		Line by line
 
@@ -41,38 +43,5 @@ class Tileset {
 				tiles.push(tile);
 			}
 		}
-	}
-
-	public function loadPNG(bytes:Bytes) {
-		// FIXME: The code is horrible. Need to rewrite
-		var pngReader = new Reader(new BytesInput(bytes));
-		var pngData = pngReader.read();
-
-		var header = Tools.getHeader(pngData);
-		var palette = Tools.getPalette(pngData);
-
-		var indexBytes = Bytes.alloc(header.width * header.height);
-
-		var colors:Array<Int> = [];
-
-		var bi = new BytesInput(palette);
-
-		for (_ in 0...Std.int(bi.length / 3)) {
-			var col = Color.fromInt24(bi.readUInt24());
-
-			colors.push(Color.fromARGB(col.a, col.b, col.g, col.r));
-		}
-
-		var pixels = new BytesInput(Tools.extract32(pngData));
-
-		for (n in 0...Std.int(pixels.length / 4)) {
-			var px = pixels.readInt32();
-
-			var index = colors.indexOf(px);
-
-			indexBytes.set(n, index == -1 ? 0 : index);
-		}
-
-		fromBytes(indexBytes, header.width, header.height);
 	}
 }

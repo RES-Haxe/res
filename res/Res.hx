@@ -2,8 +2,8 @@ package res;
 
 import haxe.io.Bytes;
 import haxe.io.BytesInput;
-import haxe.io.Path;
 import haxe.zip.Reader;
+import haxe.zip.Tools;
 import res.data.BuiltInData;
 import res.devtools.Console;
 import res.devtools.PaletteView;
@@ -26,6 +26,7 @@ using Type;
 	public final mouse:Mouse;
 	public final palette:Palette;
 	public final resolution:Resolution;
+	public final sprites:Map<String, Sprite> = [];
 	public final tileSize:Int;
 	public final tilesets:Map<String, Tileset> = [];
 	public final vTiles:Int;
@@ -241,18 +242,10 @@ using Type;
 	/**
 		Create a sprite
 	 */
-	public function createSprite(tileset:Tileset, xPow:Int = 1, yPow:Int = 1, ?paletteSample:PaletteSample, ?indecies:Array<Int>):Sprite {
-		if (paletteSample == null && indecies != null)
-			paletteSample = createPaletteSample(indecies);
-
-		return new Sprite(this, tileset, xPow, yPow, paletteSample);
-	}
-
-	/**
-		Create a sprite list
-	 */
-	public function createSpriteList(?initialList:Array<Sprite>):SpriteList {
-		return new SpriteList(this, initialList);
+	public function createSprite(name:String, tileset:Tileset, hTiles:Int = 1, vTiles:Int = 1):Sprite {
+		var sprite = new Sprite(this, tileset, hTiles, vTiles);
+		sprites[name] = sprite;
+		return sprite;
 	}
 
 	public function loadROM(romBytes:Bytes) {
@@ -263,9 +256,26 @@ using Type;
 		for (file in files) {
 			var path = file.fileName.split('/');
 
-			if (path[0] == 'tilesets') {
-				var newTileset = createTileset(Path.withoutExtension(path[1]));
-				newTileset.loadPNG(file.data);
+			switch (path[0]) {
+				case 'tilesets':
+				// TODD
+				case 'sprites':
+					Tools.uncompress(file);
+					var rawData = new BytesInput(file.data);
+
+					final tileSet = createTileset('sprite_${path[1]}', rawData.readByte());
+					final numFrames:Int = rawData.readInt32();
+
+					final sprite = createSprite(path[1], tileSet, 1, 1);
+
+					for (nFrame in 0...numFrames) {
+						sprite.addFrame([nFrame + 1], rawData.readInt32());
+
+						final tileData = Bytes.alloc(tileSet.tileSize * tileSet.tileSize);
+
+						rawData.readBytes(tileData, 0, tileData.length);
+						tileSet.pushTile(tileData);
+					}
 			}
 		}
 	}

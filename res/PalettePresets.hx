@@ -61,5 +61,16 @@ class PalettePresets {
         0xc7f0d8,
         0x43523d
     ]);
+
+    public static final NYX8:Palette = new Palette([
+        0x08141e,
+        0x0f2a3f,
+        0x20394f,
+        0xf6d6bd,
+        0xc3a38a,
+        0x997577,
+        0x816271,
+        0x4e495f
+    ]);
     // @formatter:on
 }

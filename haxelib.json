@@ -9,7 +9,7 @@
   "releasenote": "Initial release",
   "contributors": ["miriti"],
   "dependencies": {
-    "format": ""
+    "ase": ""
   },
   "main": ""
 }

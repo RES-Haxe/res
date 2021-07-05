@@ -1,11 +1,6 @@
 package res;
 
 class Sprite {
-	public var x:Float;
-	public var y:Float;
-
-	public var priority:Null<Int> = null;
-
 	public final frames:Array<SpriteFrame> = [];
 
 	public var hTiles:Int;
@@ -13,25 +8,16 @@ class Sprite {
 
 	public var tileset:Tileset;
 
-	public var paletteSample:PaletteSample;
-
-	public var currentFrame(get, never):SpriteFrame;
-
-	function get_currentFrame():SpriteFrame
-		return frames[0];
-
 	var res:Res;
 
 	@:allow(res)
-	private function new(res:Res, tileset:Tileset, hTiles:Int, vTiles:Int, ?paletteSample:PaletteSample) {
+	private function new(res:Res, tileset:Tileset, hTiles:Int, vTiles:Int) {
 		this.res = res;
 
 		this.tileset = tileset;
 
 		this.hTiles = hTiles;
 		this.vTiles = vTiles;
-
-		this.paletteSample = paletteSample;
 	}
 
 	public function addFrame(tileIndecies:Array<Int>, duration:Int) {

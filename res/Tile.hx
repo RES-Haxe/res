@@ -12,10 +12,10 @@ class Tile {
 	function get_indecies():Bytes
 		return _indecies;
 
-	public function new(tileSize:Int) {
+	public function new(tileSize:Int, ?data:Bytes) {
 		size = tileSize;
 
-		_indecies = Bytes.alloc(size * size);
+		_indecies = data != null ? data : Bytes.alloc(size * size);
 	}
 
 	public function yank(from:Bytes, srcWidth:Int, srcHeight:Int, srcX:Int, srcY:Int) {

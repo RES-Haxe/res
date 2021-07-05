@@ -36,13 +36,23 @@ class Palette {
 	}
 
 	/**
+		Takes an array of colors
+
+		@returns Array of indecies of the given colors
+	 */
+	public function sub(colors:Array<Int>):Array<Int> {
+		return colors.map(col -> _colors.indexOf(col));
+	}
+
+	/**
 		1-based color index (0 = transparency)
 	 */
 	public inline function get(index:Int):Color {
 		return _colors[index - 1];
 	}
 
-	public function new(rgbColors:Array<Int>) {
+	@:allow(res)
+	private function new(rgbColors:Array<Int>) {
 		this._colors = rgbColors.map(col -> Color.fromInt24(col));
 
 		_byLuminance = getIndecies();

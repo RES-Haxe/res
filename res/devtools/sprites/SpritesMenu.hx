@@ -11,7 +11,11 @@ class SpritesMenu extends Scene {
 		menu = new Menu(res.createDefaultTextmap([res.palette.brightestIndex]));
 
 		menu.addItem('[ + Create ]', () -> {});
-		// TODO: List sprites here
+
+		for (name => sprite in res.sprites) {
+			menu.addItem(name, () -> {});
+		}
+
 		menu.addItem('[ ← Back ]', () -> {
 			res.popScene();
 		});
