@@ -1,7 +1,5 @@
 package res;
 
-import haxe.io.Bytes;
-
 class Rom {
 	#if macro
 	static function asepriteToSprite(path:String):haxe.io.Bytes {
@@ -26,7 +24,7 @@ class Rom {
 		for (frame in spriteData.frames) {
 			bytesOutput.writeInt32(frame.duration); // frame duration
 
-			var frameData = Bytes.alloc(tileSize * tileSize);
+			var frameData = haxe.io.Bytes.alloc(tileSize * tileSize);
 
 			for (layer in 0...spriteData.layers.length) {
 				var cel = frame.cel(layer);
@@ -47,7 +45,6 @@ class Rom {
 			}
 
 			bytesOutput.writeBytes(frameData, 0, frameData.length);
-			trace('frameWritten');
 		}
 
 		return bytesOutput.getBytes();
@@ -105,7 +102,6 @@ class Rom {
 									haxe.zip.Tools.compress(entry, 9);
 
 									files.add(entry);
-									trace('Resource added: $resourceType/$name');
 								} else {
 									trace('ROM Warning: Unsupported file: ${fileExt}');
 								}

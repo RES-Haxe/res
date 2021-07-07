@@ -2,7 +2,7 @@ package res;
 
 class PalettePresets {
     // @formatter:off
-	public static final PICO8:Palette = new Palette([
+	public static final PICO8:Array<Int> = [
 		0x000000,
         0x1d2b53,
         0x7e2553,
@@ -19,9 +19,9 @@ class PalettePresets {
         0x83769c,
         0xff77a8,
 		0xffccaa
-	]);
+	];
 
-    public static final PICO8_EX:Palette = new Palette([
+    public static final PICO8_EX:Array<Int> = [
 		0x000000,
         0x1d2b53,
         0x7e2553,
@@ -55,14 +55,14 @@ class PalettePresets {
         0x754665,
         0xff6e59,
         0xff9d81,
-    ]);
+    ];
 
-    public static final NOKIA3310:Palette = new Palette([
+    public static final NOKIA3310:Array<Int> = [
         0xc7f0d8,
         0x43523d
-    ]);
+    ];
 
-    public static final NYX8:Palette = new Palette([
+    public static final NYX8:Array<Int> = [
         0x08141e,
         0x0f2a3f,
         0x20394f,
@@ -71,6 +71,6 @@ class PalettePresets {
         0x997577,
         0x816271,
         0x4e495f
-    ]);
+    ];
     // @formatter:on
 }

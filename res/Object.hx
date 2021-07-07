@@ -1,6 +1,6 @@
 package res;
 
-class Object {
+class Object implements Updateable {
 	public var x:Float = 0;
 	public var y:Float = 0;
 
@@ -12,11 +12,27 @@ class Object {
 
 	public var currentFrame(get, never):SpriteFrame;
 
+	var frameTime:Float = 0;
+	var currentFrameIndex:Int = 0;
+
 	function get_currentFrame():SpriteFrame
-		return sprite.frames[0];
+		return sprite.frames[currentFrameIndex];
 
 	public inline function new(sprite:Sprite, paletteIndecies:Array<Int>) {
 		this.sprite = sprite;
 		this.paletteIndecies = paletteIndecies;
+	}
+
+	public function update(dt:Float) {
+		final currentFrameDuration = (currentFrame.duration / 1000);
+
+		while (frameTime > currentFrameDuration) {
+			frameTime -= currentFrameDuration;
+			currentFrameIndex++;
+			if (currentFrameIndex >= sprite.frames.length)
+				currentFrameIndex = 0;
+		}
+
+		frameTime += dt;
 	}
 }

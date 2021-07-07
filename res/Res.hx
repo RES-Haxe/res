@@ -34,6 +34,12 @@ using Type;
 	private var _defaultFontTileset:Tileset;
 	private var defaultFont:BuiltInFontData;
 
+	private var frameCount:Int = 0;
+	private var fpsMeasureTime:Float = 0;
+	private var lastFps:Int = 0;
+	private var showFps:Bool = false;
+	private var fpsDisplay:Textmap;
+
 	private final _scenes:Map<String, Scene> = [];
 
 	private final _sceneHistory:Array<Scene> = [];
@@ -51,7 +57,13 @@ using Type;
 		@param palette Global palette
 		@param pixelFormat
 	 */
-	public function new(resolution:Resolution, palette:Palette, ?pixelFormat:PixelFormat = RGBA, ?romBytes:Bytes, ?defaultFont:BuiltInFontData) {
+	public function new(resolution:Resolution, palette:Array<Int>, ?pixelFormat:PixelFormat = RGBA, ?romBytes:Bytes, ?defaultFont:BuiltInFontData) {
+		if (palette.length < 2)
+			throw 'Too few colors. I mean.. how you\'r gonna display anything if you have only one color?!';
+
+		if (palette.length > 32)
+			throw 'Too many color. Trust me, you don\'t need THAT many';
+
 		this.resolution = resolution;
 
 		switch (resolution) {
@@ -61,14 +73,14 @@ using Type;
 				this.vTiles = vTiles;
 		}
 
-		this.palette = palette;
+		this.palette = new Palette(palette);
 
 		var frameSize:{w:Int, h:Int} = switch (resolution) {
 			case TILES(tileSize, hTiles, vTiles):
 				{w: hTiles * tileSize, h: vTiles * tileSize};
 		};
 
-		frameBuffer = new FrameBuffer(palette, frameSize.w, frameSize.h, pixelFormat);
+		frameBuffer = new FrameBuffer(this.palette, frameSize.w, frameSize.h, pixelFormat);
 
 		keyboard = new Keyboard();
 		mouse = new Mouse(this);
@@ -77,7 +89,14 @@ using Type;
 		_defaultFontTileset = createTileset('_defaultFont', this.defaultFont.tileSize);
 		_defaultFontTileset.fromBytes(this.defaultFont.data, this.defaultFont.width, this.defaultFont.height);
 
+		fpsDisplay = createDefaultTextmap([this.palette.brightestIndex]);
+
 		console = new Console(this);
+
+		console.addCommand('fps', 'Show/hide fps', (args) -> {
+			showFps = (args[0].toLowerCase() == 'true' || args[0] == '1');
+			console.println('Show fps: $showFps');
+		});
 
 		#if sys
 		console.addCommand('quit', 'Quit program', (_) -> {
@@ -89,7 +108,7 @@ using Type;
 			console.println('RES      : v0.1.0'); // TODO: Make dynamic
 			console.println('Tile size: ${tileSize}');
 			console.println('Resol.   : ${frameBuffer.frameWidth}x${frameBuffer.frameHeight}');
-			console.println('Palette  : ${palette.colors.length} col.');
+			console.println('Palette  : ${this.palette.colors.length} col.');
 		});
 
 		console.addCommand('palette', 'Show palette', (_) -> {
@@ -337,14 +356,27 @@ using Type;
 	public function update(dt:Float) {
 		if (scene != null)
 			scene.update(dt);
+
+		if (fpsMeasureTime >= 1) {
+			lastFps = frameCount;
+			if (showFps)
+				fpsDisplay.textAt(0, 0, 'FPS: $lastFps');
+			frameCount = 0;
+			fpsMeasureTime -= 1;
+		} else
+			fpsMeasureTime += dt;
 	}
 
 	public function render() {
 		if (scene != null) {
-			for (renderable in scene.renderList) {
-				renderable.render(frameBuffer);
-			}
+			scene.render(frameBuffer);
 		}
+
+		if (showFps) {
+			fpsDisplay.render(frameBuffer);
+		}
+
+		frameCount++;
 	}
 
 	static function main() {}

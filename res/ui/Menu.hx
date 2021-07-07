@@ -17,7 +17,7 @@ class Menu implements Renderable {
 	function set_selectedIndex(val:Int) {
 		selectedIndex = wrapi(val, items.length);
 
-		update();
+		updateText();
 
 		return selectedIndex;
 	}
@@ -26,7 +26,7 @@ class Menu implements Renderable {
 		this.textmap = textmap;
 	}
 
-	function update() {
+	function updateText() {
 		for (line in 0...textmap.vTiles) {
 			if (line < items.length) {
 				textmap.textAt(0, line, (selectedIndex == line ? '>' : ' ') + items[line].text);
@@ -56,7 +56,7 @@ class Menu implements Renderable {
 			callback: callback
 		});
 
-		update();
+		updateText();
 	}
 
 	public function render(frameBuffer:FrameBuffer) {

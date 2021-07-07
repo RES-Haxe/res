@@ -1,6 +1,6 @@
 package res;
 
-class Scene {
+class Scene implements Renderable implements Updateable {
 	@:allow(res)
 	var res:Res;
 
@@ -16,5 +16,15 @@ class Scene {
 
 	public function keyUp(keyCode:Int) {}
 
-	public function update(dt:Float) {}
+	public function update(dt:Float) {
+		// TODO: Not optimal
+		for (item in renderList)
+			if (Std.isOfType(item, Updateable))
+				cast(item, Updateable).update(dt);
+	}
+
+	public function render(frameBuffer:FrameBuffer) {
+		for (renderable in renderList)
+			renderable.render(frameBuffer);
+	}
 }

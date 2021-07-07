@@ -1,6 +1,5 @@
 package res;
 
-import haxe.io.Bytes;
 import res.helpers.Funcs.wrapi;
 
 class Tilemap implements Renderable {
