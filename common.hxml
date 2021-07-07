@@ -1,2 +1,3 @@
+-cp src
 -lib ase
 -main res.Res
