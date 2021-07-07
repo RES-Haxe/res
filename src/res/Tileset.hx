@@ -6,8 +6,9 @@ class Tileset {
 	var res:Res;
 
 	public final tileSize:Int;
-
 	public final tiles:Array<Tile> = [];
+	public final hTiles:Int;
+	public final vTiles:Int;
 
 	public var numTiles(get, never):Int;
 
@@ -15,8 +16,10 @@ class Tileset {
 		return tiles.length;
 
 	@:allow(res)
-	private function new(tileSize:Int) {
+	private function new(tileSize:Int, hTiles:Int, vTiles:Int) {
 		this.tileSize = tileSize;
+		this.hTiles = hTiles;
+		this.vTiles = vTiles;
 	}
 
 	public inline function get(index:Int):Tile

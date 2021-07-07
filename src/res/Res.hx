@@ -86,7 +86,7 @@ using Type;
 		mouse = new Mouse(this);
 
 		this.defaultFont = defaultFont == null ? BuiltInData.FONT_8x8 : defaultFont;
-		_defaultFontTileset = createTileset('_defaultFont', this.defaultFont.tileSize);
+		_defaultFontTileset = createTileset('_defaultFont', 16, 16, this.defaultFont.tileSize);
 		_defaultFontTileset.fromBytes(this.defaultFont.data, this.defaultFont.width, this.defaultFont.height);
 
 		fpsDisplay = createDefaultTextmap([this.palette.brightestIndex]);
@@ -94,7 +94,9 @@ using Type;
 		console = new Console(this);
 
 		console.addCommand('fps', 'Show/hide fps', (args) -> {
-			showFps = (args[0].toLowerCase() == 'true' || args[0] == '1');
+			if (args.length >= 1) {
+				showFps = (args[0].toLowerCase() == 'true' || args[0] == '1');
+			}
 			console.println('Show fps: $showFps');
 		});
 
@@ -123,7 +125,8 @@ using Type;
 				}
 			} else if (args.length == 1) {
 				if (tilesets.exists(args[0])) {
-					setScene(TilesetView, [tilesets[args[0]]]);
+					// setScene(TilesetView, [tilesets[args[0]]]);
+					setScene(new TilesetView(this, tilesets[args[0]]));
 				} else {
 					console.println('`${args[0]}` 404');
 				}
@@ -218,11 +221,11 @@ using Type;
 
 		@param name Tileset name
 	 */
-	public function createTileset(name:String, ?overrideTileSize:Int):Tileset {
+	public function createTileset(name:String, hTiles:Int, vTiles:Int, ?overrideTileSize:Int):Tileset {
 		if (tilesets.exists(name))
 			throw 'Tileset $name already exists';
 
-		final tileset = new Tileset(overrideTileSize != null ? overrideTileSize : tileSize);
+		final tileset = new Tileset(overrideTileSize != null ? overrideTileSize : tileSize, hTiles, vTiles);
 
 		tilesets[name] = tileset;
 
@@ -277,12 +280,26 @@ using Type;
 
 			switch (path[0]) {
 				case 'tilesets':
-				// TODD
+					Tools.uncompress(file);
+					var rawData = new BytesInput(file.data);
+
+					var tilesize = rawData.readByte();
+
+					final hTiles = rawData.readByte();
+					final vTiles = rawData.readByte();
+
+					final tileset = createTileset(path[1], hTiles, vTiles, tilesize);
+
+					for (_ in 0...(hTiles * vTiles)) {
+						var tileBytes = Bytes.alloc(tileset.tileSize * tileset.tileSize);
+						rawData.readBytes(tileBytes, 0, tileBytes.length);
+						tileset.pushTile(tileBytes);
+					}
 				case 'sprites':
 					Tools.uncompress(file);
 					var rawData = new BytesInput(file.data);
 
-					final tileSet = createTileset('sprite_${path[1]}', rawData.readByte());
+					final tileSet = createTileset('sprite_${path[1]}', 8, 8, rawData.readByte());
 					final numFrames:Int = rawData.readInt32();
 
 					final sprite = createSprite(path[1], tileSet, 1, 1);

@@ -11,5 +11,5 @@
   "dependencies": {
     "ase": ""
   },
-  "main": ""
+  "main": "tools.Main"
 }

@@ -1,6 +1,8 @@
 package res;
 
 class Rom {
+	public static var romSourcePath:String;
+
 	#if macro
 	static function asepriteToSprite(path:String):haxe.io.Bytes {
 		var spriteData = ase.Ase.fromBytes(sys.io.File.getBytes(path));
@@ -50,8 +52,58 @@ class Rom {
 		return bytesOutput.getBytes();
 	}
 
+	static function asepriteToTileset(path:String):haxe.io.Bytes {
+		final aseData = ase.Ase.fromBytes(sys.io.File.getBytes(path));
+
+		if (!(aseData.header.gridHeight == aseData.header.gridWidth))
+			throw 'Only square grid is allowed';
+
+		if (aseData.colorDepth != INDEXED)
+			throw('Only Indexed Aseprite files please');
+
+		if ((aseData.width % aseData.header.gridHeight != 0) || (aseData.height % aseData.header.gridHeight != 0))
+			throw('Invalid size');
+
+		if (aseData.frames.length > 1)
+			trace("Warning: aseprite file contains more than 1 frame. The rest will be ignored");
+
+		final bo = new haxe.io.BytesOutput();
+
+		final tileSize:Int = aseData.header.gridWidth;
+		bo.writeByte(tileSize);
+
+		final hTiles:Int = Std.int(aseData.width / tileSize);
+		bo.writeByte(hTiles);
+
+		final vTiles:Int = Std.int(aseData.height / tileSize);
+		bo.writeByte(vTiles);
+
+		for (line in 0...vTiles) {
+			for (col in 0...hTiles) {
+				final tileBytes = new haxe.io.BytesOutput(); // haxe.io.Bytes.alloc(tileSize * tileSize);
+
+				final yTile:Int = line * tileSize;
+				final xTile:Int = col * tileSize;
+
+				for (ty in yTile...(yTile + tileSize)) {
+					for (tx in xTile...(xTile + tileSize)) {
+						tileBytes.writeByte(aseData.firstFrame.cel(0).getPixel(tx, ty));
+					}
+				}
+
+				var bytes = tileBytes.getBytes();
+
+				bo.writeBytes(bytes, 0, bytes.length);
+			}
+		}
+
+		return bo.getBytes();
+	}
+
 	static function convertResource(type:String, fullPath:String):haxe.io.Bytes {
 		switch (type) {
+			case 'tilesets':
+				return asepriteToTileset(fullPath);
 			case 'sprites':
 				return asepriteToSprite(fullPath);
 			case _:
@@ -63,7 +115,11 @@ class Rom {
 
 	public static macro function init(src:String, out:String) {
 		final resTypes:Array<String> = ['tilesets', 'tilemaps', 'sprites'];
-		final supportedTypes:Map<String, Array<String>> = ['tilesets' => [], 'tilemaps' => [], 'sprites' => ['ase', 'aseprite']];
+		final supportedTypes:Map<String, Array<String>> = [
+			'tilesets' => ['ase', 'aseprite'],
+			'tilemaps' => [],
+			'sprites' => ['ase', 'aseprite']
+		];
 
 		haxe.macro.Context.onGenerate((_) -> {
 			if (Sys.args().indexOf("--no-output") == -1) {
@@ -114,6 +170,6 @@ class Rom {
 				rom.write(files);
 			}
 		});
-		return macro trace('ROM initialized');
+		return macro Rom.romSourcePath = $v{haxe.io.Path.join([Sys.getCwd(), src])};
 	}
 }
