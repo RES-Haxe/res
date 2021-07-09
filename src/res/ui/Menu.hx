@@ -2,11 +2,7 @@ package res.ui;
 
 import res.helpers.Funcs.wrapi;
 
-typedef MenuItem = {
-	text:String,
-	callback:Void->Void
-};
-
+// TODO: Scrolling
 class Menu implements Renderable {
 	public final textmap:Textmap;
 
@@ -26,7 +22,7 @@ class Menu implements Renderable {
 		this.textmap = textmap;
 	}
 
-	function updateText() {
+	public function updateText() {
 		for (line in 0...textmap.vTiles) {
 			if (line < items.length) {
 				textmap.textAt(0, line, (selectedIndex == line ? '>' : ' ') + items[line].text);
@@ -39,24 +35,13 @@ class Menu implements Renderable {
 		items[selectedIndex].callback();
 	}
 
-	public function keyDown(keyCode:Int) {
-		switch (keyCode) {
-			case 13:
-				execute();
-			case 38 | 87 | 75:
-				selectedIndex--;
-			case 40 | 83 | 74:
-				selectedIndex++;
-		}
-	}
-
 	public function addItem(text:String, callback:Void->Void) {
-		items.push({
-			text: text,
-			callback: callback
-		});
+		var menuItem = new MenuItem(text, callback);
+		items.push(menuItem);
 
 		updateText();
+
+		return menuItem;
 	}
 
 	public function render(frameBuffer:FrameBuffer) {

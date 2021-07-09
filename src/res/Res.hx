@@ -9,6 +9,7 @@ import res.devtools.Console;
 import res.devtools.PaletteView;
 import res.devtools.TilesetView;
 import res.devtools.sprites.SpritesMenu;
+import res.devtools.tilemaps.TilemapMenu;
 import res.input.Controller;
 import res.input.Keyboard;
 import res.input.KeyboardEvent;
@@ -29,6 +30,7 @@ using Type;
 	public final sprites:Map<String, Sprite> = [];
 	public final tileSize:Int;
 	public final tilesets:Map<String, Tileset> = [];
+	public final tilemaps:Map<String, Tilemap> = [];
 	public final vTiles:Int;
 
 	private var _defaultFontTileset:Tileset;
@@ -45,6 +47,7 @@ using Type;
 	private final _sceneHistory:Array<Scene> = [];
 
 	private var _scene:Scene;
+	private var _sceneResultCb:Array<Dynamic->Void> = [];
 
 	public var scene(get, never):Scene;
 
@@ -134,8 +137,16 @@ using Type;
 				console.println('Too many arguments');
 		});
 
-		console.addCommand('sprites', 'Sprites', (_) -> {
+		console.addCommand('sprite', 'View/Edit sprites', (_) -> {
 			setScene(SpritesMenu);
+		});
+
+		console.addCommand('tilemap', 'View/Edit tilemaps', (args) -> {
+			if (args.length == 0) {
+				setScene(TilemapMenu);
+			} else {
+				// TODO Editor
+			}
 		});
 
 		keyboard.listen(keyboardListener);
@@ -235,13 +246,14 @@ using Type;
 	/**
 		Create a tile map
 
+		@param name Tilemap name
 		@param tileset Tileset to use
 		@param hTiles Number of horizontal tiles (default - number of tiles per screen)
 		@param vTiles Number of vertical tiles (default - number of tiles per screen)
 		@param paletteSample Palette sample to use
 		@param indecies If `paletteSample` isn't set these indecies will be used to create a new palette sample
 	 */
-	public function createTilemap(tileset:Tileset, ?hTiles:Int, ?vTiles:Int, ?paletteSample:PaletteSample, ?indecies:Array<Int>):Tilemap {
+	public function createTilemap(?name:String, tileset:Tileset, ?hTiles:Int, ?vTiles:Int, ?paletteSample:PaletteSample, ?indecies:Array<Int>):Tilemap {
 		if (hTiles == null)
 			hTiles = Math.ceil(frameBuffer.frameWidth / tileset.tileSize);
 
@@ -250,8 +262,15 @@ using Type;
 
 		if (paletteSample == null && indecies != null)
 			paletteSample = createPaletteSample(indecies);
+		else
+			paletteSample = createPaletteSample(palette.getIndecies());
 
-		return new Tilemap(this, tileset, hTiles, vTiles, paletteSample);
+		var tilemap = new Tilemap(this, tileset, hTiles, vTiles, paletteSample);
+
+		if (name != null)
+			tilemaps[name] = tilemap;
+
+		return tilemap;
 	}
 
 	/**
@@ -356,13 +375,24 @@ using Type;
 		return _scene = scene;
 	}
 
-	public function popScene():Scene {
+	public function pushScene(?sceneClass:Class<Scene>, ?sceneInstance:Scene = null, ?args:Array<Dynamic>, ?forceCreate:Bool = false,
+			?historyReplace:Bool = false, onResult:Dynamic->Void):Scene {
+		var scene = setScene(sceneClass, sceneInstance, args, forceCreate, historyReplace);
+		_sceneResultCb.push(onResult);
+		return scene;
+	}
+
+	public function popScene(?result:Dynamic) {
 		var scene = _sceneHistory.pop();
 
 		if (scene != null)
 			_scene = scene;
 
-		return scene;
+		var cb = _sceneResultCb.pop();
+
+		if (cb != null) {
+			cb(result);
+		}
 	}
 
 	/**

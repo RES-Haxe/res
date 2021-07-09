@@ -4,6 +4,9 @@ class Object implements Updateable {
 	public var x:Float = 0;
 	public var y:Float = 0;
 
+	public var flipX:Bool = false;
+	public var flipY:Bool = false;
+
 	public var priority:Null<Int> = null;
 
 	public final sprite:Sprite;
