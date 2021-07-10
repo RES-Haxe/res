@@ -1,15 +1,17 @@
 package res;
 
+import res.data.CommodorKernalFontData;
 import haxe.io.Bytes;
 import haxe.io.BytesInput;
 import haxe.zip.Reader;
 import haxe.zip.Tools;
-import res.data.BuiltInData;
+import res.data.Pico8FontData;
 import res.devtools.Console;
 import res.devtools.PaletteView;
 import res.devtools.TilesetView;
 import res.devtools.sprites.SpritesMenu;
 import res.devtools.tilemaps.TilemapMenu;
+import res.font.Font;
 import res.input.Controller;
 import res.input.Keyboard;
 import res.input.KeyboardEvent;
@@ -32,9 +34,8 @@ using Type;
 	public final tilesets:Map<String, Tileset> = [];
 	public final tilemaps:Map<String, Tilemap> = [];
 	public final vTiles:Int;
-
-	private var _defaultFontTileset:Tileset;
-	private var defaultFont:BuiltInFontData;
+	public final fonts:Map<String, Font> = [];
+	public final defaultFont:Font;
 
 	private var frameCount:Int = 0;
 	private var fpsMeasureTime:Float = 0;
@@ -60,7 +61,7 @@ using Type;
 		@param palette Global palette
 		@param pixelFormat
 	 */
-	public function new(resolution:Resolution, palette:Array<Int>, ?pixelFormat:PixelFormat = RGBA, ?romBytes:Bytes, ?defaultFont:BuiltInFontData) {
+	public function new(resolution:Resolution, palette:Array<Int>, ?pixelFormat:PixelFormat = RGBA, ?romBytes:Bytes) {
 		if (palette.length < 2)
 			throw 'Too few colors. I mean.. how you\'r gonna display anything if you have only one color?!';
 
@@ -88,9 +89,20 @@ using Type;
 		keyboard = new Keyboard();
 		mouse = new Mouse(this);
 
-		this.defaultFont = defaultFont == null ? BuiltInData.FONT_8x8 : defaultFont;
-		_defaultFontTileset = createTileset('_defaultFont', 16, 16, this.defaultFont.tileSize);
-		_defaultFontTileset.fromBytes(this.defaultFont.data, this.defaultFont.width, this.defaultFont.height);
+		/*
+			var _defaultFontTileset = createTileset('_defaultFont', Pico8FontData.H_TILES, Pico8FontData.V_TILES, Pico8FontData.TILE_SIZE);
+			_defaultFontTileset.fromBytes(Pico8FontData.DATA, Pico8FontData.WIDTH, Pico8FontData.HEIGHT);
+		 */
+		var _defaultFontTileset = createTileset('_defaultFont', CommodorKernalFontData.H_TILES, CommodorKernalFontData.V_TILES,
+			CommodorKernalFontData.TILE_SIZE);
+		_defaultFontTileset.fromBytes(CommodorKernalFontData.DATA, CommodorKernalFontData.WIDTH, CommodorKernalFontData.HEIGHT);
+
+		/*
+			defaultFont = createFont('_defaultFont', _defaultFontTileset,
+				' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~');
+		 */
+		defaultFont = createFont('_defaultFont', _defaultFontTileset,
+			' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]↑_✓abcdefghijklmnopqrstuvwxyz£|←▒▓');
 
 		fpsDisplay = createDefaultTextmap([this.palette.brightestIndex]);
 
@@ -143,9 +155,14 @@ using Type;
 
 		console.addCommand('tilemap', 'View/Edit tilemaps', (args) -> {
 			if (args.length == 0) {
-				setScene(TilemapMenu);
+				setScene(TilemapMenu, true);
 			} else {
-				// TODO Editor
+				if (tilemaps.exists(args[0])) {
+					console.println('???');
+					// TODO Editor
+				} else {
+					console.println('No such tilemap: ${args[0]}');
+				}
 			}
 		});
 
@@ -192,10 +209,10 @@ using Type;
 	 */
 	public function createDefaultTextmap(?hTiles:Int, ?vTiles:Int, ?indecies:Array<Int>):Textmap {
 		if (hTiles == null)
-			hTiles = Math.ceil(frameBuffer.frameWidth / _defaultFontTileset.tileSize);
+			hTiles = Math.ceil(frameBuffer.frameWidth / defaultFont.tileset.tileSize);
 
 		if (vTiles == null)
-			vTiles = Math.ceil(frameBuffer.frameHeight / _defaultFontTileset.tileSize);
+			vTiles = Math.ceil(frameBuffer.frameHeight / defaultFont.tileset.tileSize);
 
 		var paletteSample:PaletteSample;
 
@@ -204,27 +221,37 @@ using Type;
 		else
 			paletteSample = new PaletteSample(palette, indecies);
 
-		return new Textmap(this, _defaultFontTileset, hTiles, vTiles, defaultFont.characters, paletteSample);
+		return createTextmap(defaultFont, hTiles, vTiles, 0, indecies);
+	}
+
+	/**
+		Create a font
+
+		@param name Font name
+		@param tileset Tileset to use
+		@param characters Supported characters
+		@param firstTileIndex Index of the first tile in the tileset
+	 */
+	public function createFont(name:String, tileset:Tileset, characters:String, ?firstTileIndex:Int = 0):Font {
+		final font = new Font(this, name, tileset, characters);
+		fonts[name] = font;
+		return font;
 	}
 
 	/**
 		Create a new text map
 	 */
-	public function createTextmap(tileset:Tileset, characters:String, ?hTiles:Int, ?vTiles:Int, ?firstTileIndex:Int = 0, ?paletteSample:PaletteSample,
-			?indecies:Array<Int>):Textmap {
+	public function createTextmap(font:Font, ?hTiles:Int, ?vTiles:Int, ?firstTileIndex:Int = 0, ?indecies:Array<Int>):Textmap {
 		if (hTiles == null)
-			hTiles = Math.ceil(frameBuffer.frameWidth / tileset.tileSize);
+			hTiles = Math.ceil(frameBuffer.frameWidth / font.tileset.tileSize);
 
 		if (vTiles == null)
-			vTiles = Math.ceil(frameBuffer.frameHeight / tileset.tileSize);
+			vTiles = Math.ceil(frameBuffer.frameHeight / font.tileset.tileSize);
 
-		if (paletteSample == null && indecies == null)
-			paletteSample = createPaletteSample(palette.getIndecies());
+		if (indecies == null)
+			indecies = palette.getIndecies();
 
-		if (paletteSample == null && indecies != null)
-			paletteSample = createPaletteSample(indecies);
-
-		return new Textmap(this, tileset, hTiles, vTiles, characters, firstTileIndex, paletteSample);
+		return new Textmap(this, font.tileset, hTiles, vTiles, font.characters, firstTileIndex, createPaletteSample(indecies));
 	}
 
 	/**
@@ -232,13 +259,11 @@ using Type;
 
 		@param name Tileset name
 	 */
-	public function createTileset(name:String, hTiles:Int, vTiles:Int, ?overrideTileSize:Int):Tileset {
-		if (tilesets.exists(name))
-			throw 'Tileset $name already exists';
-
+	public function createTileset(?name:String, hTiles:Int, vTiles:Int, ?overrideTileSize:Int):Tileset {
 		final tileset = new Tileset(overrideTileSize != null ? overrideTileSize : tileSize, hTiles, vTiles);
 
-		tilesets[name] = tileset;
+		if (name != null)
+			tilesets[name] = tileset;
 
 		return tileset;
 	}

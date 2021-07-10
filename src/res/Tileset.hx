@@ -25,9 +25,10 @@ class Tileset {
 	public inline function get(index:Int):Tile
 		return tiles[index];
 
-	public function pushTile(data:Bytes) {
+	public function pushTile(?data:Bytes):Tile {
 		final tile = new Tile(tileSize, data);
 		tiles.push(tile);
+		return tile;
 	}
 
 	/**

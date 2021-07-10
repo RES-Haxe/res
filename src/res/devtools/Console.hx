@@ -1,5 +1,7 @@
 package res.devtools;
 
+import res.input.Key;
+
 using String;
 using StringTools;
 
@@ -54,13 +56,15 @@ class Console extends Scene {
 
 	override function keyDown(keyCode:Int) {
 		switch (keyCode) {
-			case 8:
+			case Key.BACKSPACE:
 				updateInput(commandInput.substr(0, -1));
-			case 13:
+			case Key.ENTER:
 				if (commandInput.trim() != '') {
 					execute(commandInput.trim());
 					updateInput('');
 				}
+			case Key.ESCAPE:
+				res.popScene();
 		}
 	}
 
@@ -80,9 +84,13 @@ class Console extends Scene {
 	function help(params:Array<String>) {
 		for (cmd in commands) {
 			if (params.length == 0 || params.indexOf(cmd.cmd) != -1) {
-				println('${cmd.cmd}: ${cmd.help}');
+				println('${cmd.cmd}');
+				println('  ${cmd.help}');
+				println(' ');
 			}
 		}
+		println('----');
+		println('Press ESC to close console');
 	}
 
 	public function addCommand(cmd:String, ?help:String, cb:ConsoleCommandFunc) {

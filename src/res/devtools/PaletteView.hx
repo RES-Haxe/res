@@ -1,5 +1,7 @@
 package res.devtools;
 
+import res.input.Key;
+
 class PaletteRender implements Renderable {
 	var palette:Palette;
 	var res:Res;
@@ -28,5 +30,10 @@ class PaletteView extends Scene {
 		super(res);
 
 		renderList.push(new PaletteRender(res, res.palette));
+	}
+
+	override function keyDown(keyCode:Int) {
+		if (keyCode == Key.ESCAPE)
+			res.popScene();
 	}
 }

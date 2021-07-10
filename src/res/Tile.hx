@@ -5,17 +5,20 @@ import haxe.io.Bytes;
 class Tile {
 	public final size:Int;
 
-	var _indecies:Bytes;
-
-	public var indecies(get, never):Bytes;
-
-	function get_indecies():Bytes
-		return _indecies;
+	public final indecies:Bytes;
 
 	public function new(tileSize:Int, ?data:Bytes) {
 		size = tileSize;
 
-		_indecies = data != null ? data : Bytes.alloc(size * size);
+		indecies = data != null ? data : Bytes.alloc(size * size);
+	}
+
+	public function fill(index:Int) {
+		indecies.fill(0, size * size, index);
+	}
+
+	public function setIndex(x:Int, y:Int, index:Int) {
+		indecies.set(size * y + x, index);
 	}
 
 	public function yank(from:Bytes, srcWidth:Int, srcHeight:Int, srcX:Int, srcY:Int) {
@@ -23,7 +26,7 @@ class Tile {
 			final pos:Int = scanline * size;
 			final srcPos:Int = (srcY * srcWidth) + (scanline * srcWidth) + srcX;
 
-			_indecies.blit(pos, from, srcPos, size);
+			indecies.blit(pos, from, srcPos, size);
 		}
 	}
 }

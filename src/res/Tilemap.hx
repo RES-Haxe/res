@@ -6,7 +6,7 @@ class Tilemap implements Renderable {
 	var res:Res;
 	var map:Array<Array<Int>>;
 
-	var tileset:Tileset;
+	public final tileset:Tileset;
 
 	public final hTiles:Int;
 	public final vTiles:Int;
