@@ -1,5 +1,7 @@
 package res;
 
+import res.tools.MathTools.clampi;
+
 class Palette {
 	var _colors:Array<Color>;
 
@@ -47,8 +49,8 @@ class Palette {
 	/**
 		1-based color index (0 = transparency)
 	 */
-	public inline function get(index:Int):Color {
-		return _colors[index - 1];
+	public function get(index:Int):Color {
+		return _colors[clampi(index - 1, 0, _colors.length - 1)];
 	}
 
 	@:allow(res)

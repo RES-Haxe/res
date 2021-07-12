@@ -1,11 +1,11 @@
 package res;
 
-import res.data.CommodorKernalFontData;
 import haxe.io.Bytes;
 import haxe.io.BytesInput;
 import haxe.zip.Reader;
 import haxe.zip.Tools;
-import res.data.Pico8FontData;
+import res.connectors.Connector;
+import res.data.CommodorKernalFontData;
 import res.devtools.Console;
 import res.devtools.PaletteView;
 import res.devtools.TilesetView;
@@ -22,7 +22,7 @@ using Type;
 
 @:expose('Res') class Res {
 	public final console:Console;
-	public final controllers:Array<Controller> = [for (_ in 0...4) new Controller()];
+	public final controllers:Map<Int, Controller> = [for (playerNum in 1...5) playerNum => new Controller(playerNum)];
 	public final frameBuffer:FrameBuffer;
 	public final hTiles:Int;
 	public final keyboard:Keyboard;
@@ -42,6 +42,7 @@ using Type;
 	private var lastFps:Int = 0;
 	private var showFps:Bool = false;
 	private var fpsDisplay:Textmap;
+	private var connector:Connector;
 
 	private final _scenes:Map<String, Scene> = [];
 
@@ -61,7 +62,8 @@ using Type;
 		@param palette Global palette
 		@param pixelFormat
 	 */
-	public function new(resolution:Resolution, palette:Array<Int>, ?pixelFormat:PixelFormat = RGBA, ?romBytes:Bytes) {
+	public function new(resolution:Resolution, palette:Array<Int>, ?pixelFormat:PixelFormat = RGBA, mainScene:Class<Scene>, ?romBytes:Bytes,
+			?connector:Connector) {
 		if (palette.length < 2)
 			throw 'Too few colors. I mean.. how you\'r gonna display anything if you have only one color?!';
 
@@ -86,21 +88,13 @@ using Type;
 
 		frameBuffer = new FrameBuffer(this.palette, frameSize.w, frameSize.h, pixelFormat);
 
-		keyboard = new Keyboard();
+		keyboard = new Keyboard(this);
 		mouse = new Mouse(this);
 
-		/*
-			var _defaultFontTileset = createTileset('_defaultFont', Pico8FontData.H_TILES, Pico8FontData.V_TILES, Pico8FontData.TILE_SIZE);
-			_defaultFontTileset.fromBytes(Pico8FontData.DATA, Pico8FontData.WIDTH, Pico8FontData.HEIGHT);
-		 */
 		var _defaultFontTileset = createTileset('_defaultFont', CommodorKernalFontData.H_TILES, CommodorKernalFontData.V_TILES,
 			CommodorKernalFontData.TILE_SIZE);
 		_defaultFontTileset.fromBytes(CommodorKernalFontData.DATA, CommodorKernalFontData.WIDTH, CommodorKernalFontData.HEIGHT);
 
-		/*
-			defaultFont = createFont('_defaultFont', _defaultFontTileset,
-				' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~');
-		 */
 		defaultFont = createFont('_defaultFont', _defaultFontTileset,
 			' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]↑_✓abcdefghijklmnopqrstuvwxyz£|←▒▓');
 
@@ -170,6 +164,11 @@ using Type;
 
 		if (romBytes != null)
 			loadROM(romBytes);
+
+		if (connector != null)
+			connect(connector);
+
+		setScene(mainScene);
 	}
 
 	function keyboardListener(event:KeyboardEvent) {
@@ -221,7 +220,7 @@ using Type;
 		else
 			paletteSample = new PaletteSample(palette, indecies);
 
-		return createTextmap(defaultFont, hTiles, vTiles, 0, indecies);
+		return createTextmap(defaultFont, hTiles, vTiles, indecies);
 	}
 
 	/**
@@ -233,7 +232,7 @@ using Type;
 		@param firstTileIndex Index of the first tile in the tileset
 	 */
 	public function createFont(name:String, tileset:Tileset, characters:String, ?firstTileIndex:Int = 0):Font {
-		final font = new Font(this, name, tileset, characters);
+		final font = new Font(this, name, tileset, characters, firstTileIndex);
 		fonts[name] = font;
 		return font;
 	}
@@ -241,7 +240,7 @@ using Type;
 	/**
 		Create a new text map
 	 */
-	public function createTextmap(font:Font, ?hTiles:Int, ?vTiles:Int, ?firstTileIndex:Int = 0, ?indecies:Array<Int>):Textmap {
+	public function createTextmap(font:Font, ?hTiles:Int, ?vTiles:Int, ?indecies:Array<Int>):Textmap {
 		if (hTiles == null)
 			hTiles = Math.ceil(frameBuffer.frameWidth / font.tileset.tileSize);
 
@@ -251,7 +250,7 @@ using Type;
 		if (indecies == null)
 			indecies = palette.getIndecies();
 
-		return new Textmap(this, font.tileset, hTiles, vTiles, font.characters, firstTileIndex, createPaletteSample(indecies));
+		return new Textmap(this, font.tileset, hTiles, vTiles, font.characters, font.firstTileIndex, createPaletteSample(indecies));
 	}
 
 	/**
@@ -312,6 +311,11 @@ using Type;
 		var sprite = new Sprite(this, tileset, hTiles, vTiles);
 		sprites[name] = sprite;
 		return sprite;
+	}
+
+	public function connect(connector:Connector) {
+		this.connector = connector;
+		connector.connect(this);
 	}
 
 	public function loadROM(romBytes:Bytes) {
@@ -447,6 +451,9 @@ using Type;
 		if (showFps) {
 			fpsDisplay.render(frameBuffer);
 		}
+
+		if (connector != null)
+			connector.render(this);
 
 		frameCount++;
 	}

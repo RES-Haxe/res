@@ -87,7 +87,8 @@ class Rom {
 
 				for (ty in yTile...(yTile + tileSize)) {
 					for (tx in xTile...(xTile + tileSize)) {
-						tileBytes.writeByte(aseData.firstFrame.cel(0).getPixel(tx, ty));
+						var index = aseData.firstFrame.cel(0).getPixel(tx, ty);
+						tileBytes.writeByte(index == null ? 0 : index);
 					}
 				}
 
@@ -155,7 +156,7 @@ class Rom {
 										compressed: false
 									};
 
-									haxe.zip.Tools.compress(entry, 9);
+									// haxe.zip.Tools.compress(entry, 9);
 
 									files.add(entry);
 								} else {

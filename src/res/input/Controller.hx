@@ -1,6 +1,8 @@
 package res.input;
 
 class Controller {
+	public final playerNum:Int;
+
 	var pressed:Map<ControllerButton, Bool> = [
 		for (button in Type.allEnums(ControllerButton))
 			button => false
@@ -16,7 +18,9 @@ class Controller {
 	}
 
 	@:allow(res)
-	private function new() {}
+	private function new(playerNum:Int) {
+		this.playerNum = playerNum;
+	}
 
 	public function isPressed(button:ControllerButton) {
 		return pressed[button];

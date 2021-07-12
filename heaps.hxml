@@ -1,0 +1,4 @@
+common.hxml
+-lib heaps
+-lib hlsdl
+--hl bin/main.hl

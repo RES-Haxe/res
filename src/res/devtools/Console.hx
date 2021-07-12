@@ -109,7 +109,7 @@ class Console extends Scene {
 		if (commands[cmd] != null) {
 			commands[cmd].callback(parts);
 		} else {
-			println('Unknown command `$cmd`');
+			println('Unknown command \'$cmd\'');
 		}
 	}
 
