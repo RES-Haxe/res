@@ -1,6 +1,6 @@
 package res;
 
-import res.helpers.Funcs.wrapi;
+import res.tools.MathTools.wrapi;
 
 class ObjectList implements Renderable implements Updateable {
 	private final objects:Array<Object> = [];

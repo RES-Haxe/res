@@ -1,4 +1,4 @@
-package res;
+package res.tiles;
 
 import haxe.io.Bytes;
 

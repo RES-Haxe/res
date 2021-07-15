@@ -1,4 +1,6 @@
-package res.font;
+package res.text;
+
+import res.tiles.Tileset;
 
 class Font {
 	public final name:String;

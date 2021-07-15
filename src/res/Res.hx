@@ -4,18 +4,21 @@ import haxe.io.Bytes;
 import haxe.io.BytesInput;
 import haxe.zip.Reader;
 import haxe.zip.Tools;
-import res.connectors.Connector;
 import res.data.CommodorKernalFontData;
 import res.devtools.Console;
 import res.devtools.PaletteView;
 import res.devtools.TilesetView;
 import res.devtools.sprites.SpritesMenu;
 import res.devtools.tilemaps.TilemapMenu;
-import res.font.Font;
 import res.input.Controller;
 import res.input.Keyboard;
 import res.input.KeyboardEvent;
 import res.input.Mouse;
+import res.platforms.Platform;
+import res.text.Font;
+import res.text.Textmap;
+import res.tiles.Tilemap;
+import res.tiles.Tileset;
 
 using Math;
 using Type;
@@ -42,7 +45,7 @@ using Type;
 	private var lastFps:Int = 0;
 	private var showFps:Bool = false;
 	private var fpsDisplay:Textmap;
-	private var connector:Connector;
+	private var platform:Platform;
 
 	private final _scenes:Map<String, Scene> = [];
 
@@ -63,7 +66,7 @@ using Type;
 		@param pixelFormat
 	 */
 	public function new(resolution:Resolution, palette:Array<Int>, ?pixelFormat:PixelFormat = RGBA, mainScene:Class<Scene>, ?romBytes:Bytes,
-			?connector:Connector) {
+			?connector:Platform) {
 		if (palette.length < 2)
 			throw 'Too few colors. I mean.. how you\'r gonna display anything if you have only one color?!';
 
@@ -313,9 +316,9 @@ using Type;
 		return sprite;
 	}
 
-	public function connect(connector:Connector) {
-		this.connector = connector;
-		connector.connect(this);
+	public function connect(platform:Platform) {
+		this.platform = platform;
+		platform.connect(this);
 	}
 
 	public function loadROM(romBytes:Bytes) {
@@ -452,8 +455,8 @@ using Type;
 			fpsDisplay.render(frameBuffer);
 		}
 
-		if (connector != null)
-			connector.render(this);
+		if (platform != null)
+			platform.render(this);
 
 		frameCount++;
 	}

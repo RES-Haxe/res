@@ -1,6 +1,6 @@
-package res.connectors;
+package res.platforms;
 
-interface Connector {
+interface Platform {
 	function connect(res:Res):Void;
 
 	function render(res:Res):Void;

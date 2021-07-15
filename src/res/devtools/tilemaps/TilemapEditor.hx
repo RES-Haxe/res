@@ -1,7 +1,9 @@
 package res.devtools.tilemaps;
 
-import res.helpers.Funcs.wrapi;
 import res.input.Key;
+import res.tiles.Tilemap;
+import res.tiles.Tileset;
+import res.tools.MathTools.wrapi;
 
 class TilemapEditor extends Scene {
 	var uiTileset:Tileset;

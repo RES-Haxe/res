@@ -1,6 +1,7 @@
 package res.ui;
 
 import res.input.Key;
+import res.text.Textmap;
 
 class ValueInputScene extends Scene {
 	var text:Textmap;

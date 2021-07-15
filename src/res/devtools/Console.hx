@@ -1,6 +1,7 @@
 package res.devtools;
 
 import res.input.Key;
+import res.text.Textmap;
 
 using String;
 using StringTools;

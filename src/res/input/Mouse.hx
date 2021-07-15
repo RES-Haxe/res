@@ -1,6 +1,6 @@
 package res.input;
 
-import res.helpers.Funcs.wrapi;
+import res.tools.MathTools.wrapi;
 
 class Mouse {
 	public var enabled:Bool = true;

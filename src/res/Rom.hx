@@ -78,23 +78,38 @@ class Rom {
 		final vTiles:Int = Std.int(aseData.height / tileSize);
 		bo.writeByte(vTiles);
 
+		final merged = haxe.io.Bytes.alloc(aseData.width * aseData.height);
+
+		merged.fill(0, merged.length, 0);
+
+		for (l in 0...aseData.layers.length) {
+			final cel = aseData.firstFrame.cel(l);
+
+			if (cel != null) {
+				for (srcY in 0...cel.height) {
+					final srcPos:Int = srcY * cel.width;
+					final dstX:Int = cel.xPosition;
+					final dstY:Int = cel.yPosition + srcY;
+					final cpyLen:Int = cel.width;
+
+					merged.blit(dstY * aseData.width + dstX, cel.pixelData, srcPos, cel.width);
+				}
+			}
+		}
+
 		for (line in 0...vTiles) {
 			for (col in 0...hTiles) {
-				final tileBytes = new haxe.io.BytesOutput(); // haxe.io.Bytes.alloc(tileSize * tileSize);
+				final tileBytes = haxe.io.Bytes.alloc(tileSize * tileSize);
 
-				final yTile:Int = line * tileSize;
-				final xTile:Int = col * tileSize;
+				final srcPosX:Int = col * tileSize;
 
-				for (ty in yTile...(yTile + tileSize)) {
-					for (tx in xTile...(xTile + tileSize)) {
-						var index = aseData.firstFrame.cel(0).getPixel(tx, ty);
-						tileBytes.writeByte(index == null ? 0 : index);
-					}
+				for (t_line in 0...tileSize) {
+					final srcPosY:Int = line * tileSize + t_line;
+
+					tileBytes.blit(t_line * tileSize, merged, srcPosY * aseData.width + srcPosX, tileSize);
 				}
 
-				var bytes = tileBytes.getBytes();
-
-				bo.writeBytes(bytes, 0, bytes.length);
+				bo.writeBytes(tileBytes, 0, tileBytes.length);
 			}
 		}
 

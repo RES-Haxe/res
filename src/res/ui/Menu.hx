@@ -1,6 +1,7 @@
 package res.ui;
 
-import res.helpers.Funcs.wrapi;
+import res.text.Textmap;
+import res.tools.MathTools.wrapi;
 
 // TODO: Scrolling
 class Menu implements Renderable {

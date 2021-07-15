@@ -1,9 +1,9 @@
 #if heaps
-package res.connectors.heaps;
+package res.platforms.heaps;
 
 import hxd.Pad;
 
-class HeapsConnector implements Connector {
+class HeapsPlatform implements Platform {
 	var screen:h2d.Bitmap;
 
 	public function new(?s2d:h2d.Scene) {

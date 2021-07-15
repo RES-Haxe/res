@@ -1,5 +1,8 @@
 package res.devtools.tilemaps;
 
+import res.text.Textmap;
+import res.tiles.Tilemap;
+import res.tiles.Tileset;
 import res.ui.Menu;
 import res.ui.MenuItem;
 import res.ui.MenuScene;

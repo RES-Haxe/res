@@ -1,6 +1,8 @@
 package res.devtools.tilemaps;
 
 import res.devtools.tilesets.TilesetMenu;
+import res.tiles.Tilemap;
+import res.tiles.Tileset;
 import res.ui.Menu;
 import res.ui.MenuScene;
 
@@ -12,7 +14,6 @@ class TilemapMenu extends MenuScene {
 			res.pushScene(TilesetMenu, (tileset:Tileset) -> {
 				if (tileset != null) {
 					res.pushScene(new TilemapSettings(res, tileset), (tilemap:Tilemap) -> {
-						trace('!!!!');
 						if (tilemap != null) {
 							res.setScene(new TilemapEditor(res, tilemap));
 						}

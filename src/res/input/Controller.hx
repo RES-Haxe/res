@@ -1,5 +1,7 @@
 package res.input;
 
+import res.geom.Point2i;
+
 class Controller {
 	public final playerNum:Int;
 
@@ -8,13 +10,15 @@ class Controller {
 			button => false
 	];
 
-	public var direction(get, never):{dx:Int, dy:Int};
+	var _direction:Point2i = new Point2i(0, 0);
+
+	public var direction(get, never):Point2i;
 
 	inline function get_direction() {
-		return {
-			dx: (pressed[ControllerButton.LEFT] ? -1 : 0) + (pressed[ControllerButton.RIGTH] ? 1 : 0),
-			dy: (pressed[ControllerButton.UP] ? -1 : 0) + (pressed[ControllerButton.DOWN] ? 1 : 0)
-		};
+		_direction.set((pressed[ControllerButton.LEFT] ? -1 : 0) + (pressed[ControllerButton.RIGTH] ? 1 : 0),
+			(pressed[ControllerButton.UP] ? -1 : 0) + (pressed[ControllerButton.DOWN] ? 1 : 0));
+
+		return _direction;
 	}
 
 	@:allow(res)

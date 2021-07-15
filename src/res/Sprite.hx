@@ -1,11 +1,12 @@
 package res;
 
+import res.tiles.Tileset;
+
 class Sprite {
 	public final frames:Array<SpriteFrame> = [];
 
 	public var hTiles:Int;
 	public var vTiles:Int;
-
 	public var tileset:Tileset;
 
 	var res:Res;

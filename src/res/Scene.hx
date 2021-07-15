@@ -1,5 +1,6 @@
 package res;
 
+import res.geom.Point2i;
 import res.input.ControllerButton;
 
 using Std;
@@ -22,7 +23,7 @@ class Scene implements Renderable implements Updateable {
 	/**
 		Get controller direction of the default player
 	 */
-	public inline function dir(?playerNum:Int = 1):{dx:Int, dy:Int} {
+	public inline function dir(?playerNum:Int = 1):Point2i {
 		return res.controllers[playerNum].direction;
 	}
 

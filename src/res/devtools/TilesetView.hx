@@ -1,6 +1,8 @@
 package res.devtools;
 
 import res.input.Key;
+import res.tiles.Tilemap;
+import res.tiles.Tileset;
 
 using Std;
 

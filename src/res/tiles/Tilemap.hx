@@ -1,10 +1,10 @@
-package res;
+package res.tiles;
 
-import res.helpers.Funcs.wrapi;
+import res.tools.MathTools.wrapi;
 
 class Tilemap implements Renderable {
 	var res:Res;
-	var map:Array<Array<Int>>;
+	var map:Array<Array<TilePlace>>;
 
 	public final tileset:Tileset;
 
@@ -44,19 +44,35 @@ class Tilemap implements Renderable {
 		this.hTiles = hTiles;
 		this.vTiles = vTiles;
 		this.paletteSample = paletteSample == null ? new PaletteSample(res.palette, [for (idx in 0...res.palette.colors.length) idx]) : paletteSample;
-		this.map = [for (_ in 0...vTiles) [for (_ in 0...hTiles) 0]];
+		this.map = [for (_ in 0...vTiles) [for (_ in 0...hTiles)
+			({
+				index:0, flipY:false, flipX:false
+			})]];
 	}
 
 	public function fill(tileIndex:Int) {
 		for (line in map)
 			for (index in 0...line.length)
-				line[index] = tileIndex;
+				line[index].index = tileIndex;
 	}
 
-	public function set(tileCol:Int, tileLine:Int, tileIndex:Int) {
-		if (tileLine >= 0 && tileLine < map.length && tileCol >= 0 && tileCol < map[tileLine].length)
-			map[tileLine][tileCol] = tileIndex;
+	inline function inBounds(tileCol:Int, tileLine:Int):Bool {
+		return (tileLine >= 0 && tileLine < map.length && tileCol >= 0 && tileCol < map[tileLine].length);
+	}
+
+	public function get(tileCol:Int, tileLine:Int):Null<TilePlace> {
+		if (inBounds(tileCol, tileLine))
+			return map[tileLine][tileCol];
 		else
+			return null;
+	}
+
+	public function set(tileCol:Int, tileLine:Int, tileIndex:Int, flipX:Bool = false, flipY:Bool = false) {
+		if (inBounds(tileCol, tileLine)) {
+			map[tileLine][tileCol].index = tileIndex;
+			map[tileLine][tileCol].flipX = flipX;
+			map[tileLine][tileCol].flipY = flipY;
+		} else
 			throw 'Out of tile map bounds (col: $tileCol, line: $tileLine, size: $hTiles x $vTiles)';
 	}
 
@@ -64,8 +80,9 @@ class Tilemap implements Renderable {
 		for (screenScanline in 0...frameBuffer.frameHeight) {
 			if (onScanline != null)
 				onScanline(screenScanline);
+
 			var tileScanline:Int = screenScanline + scrollY;
-			var tileLineIndex:Int = Std.int(tileScanline / tileset.tileSize);
+			var tileLineIndex:Int = Math.floor(tileScanline / tileset.tileSize);
 
 			if (tileLineIndex >= map.length)
 				tileLineIndex = tileLineIndex % map.length;
@@ -74,19 +91,22 @@ class Tilemap implements Renderable {
 
 			for (screenCol in 0...frameBuffer.frameWidth) {
 				var tileCol:Int = screenCol + scrollX;
-				var tileColIndex:Int = Std.int(tileCol / tileset.tileSize);
+				var tileColIndex:Int = Math.floor(tileCol / tileset.tileSize);
 
 				if (tileColIndex >= map[tileLineIndex].length)
 					tileColIndex = tileColIndex % map[tileLineIndex].length;
 
 				final inTileCol:Int = tileCol % tileset.tileSize;
 
-				final tileIndex = map[tileLineIndex][tileColIndex];
+				final tilePlace = map[tileLineIndex][tileColIndex];
 
-				if (tileIndex > 0 && tileIndex - 1 < tileset.numTiles) {
-					final tile = tileset.get(tileIndex - 1);
+				if (tilePlace.index > 0 && tilePlace.index - 1 < tileset.numTiles) {
+					final tile = tileset.get(tilePlace.index - 1);
 
-					final tileColorIndex:Int = tile.indecies.get(inTileScanline * tileset.tileSize + inTileCol);
+					final ftx = tilePlace.flipX ? (tileset.tileSize - 1) - inTileCol : inTileCol;
+					final fty = tilePlace.flipY ? (tileset.tileSize - 1) - inTileScanline : inTileScanline;
+
+					final tileColorIndex:Int = tile.indecies.get(fty * tileset.tileSize + ftx);
 
 					if (tileColorIndex != 0) {
 						final paletteColorIndex:Int = paletteSample.indecies[tileColorIndex - 1];

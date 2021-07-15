@@ -1,11 +1,12 @@
 #if js
-package res.connectors.js;
+package res.platforms.js;
 
 import js.Browser;
 import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
+import res.platforms.Platform;
 
-class JSConnector implements Connector {
+class Html5Platform implements Platform {
 	var canvas:CanvasElement;
 	var ctx:CanvasRenderingContext2D;
 	var scale:Int;
@@ -40,6 +41,7 @@ class JSConnector implements Connector {
 		Browser.window.requestAnimationFrame(animationFrame);
 	}
 
+	// TODO: Hook up gamepads
 	public function connect(res:Res) {
 		this.res = res;
 
@@ -59,6 +61,10 @@ class JSConnector implements Connector {
 
 		Browser.window.addEventListener('keyup', (event) -> {
 			res.keyboard.keyUp(event.keyCode);
+		});
+
+		Browser.document.addEventListener('visibilitychange', (event) -> {
+			lastTime = Browser.window.performance.now();
 		});
 
 		Browser.window.requestAnimationFrame(animationFrame);

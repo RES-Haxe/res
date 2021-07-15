@@ -1,4 +1,7 @@
-package res;
+package res.text;
+
+import res.tiles.Tilemap;
+import res.tiles.Tileset;
 
 class Textmap extends Tilemap {
 	private var _charMap:Map<Int, Int> = [];
