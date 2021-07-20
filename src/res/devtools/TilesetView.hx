@@ -12,8 +12,7 @@ class TilesetView extends Scene {
 	public function new(res:Res, tileset:Tileset) {
 		super(res);
 
-		var indecies = res.palette.byLuminance.copy();
-		indecies.reverse();
+		var indecies = res.palette.getIndecies();
 
 		var screenHTiles:Int = (res.frameBuffer.frameWidth / tileset.tileSize).int();
 		var screenVTiles:Int = (res.frameBuffer.frameHeight / tileset.tileSize).int();

@@ -1,6 +1,7 @@
 package res;
 
 class ResolutionPresets {
+	public static final GAMEBOY:Resolution = TILES(8, 20, 18);
 	public static final LOWREZ:Resolution = TILES(8, 8, 8);
 	public static final MEGADRIVE:Resolution = TILES(8, 40, 28);
 	public static final NES:Resolution = TILES(8, 32, 30);

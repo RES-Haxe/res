@@ -1,20 +1,14 @@
 package res;
 
-import haxe.io.Bytes;
-import haxe.io.BytesInput;
-import haxe.zip.Reader;
-import haxe.zip.Tools;
 import res.data.CommodorKernalFontData;
 import res.devtools.Console;
-import res.devtools.PaletteView;
-import res.devtools.TilesetView;
-import res.devtools.sprites.SpritesMenu;
-import res.devtools.tilemaps.TilemapMenu;
+import res.extra.Splash;
 import res.input.Controller;
 import res.input.Keyboard;
 import res.input.KeyboardEvent;
 import res.input.Mouse;
 import res.platforms.Platform;
+import res.rom.Rom;
 import res.text.Font;
 import res.text.Textmap;
 import res.tiles.Tilemap;
@@ -32,18 +26,19 @@ using Type;
 	public final mouse:Mouse;
 	public final palette:Palette;
 	public final resolution:Resolution;
-	public final sprites:Map<String, Sprite> = [];
 	public final tileSize:Int;
-	public final tilesets:Map<String, Tileset> = [];
-	public final tilemaps:Map<String, Tilemap> = [];
 	public final vTiles:Int;
 	public final fonts:Map<String, Font> = [];
 	public final defaultFont:Font;
+	public final mainScene:Class<Scene>;
+
+	public final rom:Rom;
+
+	public var showFps:Bool = false;
 
 	private var frameCount:Int = 0;
 	private var fpsMeasureTime:Float = 0;
 	private var lastFps:Int = 0;
-	private var showFps:Bool = false;
 	private var fpsDisplay:Textmap;
 	private var platform:Platform;
 
@@ -65,8 +60,7 @@ using Type;
 		@param palette Global palette
 		@param pixelFormat
 	 */
-	public function new(resolution:Resolution, palette:Array<Int>, ?pixelFormat:PixelFormat = RGBA, mainScene:Class<Scene>, ?romBytes:Bytes,
-			?connector:Platform) {
+	public function new(?platform:Platform, resolution:Resolution, palette:Array<Int>, mainScene:Class<Scene>, ?pixelFormat:PixelFormat = RGBA, ?rom:Rom) {
 		if (palette.length < 2)
 			throw 'Too few colors. I mean.. how you\'r gonna display anything if you have only one color?!';
 
@@ -84,15 +78,40 @@ using Type;
 
 		this.palette = new Palette(palette);
 
+		this.mainScene = mainScene;
+
+		for (controller in controllers) {
+			controller.listen((ev) -> {
+				switch (ev) {
+					case BUTTON_DOWN(controller, button):
+						if (scene != null) scene.controllerButtonDown(controller, button);
+					case BUTTON_UP(controller, button):
+						if (scene != null) scene.controllerButtonUp(controller, button);
+					case CONNECTED(controller):
+					case DISCONNECTED(controller):
+				}
+			});
+		}
+
+		keyboard = new Keyboard(this);
+		mouse = new Mouse(this);
+
+		keyboard.listen(keyboardListener);
+
+		var usePixelFormat:PixelFormat = pixelFormat;
+
+		if (platform != null) {
+			usePixelFormat = platform.pixelFormat;
+		}
+
 		var frameSize:{w:Int, h:Int} = switch (resolution) {
 			case TILES(tileSize, hTiles, vTiles):
 				{w: hTiles * tileSize, h: vTiles * tileSize};
 		};
 
-		frameBuffer = new FrameBuffer(this.palette, frameSize.w, frameSize.h, pixelFormat);
+		frameBuffer = new FrameBuffer(this.palette, frameSize.w, frameSize.h, usePixelFormat);
 
-		keyboard = new Keyboard(this);
-		mouse = new Mouse(this);
+		this.rom = rom != null ? rom : Rom.empty();
 
 		var _defaultFontTileset = createTileset('_defaultFont', CommodorKernalFontData.H_TILES, CommodorKernalFontData.V_TILES,
 			CommodorKernalFontData.TILE_SIZE);
@@ -104,74 +123,12 @@ using Type;
 		fpsDisplay = createDefaultTextmap([this.palette.brightestIndex]);
 
 		console = new Console(this);
+		console.initDefaultCommands();
 
-		console.addCommand('fps', 'Show/hide fps', (args) -> {
-			if (args.length >= 1) {
-				showFps = (args[0].toLowerCase() == 'true' || args[0] == '1');
-			}
-			console.println('Show fps: $showFps');
-		});
+		if (platform != null)
+			connect(platform);
 
-		#if sys
-		console.addCommand('quit', 'Quit program', (_) -> {
-			Sys.exit(0);
-		});
-		#end
-
-		console.addCommand('about', 'About this game', (_) -> {
-			console.println('RES      : v0.1.0'); // TODO: Make dynamic
-			console.println('Tile size: ${tileSize}');
-			console.println('Resol.   : ${frameBuffer.frameWidth}x${frameBuffer.frameHeight}');
-			console.println('Palette  : ${this.palette.colors.length} col.');
-		});
-
-		console.addCommand('palette', 'Show palette', (_) -> {
-			setScene(PaletteView);
-		});
-
-		console.addCommand('tileset', 'View tileset', (args) -> {
-			if (args.length == 0) {
-				console.println('Tilesets:');
-				for (id => set in tilesets) {
-					console.println(' $id (${set.numTiles})');
-				}
-			} else if (args.length == 1) {
-				if (tilesets.exists(args[0])) {
-					// setScene(TilesetView, [tilesets[args[0]]]);
-					setScene(new TilesetView(this, tilesets[args[0]]));
-				} else {
-					console.println('`${args[0]}` 404');
-				}
-			} else
-				console.println('Too many arguments');
-		});
-
-		console.addCommand('sprite', 'View/Edit sprites', (_) -> {
-			setScene(SpritesMenu);
-		});
-
-		console.addCommand('tilemap', 'View/Edit tilemaps', (args) -> {
-			if (args.length == 0) {
-				setScene(TilemapMenu, true);
-			} else {
-				if (tilemaps.exists(args[0])) {
-					console.println('???');
-					// TODO Editor
-				} else {
-					console.println('No such tilemap: ${args[0]}');
-				}
-			}
-		});
-
-		keyboard.listen(keyboardListener);
-
-		if (romBytes != null)
-			loadROM(romBytes);
-
-		if (connector != null)
-			connect(connector);
-
-		setScene(mainScene);
+		setScene(Splash);
 	}
 
 	function keyboardListener(event:KeyboardEvent) {
@@ -216,13 +173,6 @@ using Type;
 		if (vTiles == null)
 			vTiles = Math.ceil(frameBuffer.frameHeight / defaultFont.tileset.tileSize);
 
-		var paletteSample:PaletteSample;
-
-		if (indecies == null)
-			paletteSample = new PaletteSample(palette, palette.getIndecies());
-		else
-			paletteSample = new PaletteSample(palette, indecies);
-
 		return createTextmap(defaultFont, hTiles, vTiles, indecies);
 	}
 
@@ -234,14 +184,22 @@ using Type;
 		@param characters Supported characters
 		@param firstTileIndex Index of the first tile in the tileset
 	 */
-	public function createFont(name:String, tileset:Tileset, characters:String, ?firstTileIndex:Int = 0):Font {
+	public function createFont(?name:String, tileset:Tileset, characters:String, ?firstTileIndex:Int = 0):Font {
 		final font = new Font(this, name, tileset, characters, firstTileIndex);
-		fonts[name] = font;
+
+		if (name != null)
+			fonts[name] = font;
+
 		return font;
 	}
 
 	/**
 		Create a new text map
+
+		@param font
+		@param hTiles
+		@param vTiles
+		@param indecies
 	 */
 	public function createTextmap(font:Font, ?hTiles:Int, ?vTiles:Int, ?indecies:Array<Int>):Textmap {
 		if (hTiles == null)
@@ -253,19 +211,22 @@ using Type;
 		if (indecies == null)
 			indecies = palette.getIndecies();
 
-		return new Textmap(this, font.tileset, hTiles, vTiles, font.characters, font.firstTileIndex, createPaletteSample(indecies));
+		return new Textmap(font.tileset, hTiles, vTiles, font.characters, font.firstTileIndex, indecies);
 	}
 
 	/**
 		Create a tileset
 
 		@param name Tileset name
+		@param hTiles
+		@param vTiles
+		@param overrideTileSize
 	 */
 	public function createTileset(?name:String, hTiles:Int, vTiles:Int, ?overrideTileSize:Int):Tileset {
 		final tileset = new Tileset(overrideTileSize != null ? overrideTileSize : tileSize, hTiles, vTiles);
 
 		if (name != null)
-			tilesets[name] = tileset;
+			rom.tilesets[name] = tileset;
 
 		return tileset;
 	}
@@ -277,94 +238,31 @@ using Type;
 		@param tileset Tileset to use
 		@param hTiles Number of horizontal tiles (default - number of tiles per screen)
 		@param vTiles Number of vertical tiles (default - number of tiles per screen)
-		@param paletteSample Palette sample to use
 		@param indecies If `paletteSample` isn't set these indecies will be used to create a new palette sample
 	 */
-	public function createTilemap(?name:String, tileset:Tileset, ?hTiles:Int, ?vTiles:Int, ?paletteSample:PaletteSample, ?indecies:Array<Int>):Tilemap {
+	public function createTilemap(?name:String, tileset:Tileset, ?hTiles:Int, ?vTiles:Int, ?indecies:Array<Int>):Tilemap {
 		if (hTiles == null)
 			hTiles = Math.ceil(frameBuffer.frameWidth / tileset.tileSize);
 
 		if (vTiles == null)
 			vTiles = Math.ceil(frameBuffer.frameHeight / tileset.tileSize);
 
-		if (paletteSample == null && indecies != null)
-			paletteSample = createPaletteSample(indecies);
-		else
-			paletteSample = createPaletteSample(palette.getIndecies());
-
-		var tilemap = new Tilemap(this, tileset, hTiles, vTiles, paletteSample);
+		var tilemap = new Tilemap(tileset, hTiles, vTiles, indecies);
 
 		if (name != null)
-			tilemaps[name] = tilemap;
+			rom.tilemaps[name] = tilemap;
 
 		return tilemap;
 	}
 
 	/**
-		Create a palette sample with given color indecies
-	 */
-	public function createPaletteSample(indecies:Array<Int>):PaletteSample {
-		return new PaletteSample(palette, indecies);
-	}
+		Connect the platform
 
-	/**
-		Create a sprite
+		@param platform
 	 */
-	public function createSprite(name:String, tileset:Tileset, hTiles:Int = 1, vTiles:Int = 1):Sprite {
-		var sprite = new Sprite(this, tileset, hTiles, vTiles);
-		sprites[name] = sprite;
-		return sprite;
-	}
-
 	public function connect(platform:Platform) {
 		this.platform = platform;
 		platform.connect(this);
-	}
-
-	public function loadROM(romBytes:Bytes) {
-		trace('Loading ROM...');
-
-		var files = Reader.readZip(new BytesInput(romBytes));
-
-		for (file in files) {
-			var path = file.fileName.split('/');
-
-			switch (path[0]) {
-				case 'tilesets':
-					Tools.uncompress(file);
-					var rawData = new BytesInput(file.data);
-
-					var tilesize = rawData.readByte();
-
-					final hTiles = rawData.readByte();
-					final vTiles = rawData.readByte();
-
-					final tileset = createTileset(path[1], hTiles, vTiles, tilesize);
-
-					for (_ in 0...(hTiles * vTiles)) {
-						var tileBytes = Bytes.alloc(tileset.tileSize * tileset.tileSize);
-						rawData.readBytes(tileBytes, 0, tileBytes.length);
-						tileset.pushTile(tileBytes);
-					}
-				case 'sprites':
-					Tools.uncompress(file);
-					var rawData = new BytesInput(file.data);
-
-					final tileSet = createTileset('sprite_${path[1]}', 8, 8, rawData.readByte());
-					final numFrames:Int = rawData.readInt32();
-
-					final sprite = createSprite(path[1], tileSet, 1, 1);
-
-					for (nFrame in 0...numFrames) {
-						sprite.addFrame([nFrame + 1], rawData.readInt32());
-
-						final tileData = Bytes.alloc(tileSet.tileSize * tileSet.tileSize);
-
-						rawData.readBytes(tileData, 0, tileData.length);
-						tileSet.pushTile(tileData);
-					}
-			}
-		}
 	}
 
 	/**

@@ -1,5 +1,7 @@
 package res.devtools;
 
+import res.devtools.sprites.SpritesMenu;
+import res.devtools.tilemaps.TilemapMenu;
 import res.input.Key;
 import res.text.Textmap;
 
@@ -53,6 +55,64 @@ class Console extends Scene {
 		renderList.push(consoleText);
 
 		updateInput('');
+	}
+
+	public function initDefaultCommands() {
+		addCommand('fps', 'Show/hide fps', (args) -> {
+			if (args.length >= 1) {
+				res.showFps = (args[0].toLowerCase() == 'true' || args[0] == '1');
+			}
+			println('Show fps: ${res.showFps}');
+		});
+
+		#if sys
+		addCommand('quit', 'Quit program', (_) -> {
+			Sys.exit(0);
+		});
+		#end
+
+		addCommand('about', 'About this game', (_) -> {
+			println('RES      : v0.1.0'); // TODO: Make dynamic
+			println('Tile size: ${res.tileSize}');
+			println('Resol.   : ${res.frameBuffer.frameWidth}x${res.frameBuffer.frameHeight}');
+			println('Palette  : ${res.palette.colors.length} col.');
+		});
+
+		addCommand('palette', 'Show palette', (_) -> {
+			res.setScene(PaletteView);
+		});
+
+		addCommand('tileset', 'View tileset', (args) -> {
+			if (args.length == 0) {
+				println('Tilesets:');
+				for (id => set in res.rom.tilesets) {
+					println(' $id (${set.numTiles})');
+				}
+			} else if (args.length == 1) {
+				if (res.rom.tilesets.exists(args[0])) {
+					res.setScene(new TilesetView(res, res.rom.tilesets[args[0]]));
+				} else {
+					println('`${args[0]}` 404');
+				}
+			} else
+				println('Too many arguments');
+		});
+
+		addCommand('sprite', 'View/Edit sprites', (_) -> {
+			res.setScene(SpritesMenu);
+		});
+
+		addCommand('tilemap', 'View/Edit tilemaps', (args) -> {
+			if (args.length == 0) {
+				res.setScene(TilemapMenu, true);
+			} else {
+				if (res.rom.tilemaps.exists(args[0])) {
+					// TODO Editor
+				} else {
+					println('No such tilemap: ${args[0]}');
+				}
+			}
+		});
 	}
 
 	override function keyDown(keyCode:Int) {

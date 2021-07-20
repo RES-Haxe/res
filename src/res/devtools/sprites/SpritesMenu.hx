@@ -1,7 +1,7 @@
 package res.devtools.sprites;
 
-import res.ui.MenuScene;
 import res.ui.Menu;
+import res.ui.MenuScene;
 
 class SpritesMenu extends MenuScene {
 	public function new(res:Res) {
@@ -9,8 +9,8 @@ class SpritesMenu extends MenuScene {
 
 		menu.addItem('[ + Create ]', () -> {});
 
-		for (name => sprite in res.sprites) {
-			menu.addItem(name, () -> {
+		for (name => sprite in res.rom.sprites) {
+			menu.addItem('$name (${sprite.width}x${sprite.height})', () -> {
 				// TODO
 			});
 		}

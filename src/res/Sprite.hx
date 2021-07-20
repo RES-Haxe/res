@@ -1,27 +1,28 @@
 package res;
 
-import res.tiles.Tileset;
+import haxe.io.Bytes;
 
 class Sprite {
-	public final frames:Array<SpriteFrame> = [];
+	public final frames:Array<SpriteFrame>;
 
-	public var hTiles:Int;
-	public var vTiles:Int;
-	public var tileset:Tileset;
-
-	var res:Res;
+	public final width:Int;
+	public final height:Int;
 
 	@:allow(res)
-	private function new(res:Res, tileset:Tileset, hTiles:Int, vTiles:Int) {
-		this.res = res;
+	private function new(width:Int, height:Int, ?frames:Array<SpriteFrame>) {
+		this.width = width;
+		this.height = height;
+		this.frames = frames != null ? frames : [];
 
-		this.tileset = tileset;
-
-		this.hTiles = hTiles;
-		this.vTiles = vTiles;
+		for (frame in frames)
+			if (frame.data.length != width * height)
+				throw 'Invalid frame size';
 	}
 
-	public function addFrame(tileIndecies:Array<Int>, duration:Int) {
-		frames.push(new SpriteFrame(tileIndecies, duration));
+	public function addFrame(data:Bytes, duration:Int) {
+		if (data.length != width * height)
+			throw 'Invalid frame size';
+
+		frames.push(new SpriteFrame(data, duration));
 	}
 }

@@ -1,11 +1,13 @@
 package res;
 
-class SpriteFrame {
-	public var indecies:Array<Int>;
-	public var duration:Int;
+import haxe.io.Bytes;
 
-	public function new(tileIndecies:Array<Int>, duration:Int) {
-		this.indecies = tileIndecies;
+class SpriteFrame {
+	public final data:Bytes;
+	public final duration:Int;
+
+	public function new(data:Bytes, duration:Int) {
+		this.data = data;
 		this.duration = duration;
 	}
 }

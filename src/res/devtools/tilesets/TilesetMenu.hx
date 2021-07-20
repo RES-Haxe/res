@@ -7,7 +7,7 @@ class TilesetMenu extends MenuScene {
 	public function new(res:Res) {
 		var menu = new Menu(res.createDefaultTextmap([res.palette.brightestIndex]));
 
-		for (name => tileset in res.tilesets) {
+		for (name => tileset in res.rom.tilesets) {
 			menu.addItem(name, () -> {
 				res.popScene(tileset);
 			});

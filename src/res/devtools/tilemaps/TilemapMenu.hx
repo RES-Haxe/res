@@ -22,7 +22,7 @@ class TilemapMenu extends MenuScene {
 			});
 		});
 
-		for (name => tilemap in res.tilemaps) {
+		for (name => tilemap in res.rom.tilemaps) {
 			menu.addItem('* ${name}', () -> {});
 		}
 

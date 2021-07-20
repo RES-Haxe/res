@@ -66,6 +66,23 @@ class Main {
 			hxFile.writeString('\tpublic static final DATA:Bytes = UInt8Array.fromArray([\n$dataString\n]).view.buffer;\n');
 			hxFile.writeString('}\n');
 		}
+
+		final splashAse = Ase.fromBytes(File.getBytes('resources/splash.aseprite'));
+
+		final cel = splashAse.firstFrame.cel(0);
+
+		final dataString:String = cel.pixelData.toHex();
+
+		final hxFile = File.write('src/res/data/SplashData.hx', false);
+
+		hxFile.writeString('/**\nTHIS FILE WAS GENERATED WITH `haxelib run res gen`. PLEASE DON\'T CHANGE\n*/\n');
+		hxFile.writeString('package res.data;\n\n');
+		hxFile.writeString('import haxe.io.Bytes;\n');
+		hxFile.writeString('class SplashData {\n');
+		hxFile.writeString('\tpublic static final WIDTH:Int = ${cel.width};\n');
+		hxFile.writeString('\tpublic static final HEIGHT:Int = ${cel.height};\n');
+		hxFile.writeString('\tpublic static final DATA:Bytes = Bytes.ofHex(\'${dataString}\');\n');
+		hxFile.writeString('}\n');
 	}
 
 	static function main() {

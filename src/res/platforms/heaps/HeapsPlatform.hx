@@ -4,9 +4,13 @@ package res.platforms.heaps;
 import hxd.Pad;
 
 class HeapsPlatform implements Platform {
-	var screen:h2d.Bitmap;
+	public final pixelFormat:PixelFormat = ABGR;
 
-	public function new(?s2d:h2d.Scene) {
+	var screen:h2d.Bitmap;
+	var s2d:h2d.Scene;
+
+	public function new(s2d:h2d.Scene) {
+		this.s2d = s2d;
 		screen = new h2d.Bitmap(s2d);
 
 		Pad.wait(onPad);
@@ -18,6 +22,8 @@ class HeapsPlatform implements Platform {
 		Connect input
 	 */
 	public function connect(res:Res) {
+		s2d.scaleMode = LetterBox(res.frameBuffer.frameWidth, res.frameBuffer.frameHeight);
+
 		hxd.Window.getInstance().addEventTarget((ev) -> {
 			switch (ev.kind) {
 				case EMove:

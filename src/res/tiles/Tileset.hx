@@ -3,8 +3,6 @@ package res.tiles;
 import haxe.io.Bytes;
 
 class Tileset {
-	var res:Res;
-
 	public final tileSize:Int;
 	public final tiles:Array<Tile> = [];
 	public final hTiles:Int;
@@ -15,8 +13,7 @@ class Tileset {
 	function get_numTiles():Int
 		return tiles.length;
 
-	@:allow(res)
-	private function new(tileSize:Int, hTiles:Int, vTiles:Int) {
+	public function new(tileSize:Int, hTiles:Int, vTiles:Int) {
 		this.tileSize = tileSize;
 		this.hTiles = hTiles;
 		this.vTiles = vTiles;

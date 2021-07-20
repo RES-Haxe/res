@@ -1,12 +1,11 @@
 package res.input;
 
+import res.events.Emitter;
 import res.input.KeyboardEvent;
 
 typedef KeyboardListener = KeyboardEvent->Void;
 
-class Keyboard {
-	private final _listeners:Array<KeyboardListener> = [];
-
+class Keyboard extends Emitter<KeyboardEvent> {
 	private final _down:Map<Int, Bool> = [];
 
 	private var controllerMappings:Map<Int, KeyboardControllerMapping> = [];
@@ -20,14 +19,6 @@ class Keyboard {
 		defaultControllerMapping();
 	}
 
-	public function listen(cb:KeyboardListener) {
-		_listeners.push(cb);
-	}
-
-	public function unlisten(cb:KeyboardListener) {
-		_listeners.remove(cb);
-	}
-
 	public function keyDown(keyCode:Int) {
 		_down[keyCode] = true;
 		final controllerMapping = controllerMappings[keyCode];
@@ -35,13 +26,11 @@ class Keyboard {
 		if (controllerMapping != null)
 			res.controllers[controllerMapping.playerNumber].push(controllerMapping.controllerButton);
 
-		for (listener in _listeners)
-			listener(KEY_DOWN(keyCode));
+		emit(KEY_DOWN(keyCode));
 	}
 
 	public function keyPress(charCode:Int) {
-		for (listener in _listeners)
-			listener(KEY_PRESS(charCode));
+		emit(KEY_PRESS(charCode));
 	}
 
 	public function keyUp(keyCode:Int) {
@@ -52,8 +41,7 @@ class Keyboard {
 		if (controllerMapping != null)
 			res.controllers[controllerMapping.playerNumber].release(controllerMapping.controllerButton);
 
-		for (listener in _listeners)
-			listener(KEY_UP(keyCode));
+		emit(KEY_UP(keyCode));
 	}
 
 	public function isDown(keyCode:Int):Bool {

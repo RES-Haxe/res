@@ -1,6 +1,7 @@
 package res;
 
 import res.geom.Point2i;
+import res.input.Controller;
 import res.input.ControllerButton;
 
 using Std;
@@ -63,6 +64,10 @@ class Scene implements Renderable implements Updateable {
 		if (updatable != null)
 			updateList.remove(updatable);
 	}
+
+	public function controllerButtonDown(controller:Controller, button:ControllerButton) {}
+
+	public function controllerButtonUp(controller:Controller, button:ControllerButton) {}
 
 	public function keyDown(keyCode:Int) {}
 

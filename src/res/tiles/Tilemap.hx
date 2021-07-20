@@ -3,7 +3,6 @@ package res.tiles;
 import res.tools.MathTools.wrapi;
 
 class Tilemap implements Renderable {
-	var res:Res;
 	var map:Array<Array<TilePlace>>;
 
 	public final tileset:Tileset;
@@ -13,7 +12,7 @@ class Tilemap implements Renderable {
 
 	public var onScanline:Int->Void;
 
-	public var paletteSample:PaletteSample;
+	public var paletteIndecies:Array<Int>;
 
 	public var pixelWidth(get, never):Int;
 
@@ -37,13 +36,11 @@ class Tilemap implements Renderable {
 		return scrollY = wrapi(val, pixelHeight);
 	}
 
-	@:allow(res)
-	private function new(res:Res, tileset:Tileset, hTiles:Int, vTiles:Int, ?paletteSample:PaletteSample) {
-		this.res = res;
+	public function new(tileset:Tileset, hTiles:Int, vTiles:Int, ?paletteIndecies:Array<Int>) {
 		this.tileset = tileset;
 		this.hTiles = hTiles;
 		this.vTiles = vTiles;
-		this.paletteSample = paletteSample == null ? new PaletteSample(res.palette, [for (idx in 0...res.palette.colors.length) idx]) : paletteSample;
+		this.paletteIndecies = paletteIndecies;
 		this.map = [for (_ in 0...vTiles) [for (_ in 0...hTiles)
 			({
 				index:0, flipY:false, flipX:false
@@ -109,7 +106,7 @@ class Tilemap implements Renderable {
 					final tileColorIndex:Int = tile.indecies.get(fty * tileset.tileSize + ftx);
 
 					if (tileColorIndex != 0) {
-						final paletteColorIndex:Int = paletteSample.indecies[tileColorIndex - 1];
+						final paletteColorIndex:Int = paletteIndecies == null ? tileColorIndex : paletteIndecies[tileColorIndex - 1];
 
 						frameBuffer.setIndex(screenCol, screenScanline, paletteColorIndex);
 					}

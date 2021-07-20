@@ -1,8 +1,10 @@
 package res.input;
 
+import res.events.Emitter;
 import res.geom.Point2i;
+import res.input.ControllerEvent;
 
-class Controller {
+class Controller extends Emitter<ControllerEvent> {
 	public final playerNum:Int;
 
 	var pressed:Map<ControllerButton, Bool> = [
@@ -26,15 +28,29 @@ class Controller {
 		this.playerNum = playerNum;
 	}
 
+	public function connect() {
+		emit(DISCONNECTED(this));
+	}
+
+	public function disconnect() {
+		emit(CONNECTED(this));
+	}
+
 	public function isPressed(button:ControllerButton) {
 		return pressed[button];
 	}
 
 	public function push(button:ControllerButton) {
-		pressed[button] = true;
+		if (!pressed[button]) {
+			emit(BUTTON_DOWN(this, button));
+			pressed[button] = true;
+		}
 	}
 
 	public function release(button:ControllerButton) {
-		pressed[button] = false;
+		if (pressed[button]) {
+			emit(BUTTON_UP(this, button));
+			pressed[button] = false;
+		}
 	}
 }
