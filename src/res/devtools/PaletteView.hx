@@ -4,9 +4,9 @@ import res.input.Key;
 
 class PaletteRender extends Renderable {
 	var palette:Palette;
-	var res:Res;
+	var res:RES;
 
-	public inline function new(res:Res, palette:Palette) {
+	public inline function new(res:RES, palette:Palette) {
 		this.res = res;
 		this.palette = palette;
 	}
@@ -26,7 +26,7 @@ class PaletteRender extends Renderable {
 }
 
 class PaletteView extends Scene {
-	public function new(res:Res) {
+	public function new(res:RES) {
 		super(res);
 
 		renderList.push(new PaletteRender(res, res.palette));

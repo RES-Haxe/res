@@ -39,7 +39,7 @@ class Console extends Scene {
 	}
 
 	@:allow(res)
-	private function new(res:Res) {
+	private function new(res:RES) {
 		super(res);
 
 		addCommand('clear', 'Clear console', clear);

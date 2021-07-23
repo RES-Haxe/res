@@ -9,7 +9,7 @@ class Splash extends Scene {
 	final paletteTest:Graphics;
 	final logo:Graphics;
 
-	public function new(res:Res) {
+	public function new(res:RES) {
 		super(res);
 
 		final indexes = res.palette.byLuminance.copy();

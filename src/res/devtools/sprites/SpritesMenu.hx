@@ -4,7 +4,7 @@ import res.ui.Menu;
 import res.ui.MenuScene;
 
 class SpritesMenu extends MenuScene {
-	public function new(res:Res) {
+	public function new(res:RES) {
 		menu = new Menu(res.createDefaultTextmap([res.palette.brightestIndex]));
 
 		menu.addItem('[ + Create ]', () -> {});

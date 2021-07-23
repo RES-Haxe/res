@@ -9,7 +9,7 @@ class Font {
 	public final firstTileIndex:Int;
 
 	@:allow(res)
-	private inline function new(res:Res, name:String, tileset:Tileset, characters:String, firstTileIndex:Int = 0) {
+	private inline function new(res:RES, name:String, tileset:Tileset, characters:String, firstTileIndex:Int = 0) {
 		this.name = name;
 		this.tileset = tileset;
 		this.characters = characters;

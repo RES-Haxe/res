@@ -7,7 +7,7 @@ import res.ui.Menu;
 import res.ui.MenuScene;
 
 class TilemapMenu extends MenuScene {
-	public function new(res:Res) {
+	public function new(res:RES) {
 		var menu = new Menu(res.createDefaultTextmap([res.palette.brightestIndex]));
 
 		menu.addItem('[ + Create ]', () -> {

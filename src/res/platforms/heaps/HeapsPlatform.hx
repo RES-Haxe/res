@@ -21,7 +21,7 @@ class HeapsPlatform implements Platform {
 	/**
 		Connect input
 	 */
-	public function connect(res:Res) {
+	public function connect(res:RES) {
 		s2d.scaleMode = LetterBox(res.frameBuffer.frameWidth, res.frameBuffer.frameHeight);
 
 		hxd.Window.getInstance().addEventTarget((ev) -> {
@@ -55,7 +55,7 @@ class HeapsPlatform implements Platform {
 		});
 	}
 
-	public function render(res:Res) {
+	public function render(res:RES) {
 		screen.tile = h2d.Tile.fromPixels(new hxd.Pixels(res.frameBuffer.frameWidth, res.frameBuffer.frameHeight, res.frameBuffer.getFrame(), RGBA));
 	}
 }

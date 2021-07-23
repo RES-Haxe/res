@@ -8,14 +8,14 @@ using Std;
 
 class Scene extends Renderable implements Updateable {
 	@:allow(res)
-	final res:Res;
+	final res:RES;
 
 	final renderList:Array<Renderable> = [];
 	final updateList:Array<Updateable> = [];
 
 	var clearColorIndex:Null<Int>;
 
-	public function new(res:Res) {
+	public function new(res:RES) {
 		this.res = res;
 
 		clearColorIndex = res.palette.darkestIndex;

@@ -17,7 +17,7 @@ import res.tiles.Tileset;
 using Math;
 using Type;
 
-@:expose('Res') class Res {
+class RES {
 	public final console:Console;
 	public final controllers:Map<Int, Controller> = [for (playerNum in 1...5) playerNum => new Controller(playerNum)];
 	public final frameBuffer:FrameBuffer;

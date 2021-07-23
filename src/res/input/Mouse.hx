@@ -8,10 +8,10 @@ class Mouse {
 	public var x:Int;
 	public var y:Int;
 
-	var res:Res;
+	var res:RES;
 
 	@:allow(res)
-	private inline function new(res:Res) {
+	private inline function new(res:RES) {
 		this.res = res;
 	}
 

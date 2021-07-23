@@ -19,7 +19,7 @@ class TilemapSettings extends MenuScene {
 	var hTilesItem:MenuItem;
 	var vTilesItem:MenuItem;
 
-	public function new(res:Res, tileset:Tileset) {
+	public function new(res:RES, tileset:Tileset) {
 		var menu = new Menu(res.createDefaultTextmap([res.palette.brightestIndex]));
 
 		nameItem = menu.addItem('', () -> {

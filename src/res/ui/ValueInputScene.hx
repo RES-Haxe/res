@@ -8,7 +8,7 @@ class ValueInputScene extends Scene {
 
 	var enteredValue:String;
 
-	public function new(res:Res, valueName:String = "Value", initial:String = '') {
+	public function new(res:RES, valueName:String = "Value", initial:String = '') {
 		super(res);
 
 		enteredValue = initial;

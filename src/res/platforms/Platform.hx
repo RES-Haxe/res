@@ -3,7 +3,7 @@ package res.platforms;
 interface Platform {
 	public final pixelFormat:PixelFormat;
 
-	function connect(res:Res):Void;
+	function connect(res:RES):Void;
 
-	function render(res:Res):Void;
+	function render(res:RES):Void;
 }

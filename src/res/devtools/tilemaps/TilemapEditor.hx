@@ -17,7 +17,7 @@ class TilemapEditor extends Scene {
 
 	final tilemap:Tilemap;
 
-	public function new(res:Res, tilemap:Tilemap) {
+	public function new(res:RES, tilemap:Tilemap) {
 		super(res);
 
 		this.tilemap = tilemap;

@@ -11,7 +11,7 @@ class Html5Platform implements Platform {
 	var ctx:CanvasRenderingContext2D;
 	var scale:Int;
 
-	var res:Res;
+	var res:RES;
 
 	var lastTime:Float = 0;
 
@@ -42,7 +42,7 @@ class Html5Platform implements Platform {
 	}
 
 	// TODO: Hook up gamepads
-	public function connect(res:Res) {
+	public function connect(res:RES) {
 		this.res = res;
 
 		canvas.width = res.frameBuffer.frameWidth;
@@ -70,7 +70,7 @@ class Html5Platform implements Platform {
 		Browser.window.requestAnimationFrame(animationFrame);
 	}
 
-	public function render(res:Res) {
+	public function render(res:RES) {
 		ctx.putImageData(res.frameBuffer.getImageData(), 0, 0);
 	}
 }

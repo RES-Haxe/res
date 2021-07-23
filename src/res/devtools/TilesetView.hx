@@ -9,7 +9,7 @@ using Std;
 class TilesetView extends Scene {
 	var tilemap:Tilemap;
 
-	public function new(res:Res, tileset:Tileset) {
+	public function new(res:RES, tileset:Tileset) {
 		super(res);
 
 		var indecies = res.palette.getIndecies();

@@ -10,10 +10,10 @@ class Keyboard extends Emitter<KeyboardEvent> {
 
 	private var controllerMappings:Map<Int, KeyboardControllerMapping> = [];
 
-	final res:Res;
+	final res:RES;
 
 	@:allow(res)
-	private function new(res:Res) {
+	private function new(res:RES) {
 		this.res = res;
 
 		defaultControllerMapping();
