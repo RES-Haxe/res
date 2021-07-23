@@ -1,18 +1,18 @@
 package res.rom.tools;
 
-import haxe.io.Bytes;
 import ase.Ase;
+import haxe.io.Bytes;
 
 class AseTools {
-	public static function merge(ase:Ase):Bytes {
+	public static function merge(ase:Ase, ?frame:Int = 0):Bytes {
 		final merged = Bytes.alloc(ase.width * ase.height);
 
 		for (index in 0...ase.layers.length) {
 			if (ase.layers[index].visible) {
-				final cel = ase.firstFrame.cel(index);
+				final cel = ase.frames[frame].cel(index);
 
 				if (cel != null) {
-					for (line in 0...cel.height) {
+					for (line in 0...Std.int(Math.min(ase.height, cel.height))) {
 						final srcPos = line * cel.width;
 						final srcLen = cel.width;
 

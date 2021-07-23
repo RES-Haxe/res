@@ -2,7 +2,7 @@ package res.devtools;
 
 import res.input.Key;
 
-class PaletteRender implements Renderable {
+class PaletteRender extends Renderable {
 	var palette:Palette;
 	var res:Res;
 
@@ -11,7 +11,7 @@ class PaletteRender implements Renderable {
 		this.palette = palette;
 	}
 
-	public function render(frameBuffer:FrameBuffer) {
+	override public function render(frameBuffer:FrameBuffer) {
 		final colSize:Int = Std.int(frameBuffer.frameWidth / palette.colors.length);
 
 		for (scanline in 0...frameBuffer.frameHeight) {

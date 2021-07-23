@@ -2,7 +2,7 @@ package res.graphics;
 
 import haxe.io.Bytes;
 
-class Graphics implements Renderable {
+class Graphics extends Renderable {
 	public final width:Int;
 	public final height:Int;
 	public final indecies:Array<Int>;
@@ -53,7 +53,7 @@ class Graphics implements Renderable {
 		buffer.set(y * width + x, index);
 	}
 
-	public function render(frameBuffer:FrameBuffer) {
+	override public function render(frameBuffer:FrameBuffer) {
 		for (y in 0...height) {
 			for (x in 0...width) {
 				final px = buffer.get(y * width + x);

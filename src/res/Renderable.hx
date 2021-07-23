@@ -1,5 +1,7 @@
 package res;
 
-interface Renderable {
-	function render(frameBuffer:FrameBuffer):Void;
+class Renderable {
+	public var visible:Bool = true;
+
+	public function render(frameBuffer:FrameBuffer):Void {}
 }

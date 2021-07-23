@@ -2,7 +2,7 @@ package res.tiles;
 
 import res.tools.MathTools.wrapi;
 
-class Tilemap implements Renderable {
+class Tilemap extends Renderable {
 	var map:Array<Array<TilePlace>>;
 
 	public final tileset:Tileset;
@@ -47,6 +47,16 @@ class Tilemap implements Renderable {
 			})]];
 	}
 
+	public function clear() {
+		for (line in 0...vTiles) {
+			for (col in 0...hTiles) {
+				map[line][col].index = 0;
+				map[line][col].flipX = false;
+				map[line][col].flipY = false;
+			}
+		}
+	}
+
 	public function fill(tileIndex:Int) {
 		for (line in map)
 			for (index in 0...line.length)
@@ -73,7 +83,7 @@ class Tilemap implements Renderable {
 			throw 'Out of tile map bounds (col: $tileCol, line: $tileLine, size: $hTiles x $vTiles)';
 	}
 
-	public function render(frameBuffer:FrameBuffer) {
+	override public function render(frameBuffer:FrameBuffer) {
 		for (screenScanline in 0...frameBuffer.frameHeight) {
 			if (onScanline != null)
 				onScanline(screenScanline);

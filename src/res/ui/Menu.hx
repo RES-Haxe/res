@@ -4,7 +4,7 @@ import res.text.Textmap;
 import res.tools.MathTools.wrapi;
 
 // TODO: Scrolling
-class Menu implements Renderable {
+class Menu extends Renderable {
 	public final textmap:Textmap;
 
 	var items:Array<MenuItem> = [];
@@ -45,7 +45,7 @@ class Menu implements Renderable {
 		return menuItem;
 	}
 
-	public function render(frameBuffer:FrameBuffer) {
+	override public function render(frameBuffer:FrameBuffer) {
 		textmap.render(frameBuffer);
 	}
 }

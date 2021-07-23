@@ -6,7 +6,7 @@ import res.input.ControllerButton;
 
 using Std;
 
-class Scene implements Renderable implements Updateable {
+class Scene extends Renderable implements Updateable {
 	@:allow(res)
 	final res:Res;
 
@@ -80,10 +80,11 @@ class Scene implements Renderable implements Updateable {
 			item.update(dt);
 	}
 
-	public function render(frameBuffer:FrameBuffer) {
+	override public function render(frameBuffer:FrameBuffer) {
 		frameBuffer.fill(clearColorIndex);
 
 		for (renderable in renderList)
-			renderable.render(frameBuffer);
+			if (renderable.visible)
+				renderable.render(frameBuffer);
 	}
 }
