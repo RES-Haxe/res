@@ -3,7 +3,6 @@ package res;
 class PalettePresets {
     // @formatter:off
     public static final DB32:Array<Int> = [
-        0x000000,
         0x222034,
         0x45283C,
         0x663931,
@@ -38,7 +37,6 @@ class PalettePresets {
     ];
 
 	public static final PICO8:Array<Int> = [
-		0x000000,
         0x1d2b53,
         0x7e2553,
         0x008751,
@@ -57,7 +55,6 @@ class PalettePresets {
 	];
 
     public static final PICO8_EX:Array<Int> = [
-		0x000000,
         0x1d2b53,
         0x7e2553,
         0x008751,

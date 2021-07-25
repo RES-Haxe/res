@@ -1,9 +1,9 @@
 package res.rom;
 
-import haxe.zip.InflateImpl;
 import haxe.Int32;
 import haxe.io.Bytes;
 import haxe.io.BytesInput;
+import haxe.zip.InflateImpl;
 import res.tiles.Tilemap;
 import res.tiles.Tileset;
 #if macro
@@ -19,11 +19,13 @@ class Rom {
 	public final tilesets:Map<String, Tileset>;
 	public final tilemaps:Map<String, Tilemap>;
 	public final sprites:Map<String, Sprite>;
+	public final data:Map<String, Bytes>;
 
-	private function new(tilesets:Map<String, Tileset>, tilemaps:Map<String, Tilemap>, sprites:Map<String, Sprite>) {
+	private function new(tilesets:Map<String, Tileset>, tilemaps:Map<String, Tilemap>, sprites:Map<String, Sprite>, data:Map<String, Bytes>) {
 		this.tilesets = tilesets;
 		this.tilemaps = tilemaps;
 		this.sprites = sprites;
+		this.data = data;
 	}
 
 	#if macro
@@ -152,11 +154,12 @@ class Rom {
 		if (!FileSystem.exists(src))
 			throw 'Error: $src doesn\'t exists';
 
-		final resTypes:Array<String> = ['tilesets', 'tilemaps', 'sprites'];
+		final resTypes:Array<String> = ['tilesets', 'tilemaps', 'sprites', 'data'];
 		final supportedTypes:Map<String, Array<String>> = [
 			'tilesets' => ['aseprite'],
 			'tilemaps' => ['aseprite'],
-			'sprites' => ['aseprite']
+			'sprites' => ['aseprite'],
+			'data' => []
 		];
 
 		final byteOutput = new BytesOutput();
@@ -172,7 +175,7 @@ class Rom {
 					if (!FileSystem.isDirectory(filePath)) {
 						var fileExt = Path.extension(file).toLowerCase();
 
-						if (supportedTypes[resourceType].indexOf(fileExt) != -1) {
+						if (supportedTypes[resourceType].length == 0 || supportedTypes[resourceType].indexOf(fileExt) != -1) {
 							var name = Path.withoutExtension(file);
 							var fileBytes = File.getBytes(Path.join([path, file]));
 
@@ -194,14 +197,15 @@ class Rom {
 											result.tilesetChunk.write(byteOutput);
 											result.tilemapChunk.write(byteOutput);
 									}
+								case 'data':
+									DataChunk.fromBytes(fileBytes, file).write(byteOutput);
 							}
 						} else {
 							trace('ROM Warning: Unsupported file format: ${fileExt}');
 						}
 					}
 				}
-			} else
-				trace('No $resourceType for this ROM');
+			}
 		}
 
 		return byteOutput.getBytes();
@@ -209,7 +213,7 @@ class Rom {
 	#end
 
 	public static function empty():Rom {
-		return new Rom([], [], []);
+		return new Rom([], [], [], []);
 	}
 
 	public static function fromBytes(bytes:Bytes, ?compressed:Bool):Rom {
@@ -218,6 +222,7 @@ class Rom {
 		var sprites:Map<String, Sprite> = [];
 		var tilesets:Map<String, Tileset> = [];
 		var tilemaps:Map<String, Tilemap> = [];
+		var data:Map<String, Bytes> = [];
 
 		var bytesInput = new BytesInput(compressed ? InflateImpl.run(new BytesInput(bytes)) : bytes);
 
@@ -234,12 +239,14 @@ class Rom {
 					tilesets[chunk.name] = cast(chunk, TilesetChunk).getTileset();
 				case TILEMAP:
 					tilemaps[chunk.name] = cast(chunk, TilemapChunk).getTilemap(tilesets[chunk.name]);
+				case DATA:
+					data[chunk.name] = cast(chunk, DataChunk).getBytes();
 				case _:
 					trace('TODO');
 			}
 		}
 
-		return new Rom(tilesets, tilemaps, sprites);
+		return new Rom(tilesets, tilemaps, sprites, data);
 	}
 
 	public static macro function embed(src:String, ?compressed:Bool = true) {

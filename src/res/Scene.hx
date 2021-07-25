@@ -3,6 +3,7 @@ package res;
 import res.geom.Point2i;
 import res.input.Controller;
 import res.input.ControllerButton;
+import res.timeline.Timeline;
 
 using Std;
 
@@ -14,6 +15,19 @@ class Scene extends Renderable implements Updateable {
 	final updateList:Array<Updateable> = [];
 
 	var clearColorIndex:Null<Int>;
+
+	var defaultTimeline:Timeline;
+
+	public var timeline(get, never):Timeline;
+
+	function get_timeline():Timeline {
+		if (defaultTimeline == null) {
+			defaultTimeline = new Timeline();
+			add(defaultTimeline);
+		}
+
+		return defaultTimeline;
+	}
 
 	public function new(res:RES) {
 		this.res = res;

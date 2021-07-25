@@ -19,10 +19,19 @@ class Tileset {
 		this.vTiles = vTiles;
 	}
 
+	/**
+		Create an array of indecies for the tiles
+	 */
+	public function getIndecies():Array<Int> {
+		return [for (index in 1...tiles.length + 1) index];
+	}
+
 	public inline function get(index:Int):Tile
 		return tiles[index];
 
 	public function pushTile(?data:Bytes):Tile {
+		if (data.length != tileSize * tileSize)
+			throw 'Invalid data sise for the tile ($tileSize x $tileSize = ${tileSize * tileSize} bytes expected)';
 		final tile = new Tile(tileSize, data);
 		tiles.push(tile);
 		return tile;

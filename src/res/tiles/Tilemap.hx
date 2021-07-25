@@ -12,7 +12,9 @@ class Tilemap extends Renderable {
 
 	public var onScanline:Int->Void;
 
-	public var paletteIndecies:Array<Int>;
+	public var colorMap:Array<Int> = null;
+
+	public var indexMap:Array<Int> = null;
 
 	public var pixelWidth(get, never):Int;
 
@@ -36,14 +38,14 @@ class Tilemap extends Renderable {
 		return scrollY = wrapi(val, pixelHeight);
 	}
 
-	public function new(tileset:Tileset, hTiles:Int, vTiles:Int, ?paletteIndecies:Array<Int>) {
+	public function new(tileset:Tileset, hTiles:Int, vTiles:Int, ?colorMap:Array<Int>) {
 		this.tileset = tileset;
 		this.hTiles = hTiles;
 		this.vTiles = vTiles;
-		this.paletteIndecies = paletteIndecies;
+		this.colorMap = colorMap;
 		this.map = [for (_ in 0...vTiles) [for (_ in 0...hTiles)
 			({
-				index:0, flipY:false, flipX:false
+				index:0, rot90cw:false, flipY:false, flipX:false
 			})]];
 	}
 
@@ -74,15 +76,42 @@ class Tilemap extends Renderable {
 			return null;
 	}
 
-	public function set(tileCol:Int, tileLine:Int, tileIndex:Int, flipX:Bool = false, flipY:Bool = false) {
+	public function set(tileCol:Int, tileLine:Int, tileIndex:Int, flipX:Bool = false, flipY:Bool = false, rot90cw:Bool = false) {
 		if (inBounds(tileCol, tileLine)) {
 			map[tileLine][tileCol].index = tileIndex;
 			map[tileLine][tileCol].flipX = flipX;
 			map[tileLine][tileCol].flipY = flipY;
+			map[tileLine][tileCol].rot90cw = rot90cw;
 		} else
 			throw 'Out of tile map bounds (col: $tileCol, line: $tileLine, size: $hTiles x $vTiles)';
 	}
 
+	/**
+		Get pixel from a tile to render
+
+		@param tx tile column
+		@param ty tile row
+		@param fx x pixel in tile without rotation nor flipping
+		@param fy y pixel in tile without rotation nor flipping
+	 */
+	function readTilePixel(tx:Int, ty:Int, fx:Int, fy:Int):Int {
+		final tile = map[ty][tx];
+		final rfx = tile.rot90cw ? fy : fx;
+		final rfy = tile.rot90cw ? tileset.tileSize - 1 - fx : fy;
+
+		final ffx = tile.flipX ? tileset.tileSize - 1 - rfx : rfx;
+		final ffy = tile.flipY ? tileset.tileSize - 1 - rfy : rfy;
+
+		final tileIndex = indexMap == null ? tile.index - 1 : indexMap[tile.index - 1] - 1;
+
+		return tileset.get(tileIndex).indecies.get(ffy * tileset.tileSize + ffx);
+	}
+
+	/**
+		Render the tilemap
+
+		@param frameBuffer Frame buffer to render at
+	 */
 	override public function render(frameBuffer:FrameBuffer) {
 		for (screenScanline in 0...frameBuffer.frameHeight) {
 			if (onScanline != null)
@@ -108,15 +137,10 @@ class Tilemap extends Renderable {
 				final tilePlace = map[tileLineIndex][tileColIndex];
 
 				if (tilePlace.index > 0 && tilePlace.index - 1 < tileset.numTiles) {
-					final tile = tileset.get(tilePlace.index - 1);
-
-					final ftx = tilePlace.flipX ? (tileset.tileSize - 1) - inTileCol : inTileCol;
-					final fty = tilePlace.flipY ? (tileset.tileSize - 1) - inTileScanline : inTileScanline;
-
-					final tileColorIndex:Int = tile.indecies.get(fty * tileset.tileSize + ftx);
+					final tileColorIndex:Int = readTilePixel(tileColIndex, tileLineIndex, inTileCol, inTileScanline);
 
 					if (tileColorIndex != 0) {
-						final paletteColorIndex:Int = paletteIndecies == null ? tileColorIndex : paletteIndecies[tileColorIndex - 1];
+						final paletteColorIndex:Int = colorMap == null ? tileColorIndex : colorMap[tileColorIndex - 1];
 
 						frameBuffer.setIndex(screenCol, screenScanline, paletteColorIndex);
 					}

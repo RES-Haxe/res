@@ -1,11 +1,11 @@
 package res.rom;
 
-import res.rom.tools.AseTools;
-import haxe.io.BytesInput;
-import res.tiles.Tileset;
 import ase.Ase;
 import haxe.io.Bytes;
+import haxe.io.BytesInput;
 import haxe.io.BytesOutput;
+import res.rom.tools.AseTools;
+import res.tiles.Tileset;
 
 class TilesetChunk extends RomChunk {
 	public function new(name:String, data:Bytes) {
@@ -94,8 +94,6 @@ class TilesetChunk extends RomChunk {
 		for (tileData in tiles) {
 			bytesOutput.writeBytes(tileData, 0, tileData.length);
 		}
-
-		trace('Tileset written: ${tiles.length} tiles');
 
 		return new TilesetChunk(name, bytesOutput.getBytes());
 	}

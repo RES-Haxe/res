@@ -27,8 +27,9 @@ class TilemapChunk extends RomChunk {
 				final tileIndex = bytesInput.readUInt16();
 				final flipX = bytesInput.readByte() == 1;
 				final flipY = bytesInput.readByte() == 1;
+				final rot90cw = bytesInput.readByte() == 1;
 
-				tilemap.set(col, line, tileIndex, flipX, flipY);
+				tilemap.set(col, line, tileIndex, flipX, flipY, rot90cw);
 			}
 		}
 
@@ -83,6 +84,7 @@ class TilemapChunk extends RomChunk {
 
 				bytesOutput.writeByte(0); // flipX
 				bytesOutput.writeByte(0); // flipY
+				bytesOutput.writeByte(0); // rot90cw
 			}
 		}
 

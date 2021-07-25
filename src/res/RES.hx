@@ -51,6 +51,18 @@ class RES {
 
 	public var scene(get, never):Scene;
 
+	/** Shorthand for `frameBuffer.frameWidth` */
+	public var width(get, never):Int;
+
+	function get_width():Int
+		return frameBuffer.frameWidth;
+
+	/** Shorthand for `frameBuffer.frameHeight` */
+	public var height(get, never):Int;
+
+	function get_height():Int
+		return frameBuffer.frameHeight;
+
 	function get_scene():Scene {
 		return _scene;
 	}
