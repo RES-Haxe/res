@@ -23,6 +23,17 @@ class Menu extends Renderable {
 		this.textmap = textmap;
 	}
 
+	public function keyDown(keyCode:Int) {
+		switch (keyCode) {
+			case 13:
+				execute();
+			case 38 | 87 | 75:
+				selectedIndex--;
+			case 40 | 83 | 74:
+				selectedIndex++;
+		}
+	}
+
 	public function updateText() {
 		for (line in 0...textmap.vTiles) {
 			if (line < items.length) {

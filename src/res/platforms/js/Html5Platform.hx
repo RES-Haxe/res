@@ -7,6 +7,8 @@ import js.html.CanvasRenderingContext2D;
 import res.platforms.Platform;
 
 class Html5Platform implements Platform {
+	public final pixelFormat:PixelFormat = ARGB;
+
 	var canvas:CanvasElement;
 	var ctx:CanvasRenderingContext2D;
 	var scale:Int;
@@ -53,14 +55,17 @@ class Html5Platform implements Platform {
 
 		Browser.window.addEventListener('keydown', (event) -> {
 			res.keyboard.keyDown(event.keyCode);
+			event.preventDefault();
 		});
 
 		Browser.window.addEventListener('keypress', (event) -> {
 			res.keyboard.keyPress(event.charCode);
+			event.preventDefault();
 		});
 
 		Browser.window.addEventListener('keyup', (event) -> {
 			res.keyboard.keyUp(event.keyCode);
+			event.preventDefault();
 		});
 
 		Browser.document.addEventListener('visibilitychange', (event) -> {

@@ -10,13 +10,6 @@ class MenuScene extends Scene {
 	}
 
 	override function keyDown(keyCode:Int) {
-		switch (keyCode) {
-			case 13:
-				menu.execute();
-			case 38 | 87 | 75:
-				menu.selectedIndex--;
-			case 40 | 83 | 74:
-				menu.selectedIndex++;
-		}
+		menu.keyDown(keyCode);
 	}
 }

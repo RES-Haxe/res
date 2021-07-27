@@ -1,5 +1,6 @@
 package res;
 
+import res.tween.Tweening;
 import res.geom.Point2i;
 import res.input.Controller;
 import res.input.ControllerButton;
@@ -16,18 +17,8 @@ class Scene extends Renderable implements Updateable {
 
 	var clearColorIndex:Null<Int>;
 
-	var defaultTimeline:Timeline;
-
-	public var timeline(get, never):Timeline;
-
-	function get_timeline():Timeline {
-		if (defaultTimeline == null) {
-			defaultTimeline = new Timeline();
-			add(defaultTimeline);
-		}
-
-		return defaultTimeline;
-	}
+	public final timeline:Timeline = new Timeline();
+	public final tweening:Tweening = new Tweening();
 
 	public function new(res:RES) {
 		this.res = res;
@@ -90,6 +81,9 @@ class Scene extends Renderable implements Updateable {
 	public function keyUp(keyCode:Int) {}
 
 	public function update(dt:Float) {
+		timeline.update(dt);
+		tweening.update(dt);
+
 		for (item in updateList)
 			item.update(dt);
 	}

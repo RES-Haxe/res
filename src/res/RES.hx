@@ -86,6 +86,10 @@ class RES {
 				this.tileSize = tileSize;
 				this.hTiles = hTiles;
 				this.vTiles = vTiles;
+			case PIXELS(width, height, defaultTIleSize):
+				this.tileSize = defaultTIleSize;
+				this.hTiles = Math.floor(width / defaultTIleSize);
+				this.vTiles = Math.floor(height / defaultTIleSize);
 		}
 
 		this.palette = new Palette(palette);
@@ -119,6 +123,8 @@ class RES {
 		var frameSize:{w:Int, h:Int} = switch (resolution) {
 			case TILES(tileSize, hTiles, vTiles):
 				{w: hTiles * tileSize, h: vTiles * tileSize};
+			case PIXELS(width, height, defaultTIleSize):
+				{w: width, h: height}
 		};
 
 		frameBuffer = new FrameBuffer(this.palette, frameSize.w, frameSize.h, usePixelFormat);
@@ -184,6 +190,9 @@ class RES {
 
 		if (vTiles == null)
 			vTiles = Math.ceil(frameBuffer.frameHeight / defaultFont.tileset.tileSize);
+
+		if (indecies == null)
+			indecies = [palette.brightestIndex];
 
 		return createTextmap(defaultFont, hTiles, vTiles, indecies);
 	}
@@ -370,6 +379,6 @@ class RES {
 
 		frameCount++;
 	}
-
-	static function main() {}
 }
+
+function main() {}
