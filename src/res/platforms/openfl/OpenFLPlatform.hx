@@ -1,6 +1,7 @@
 #if openfl
 package res.platforms.openfl;
 
+import openfl.Lib;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObjectContainer;
@@ -16,6 +17,7 @@ class OpenFLPlatform implements Platform {
 	var container:DisplayObjectContainer;
 	var res:RES;
 	var autosize:Bool;
+	var lastTime:Int;
 
 	public function new(container:DisplayObjectContainer, autosize:Bool = true) {
 		this.container = container;
@@ -25,8 +27,12 @@ class OpenFLPlatform implements Platform {
 
 	function onEnterFrame(e:Event) {
 		if (res != null) {
-			res.update(60 / 1000);
+			var currentTime = Lib.getTimer();
+
+			res.update((currentTime - lastTime) / 1000);
 			res.render();
+
+			lastTime = currentTime;
 		}
 	}
 
@@ -64,6 +70,8 @@ class OpenFLPlatform implements Platform {
 
 			resize();
 		}
+
+		lastTime = Lib.getTimer();
 	}
 
 	public function render(res:RES) {
