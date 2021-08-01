@@ -1,30 +1,30 @@
 package res.rom;
 
+import res.text.Font;
 import haxe.Int32;
 import haxe.io.Bytes;
 import haxe.io.BytesInput;
 import haxe.zip.InflateImpl;
 import res.tiles.Tilemap;
-import res.tiles.Tileset;
-#if macro
-import haxe.io.BytesOutput;
+import res.tiles.Tileset; #if macro import haxe.io.BytesOutput;
 import haxe.io.Path;
 import sys.FileSystem;
-import sys.io.File;
-#end
+import sys.io.File; #end class Rom {
 
-class Rom {
 	static inline var MAGIC_NUMBER:Int32 = 0x52524f4d;
 
 	public final tilesets:Map<String, Tileset>;
 	public final tilemaps:Map<String, Tilemap>;
 	public final sprites:Map<String, Sprite>;
+	public final fonts:Map<String, Font>;
 	public final data:Map<String, Bytes>;
 
-	private function new(tilesets:Map<String, Tileset>, tilemaps:Map<String, Tilemap>, sprites:Map<String, Sprite>, data:Map<String, Bytes>) {
+	private function new(tilesets:Map<String, Tileset>, tilemaps:Map<String, Tilemap>, sprites:Map<String, Sprite>, fonts:Map<String, Font>,
+			data:Map<String, Bytes>) {
 		this.tilesets = tilesets;
 		this.tilemaps = tilemaps;
 		this.sprites = sprites;
+		this.fonts = fonts;
 		this.data = data;
 	}
 
@@ -154,11 +154,12 @@ class Rom {
 		if (!FileSystem.exists(src))
 			throw 'Error: $src doesn\'t exists';
 
-		final resTypes:Array<String> = ['tilesets', 'tilemaps', 'sprites', 'data'];
+		final resTypes:Array<String> = ['tilesets', 'tilemaps', 'sprites', 'fonts', 'data'];
 		final supportedTypes:Map<String, Array<String>> = [
 			'tilesets' => ['aseprite'],
 			'tilemaps' => ['aseprite'],
 			'sprites' => ['aseprite'],
+			'fonts' => ['txt'],
 			'data' => []
 		];
 
@@ -197,11 +198,19 @@ class Rom {
 											result.tilesetChunk.write(byteOutput);
 											result.tilemapChunk.write(byteOutput);
 									}
+								case 'fonts':
+									final aseFile = Path.join([path, '$name.aseprite']);
+									if (FileSystem.exists(aseFile)) {
+										final tileset = TilesetChunk.fromAseprite(File.getBytes(aseFile), 'font:$name', false);
+										tileset.write(byteOutput);
+										final font = FontChunk.fromBytes(fileBytes, name);
+										font.write(byteOutput);
+									} else {
+										trace('No Aseprite file for the font');
+									}
 								case 'data':
 									DataChunk.fromBytes(fileBytes, file).write(byteOutput);
 							}
-						} else {
-							trace('ROM Warning: Unsupported file format: ${fileExt}');
 						}
 					}
 				}
@@ -213,7 +222,7 @@ class Rom {
 	#end
 
 	public static function empty():Rom {
-		return new Rom([], [], [], []);
+		return new Rom([], [], [], [], []);
 	}
 
 	public static function fromBytes(bytes:Bytes, ?compressed:Bool):Rom {
@@ -222,6 +231,7 @@ class Rom {
 		var sprites:Map<String, Sprite> = [];
 		var tilesets:Map<String, Tileset> = [];
 		var tilemaps:Map<String, Tilemap> = [];
+		var fonts:Map<String, Font> = [];
 		var data:Map<String, Bytes> = [];
 
 		var bytesInput = new BytesInput(compressed ? InflateImpl.run(new BytesInput(bytes)) : bytes);
@@ -239,14 +249,14 @@ class Rom {
 					tilesets[chunk.name] = cast(chunk, TilesetChunk).getTileset();
 				case TILEMAP:
 					tilemaps[chunk.name] = cast(chunk, TilemapChunk).getTilemap(tilesets[chunk.name]);
+				case FONT:
+					fonts[chunk.name] = cast(chunk, FontChunk).getFont(tilesets['font:${chunk.name}']);
 				case DATA:
 					data[chunk.name] = cast(chunk, DataChunk).getBytes();
-				case _:
-					trace('TODO');
 			}
 		}
 
-		return new Rom(tilesets, tilemaps, sprites, data);
+		return new Rom(tilesets, tilemaps, sprites, fonts, data);
 	}
 
 	public static macro function embed(src:String, ?compressed:Bool = true) {

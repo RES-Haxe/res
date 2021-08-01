@@ -3,10 +3,12 @@ package res;
 import res.data.CommodorKernalFontData;
 import res.devtools.Console;
 import res.extra.Splash;
+import res.graphics.Graphics;
 import res.input.Controller;
 import res.input.Keyboard;
 import res.input.KeyboardEvent;
 import res.input.Mouse;
+import res.input.MouseEvent;
 import res.platforms.Platform;
 import res.rom.Rom;
 import res.text.Font;
@@ -76,8 +78,8 @@ class RES {
 		if (palette.length < 2)
 			throw 'Too few colors. I mean.. how you\'r gonna display anything if you have only one color?!';
 
-		if (palette.length > 32)
-			throw 'Too many color. Trust me, you don\'t need THAT many';
+		if (palette.length > 256)
+			throw 'Too many colors (>=256)';
 
 		this.resolution = resolution;
 
@@ -97,22 +99,14 @@ class RES {
 		this.mainScene = mainScene;
 
 		for (controller in controllers) {
-			controller.listen((ev) -> {
-				switch (ev) {
-					case BUTTON_DOWN(controller, button):
-						if (scene != null) scene.controllerButtonDown(controller, button);
-					case BUTTON_UP(controller, button):
-						if (scene != null) scene.controllerButtonUp(controller, button);
-					case CONNECTED(controller):
-					case DISCONNECTED(controller):
-				}
-			});
+			controller.listen((ev) -> if (scene != null) scene.controllerEvent(ev));
 		}
 
 		keyboard = new Keyboard(this);
-		mouse = new Mouse(this);
-
 		keyboard.listen(keyboardListener);
+
+		mouse = new Mouse(this);
+		mouse.listen(mouseListener);
 
 		var usePixelFormat:PixelFormat = pixelFormat;
 
@@ -131,11 +125,11 @@ class RES {
 
 		this.rom = rom != null ? rom : Rom.empty();
 
-		var _defaultFontTileset = createTileset('_defaultFont', CommodorKernalFontData.H_TILES, CommodorKernalFontData.V_TILES,
+		var _defaultFontTileset = createTileset('font:default', CommodorKernalFontData.H_TILES, CommodorKernalFontData.V_TILES,
 			CommodorKernalFontData.TILE_SIZE);
 		_defaultFontTileset.fromBytes(CommodorKernalFontData.DATA, CommodorKernalFontData.WIDTH, CommodorKernalFontData.HEIGHT);
 
-		defaultFont = createFont('_defaultFont', _defaultFontTileset,
+		defaultFont = createFont('font:default', _defaultFontTileset,
 			' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]↑_✓abcdefghijklmnopqrstuvwxyz£|←▒▓');
 
 		fpsDisplay = createDefaultTextmap([this.palette.brightestIndex]);
@@ -167,6 +161,12 @@ class RES {
 			case KEY_UP(keyCode):
 				if (scene != null)
 					scene.keyUp(keyCode);
+		}
+	}
+
+	function mouseListener(event:MouseEvent) {
+		if (scene != null) {
+			scene.mouseEvent(event);
 		}
 	}
 
@@ -206,12 +206,23 @@ class RES {
 		@param firstTileIndex Index of the first tile in the tileset
 	 */
 	public function createFont(?name:String, tileset:Tileset, characters:String, ?firstTileIndex:Int = 0):Font {
-		final font = new Font(this, name, tileset, characters, firstTileIndex);
+		final font = new Font(name, tileset, characters, firstTileIndex);
 
 		if (name != null)
 			fonts[name] = font;
 
 		return font;
+	}
+
+	/**
+		Create graphics
+
+		@param width
+		@param height
+		@param colorMap
+	 */
+	public function createGraphics(?width:Int, ?height:Int, ?colorMap:Array<Int>):Graphics {
+		return new Graphics(width == null ? this.width : width, height == null ? this.height : height, colorMap == null ? palette.getIndecies() : colorMap);
 	}
 
 	/**
@@ -284,6 +295,12 @@ class RES {
 	public function connect(platform:Platform) {
 		this.platform = platform;
 		platform.connect(this);
+	}
+
+	public function poweroff() {
+		#if sys
+		Sys.exit(0);
+		#end
 	}
 
 	/**

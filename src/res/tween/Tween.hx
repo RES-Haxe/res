@@ -12,6 +12,7 @@ class Tween implements Updateable {
 	var props:Array<String>;
 	var _done:Bool = false;
 	var doneCb:Void->Void;
+	var updateCb:Float->Void;
 
 	public var done(get, never):Bool;
 
@@ -31,9 +32,18 @@ class Tween implements Updateable {
 
 	public function then(cb:Void->Void) {
 		doneCb = cb;
+		return this;
+	}
+
+	public function onUpdate(cb:Float->Void) {
+		updateCb = cb;
+		return this;
 	}
 
 	function setValues(t:Float) {
+		if (updateCb != null)
+			updateCb(t);
+
 		for (prop in props) {
 			final from = fromProps.field(prop);
 			final to = toProps.field(prop);

@@ -1,11 +1,19 @@
 package res.graphics;
 
 import haxe.io.Bytes;
+import res.geom.Recti;
+import res.tools.MathTools.maxi;
+import res.tools.MathTools.mini;
+
+using res.tools.BytesTools;
 
 class Graphics extends Renderable {
 	public final width:Int;
 	public final height:Int;
 	public final indecies:Array<Int>;
+
+	public var x:Float = 0;
+	public var y:Float = 0;
 
 	var buffer:Bytes;
 
@@ -20,6 +28,8 @@ class Graphics extends Renderable {
 	public function clear() {
 		buffer.fill(0, buffer.length, 0);
 	}
+
+	public dynamic function draw(g:Graphics) {}
 
 	public function drawImage(data:Bytes, x:Int, y:Int, width:Int, height:Int) {
 		if (data.length != width * height)
@@ -39,26 +49,39 @@ class Graphics extends Renderable {
 		// TODO
 	}
 
-	public function drawRect(x:Int, y:Int, width:Int, height:Int, index:Int) {
-		for (line in y...y + height) {
-			if (y < this.height) {
-				final len = x + width >= this.width ? this.width - x : width;
-				buffer.fill(line * this.width + x, len, index);
-			} else
-				break;
+	/**
+		Draw a rectangle
+	 */
+	public function drawRect(rx:Int, ry:Int, rwidth:Int, rheight:Int, index:Int) {
+		if (Recti.intersect(0, 0, width, height, rx, ry, rwidth, rheight)) {
+			final fx = maxi(0, rx);
+			final fy = maxi(0, ry);
+
+			final tx = mini(width, rx + rwidth);
+			final ty = mini(height, ry + rheight);
+
+			if (tx - fx > 0 && ty - fy > 0) {
+				for (line in fy...ty) {
+					final len = tx - fx;
+					buffer.fill(line * width + fx, len, index);
+				}
+			}
 		}
 	}
 
 	public function setPixel(x:Int, y:Int, index:Int = 1) {
-		buffer.set(y * width + x, index);
+		if (x >= 0 && x < width && y >= 0 && y < height)
+			buffer.setxy(width, x, y, index);
 	}
 
 	override public function render(frameBuffer:FrameBuffer) {
-		for (y in 0...height) {
-			for (x in 0...width) {
-				final px = buffer.get(y * width + x);
-				if (px != 0) {
-					frameBuffer.setIndex(x, y, indecies[px - 1]);
+		draw(this);
+
+		for (py in 0...height) {
+			for (px in 0...width) {
+				final pixel = buffer.get(py * width + px);
+				if (pixel != 0) {
+					frameBuffer.setIndex(Math.floor(x + px), Math.floor(y + py), indecies[pixel - 1]);
 				}
 			}
 		}

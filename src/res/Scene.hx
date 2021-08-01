@@ -1,10 +1,12 @@
 package res;
 
-import res.tween.Tweening;
 import res.geom.Point2i;
 import res.input.Controller;
 import res.input.ControllerButton;
+import res.input.ControllerEvent;
+import res.input.MouseEvent;
 import res.timeline.Timeline;
+import res.tween.Tweening;
 
 using Std;
 
@@ -70,15 +72,15 @@ class Scene extends Renderable implements Updateable {
 			updateList.remove(updatable);
 	}
 
-	public function controllerButtonDown(controller:Controller, button:ControllerButton) {}
-
-	public function controllerButtonUp(controller:Controller, button:ControllerButton) {}
-
 	public function keyDown(keyCode:Int) {}
 
 	public function keyPress(charCode:Int) {}
 
 	public function keyUp(keyCode:Int) {}
+
+	public dynamic function controllerEvent(event:ControllerEvent) {}
+
+	public dynamic function mouseEvent(event:MouseEvent) {}
 
 	public function update(dt:Float) {
 		timeline.update(dt);

@@ -31,6 +31,8 @@ class RomChunk {
 				return new TilesetChunk(name, data);
 			case TILEMAP:
 				return new TilemapChunk(name, data);
+			case FONT:
+				return new FontChunk(name, data);
 			case DATA:
 				return new DataChunk(name, data);
 			case _:

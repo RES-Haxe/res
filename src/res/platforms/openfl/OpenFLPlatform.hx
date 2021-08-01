@@ -1,12 +1,14 @@
 #if openfl
 package res.platforms.openfl;
 
+import openfl.events.MouseEvent;
 import openfl.Lib;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObjectContainer;
 import openfl.events.Event;
 import openfl.events.KeyboardEvent;
+import openfl.ui.GameInput;
 
 class OpenFLPlatform implements Platform {
 	public final pixelFormat:PixelFormat = ARGB;
@@ -62,6 +64,20 @@ class OpenFLPlatform implements Platform {
 		container.stage.addEventListener(KeyboardEvent.KEY_UP, (event:KeyboardEvent) -> {
 			res.keyboard.keyUp(event.keyCode);
 		});
+
+		container.stage.addEventListener(MouseEvent.MOUSE_MOVE, (event) -> {
+			res.mouse.moveTo(Std.int(event.localX), Std.int(event.localY));
+		});
+
+		container.stage.addEventListener(MouseEvent.MOUSE_DOWN, (event) -> {
+			res.mouse.push(LEFT);
+		});
+
+		container.stage.addEventListener(MouseEvent.MOUSE_UP, (event) -> {
+			res.mouse.release(LEFT);
+		});
+
+		if (GameInput.isSupported) {}
 
 		if (autosize) {
 			container.stage.addEventListener(Event.RESIZE, (_) -> {

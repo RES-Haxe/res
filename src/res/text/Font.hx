@@ -8,8 +8,7 @@ class Font {
 	public final characters:String;
 	public final firstTileIndex:Int;
 
-	@:allow(res)
-	private inline function new(res:RES, name:String, tileset:Tileset, characters:String, firstTileIndex:Int = 0) {
+	public inline function new(name:String, tileset:Tileset, characters:String, firstTileIndex:Int = 0) {
 		this.name = name;
 		this.tileset = tileset;
 		this.characters = characters;

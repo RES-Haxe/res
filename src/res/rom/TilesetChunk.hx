@@ -30,7 +30,7 @@ class TilesetChunk extends RomChunk {
 		return tileset;
 	}
 
-	public static function fromAseprite(bytes:Bytes, name:String):TilesetChunk {
+	public static function fromAseprite(bytes:Bytes, name:String, ?reuseRepeated:Bool = true):TilesetChunk {
 		final ase = Ase.fromBytes(bytes);
 
 		if (ase.header.colorDepth != INDEXED)
@@ -72,14 +72,17 @@ class TilesetChunk extends RomChunk {
 				if (!empty) {
 					var exists:Bool = false;
 
-					for (exTile in tiles) {
-						if (exTile.compare(tileData) == 0) {
-							exists = true;
-							break;
+					if (reuseRepeated) {
+						for (exTile in tiles) {
+							if (exTile.compare(tileData) == 0) {
+								exists = true;
+								break;
+							}
 						}
-					}
 
-					if (!exists)
+						if (!exists)
+							tiles.push(tileData);
+					} else
 						tiles.push(tileData);
 				}
 			}

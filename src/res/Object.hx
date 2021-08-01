@@ -2,6 +2,8 @@ package res;
 
 import res.tools.MathTools.wrapi;
 
+using res.tools.BytesTools;
+
 @:enum abstract ObjectAnimDirection(Int) from Int to Int {
 	var Forward = 1;
 	var Backwards = -1;
@@ -30,6 +32,11 @@ class Object extends Renderable implements Updateable {
 
 	public var wrap:Bool = true;
 
+	public var toRemove:Bool = false;
+
+	public var width:Int;
+	public var height:Int;
+
 	public var currentFrame(get, never):SpriteFrame;
 
 	function get_currentFrame():SpriteFrame
@@ -42,6 +49,11 @@ class Object extends Renderable implements Updateable {
 	public function new(?sprite:Sprite, ?paletteIndecies:Array<Int>) {
 		this.sprite = sprite;
 		this.paletteIndecies = paletteIndecies;
+
+		if (sprite != null) {
+			width = sprite.width;
+			height = sprite.height;
+		}
 	}
 
 	function sortChildren() {
@@ -98,8 +110,12 @@ class Object extends Renderable implements Updateable {
 			frameTime += dt;
 		}
 
-		for (child in children)
-			child.update(dt);
+		for (child in children) {
+			if (!child.toRemove)
+				child.update(dt);
+			else
+				remove(child);
+		}
 	}
 
 	function renderObject(frameBuffer:FrameBuffer, ?tx:Float = 0, ?ty:Float = 0, ?wrap:Bool) {
@@ -117,8 +133,8 @@ class Object extends Renderable implements Updateable {
 
 			final frame = currentFrame;
 
-			final lines:Int = sprite.height;
-			final cols:Int = sprite.width;
+			final lines:Int = height;
+			final cols:Int = width;
 
 			final fromX:Int = Math.floor(gX);
 			final fromY:Int = Math.floor(gY);
@@ -126,7 +142,9 @@ class Object extends Renderable implements Updateable {
 			for (scanline in 0...lines) {
 				if (!((!wrap && (scanline < 0 || scanline >= frameBuffer.frameHeight)))) {
 					for (col in 0...cols) {
-						final sampleIndex:Int = frame.data.get(scanline * sprite.width + col);
+						final sprite_line = wrapi(scanline, sprite.height);
+						final sprite_col = wrapi(col, sprite.width);
+						final sampleIndex:Int = frame.data.getxy(sprite.width, sprite_col, sprite_line);
 						if (sampleIndex != 0) {
 							final screenX:Int = wrap ? wrapi(fromX + col, frameBuffer.frameWidth) : fromX + col;
 							final screenY:Int = wrap ? wrapi(fromY + scanline, frameBuffer.frameHeight) : fromY + scanline;

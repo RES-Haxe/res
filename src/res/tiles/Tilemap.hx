@@ -55,8 +55,22 @@ class Tilemap extends Renderable {
 				map[line][col].index = 0;
 				map[line][col].flipX = false;
 				map[line][col].flipY = false;
+				map[line][col].rot90cw = false;
 			}
 		}
+	}
+
+	public function clone():Tilemap {
+		var cloned = new Tilemap(tileset, hTiles, vTiles, colorMap);
+		for (line in 0...vTiles) {
+			for (col in 0...hTiles) {
+				final t = get(col, line);
+
+				cloned.set(col, line, t.index, t.flipX, t.flipY, t.rot90cw);
+			}
+		}
+
+		return cloned;
 	}
 
 	public function fill(tileIndex:Int) {
