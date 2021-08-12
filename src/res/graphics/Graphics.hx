@@ -1,14 +1,14 @@
 package res.graphics;
 
+import Math.abs;
 import haxe.io.Bytes;
 import res.display.Renderable;
 import res.geom.Rect;
 import res.tools.MathTools.maxi;
 import res.tools.MathTools.mini;
-import Math.abs;
 
-using res.tools.BytesTools;
 using Std;
+using res.tools.BytesTools;
 
 class Graphics extends Renderable {
 	public final width:Int;

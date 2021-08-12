@@ -15,6 +15,7 @@ import res.tiles.Tileset;
 using Math;
 using Type;
 
+@:build(res.Macros.ver())
 class RES {
 	public final controllers:Map<Int, Controller> = [for (playerNum in 1...5) playerNum => new Controller(playerNum)];
 	public final frameBuffer:FrameBuffer;

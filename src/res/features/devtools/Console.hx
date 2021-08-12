@@ -37,8 +37,7 @@ class ConsoleScene extends Scene {
 		consoleText.textAt(0, consoleText.vTiles - 1, '>' + commandInput + (blink ? CURSOR : ''));
 	}
 
-	@:allow(res)
-	private function new(res:RES) {
+	public function new(res:RES) {
 		super(res);
 
 		addCommand('clear', 'Clear console', clear);
@@ -68,9 +67,9 @@ class ConsoleScene extends Scene {
 		#end
 
 		addCommand('about', 'About this game', (_) -> {
-			println('RES      : v0.1.0'); // TODO: Make dynamic
-			println('Resol.   : ${res.frameBuffer.frameWidth}x${res.frameBuffer.frameHeight}');
-			println('Palette  : ${res.palette.colors.length} col.');
+			println('Ver.  : ${RES.VERSION}');
+			println('Resol.: ${res.frameBuffer.frameWidth}x${res.frameBuffer.frameHeight}');
+			println('Pal.  : ${res.palette.colors.length} col.');
 		});
 	}
 
@@ -167,8 +166,12 @@ class ConsoleScene extends Scene {
 
 class Console implements Feature {
 	var shown:Bool = false;
+	var consoleScene:ConsoleScene;
 
 	public function enable(res:RES) {
+		consoleScene = new ConsoleScene(res);
+		consoleScene.initDefaultCommands();
+
 		res.keyboard.listen((ev) -> {
 			switch (ev) {
 				case KEY_DOWN(keyCode):
@@ -176,7 +179,7 @@ class Console implements Feature {
 						if (shown)
 							res.popScene();
 						else
-							res.setScene(ConsoleScene);
+							res.setScene(consoleScene);
 
 						shown = !shown;
 					}
