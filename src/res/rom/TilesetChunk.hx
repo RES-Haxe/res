@@ -1,10 +1,8 @@
 package res.rom;
 
-import ase.Ase;
 import haxe.io.Bytes;
 import haxe.io.BytesInput;
 import haxe.io.BytesOutput;
-import res.rom.tools.AseTools;
 import res.tiles.Tileset;
 
 class TilesetChunk extends RomChunk {
@@ -24,19 +22,20 @@ class TilesetChunk extends RomChunk {
 		for (_ in 0...numTiles) {
 			final tileData = Bytes.alloc(tileWidth * tileHeight);
 			bi.readBytes(tileData, 0, tileData.length);
-			tileset.pushTile(tileData);
+			tileset.createTile(tileData);
 		}
 
 		return tileset;
 	}
 
+	#if macro
 	public static function fromAseprite(bytes:Bytes, name:String, ?reuseRepeated:Bool = true):TilesetChunk {
-		final ase = Ase.fromBytes(bytes);
+		final ase = ase.Ase.fromBytes(bytes);
 
 		if (ase.header.colorDepth != INDEXED)
 			throw 'Only indexed aseprite files are allowed';
 
-		final merged = AseTools.merge(ase);
+		final merged = res.rom.tools.AseTools.merge(ase);
 
 		final tiles:Array<Bytes> = [];
 
@@ -100,4 +99,5 @@ class TilesetChunk extends RomChunk {
 
 		return new TilesetChunk(name, bytesOutput.getBytes());
 	}
+	#end
 }

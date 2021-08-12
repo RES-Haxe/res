@@ -10,6 +10,16 @@ class MathTools {
 	public static inline function mini(a:Int, b:Int):Int
 		return a < b ? a : b;
 
+	public static inline function wrap(x:Float, w:Float):Float {
+		if (x < 0)
+			x = w + (x % w);
+
+		if (x >= w)
+			x = x % w;
+
+		return x;
+	}
+
 	public static inline function wrapi(x:Int, w:Int):Int {
 		if (x < 0)
 			x = w + (x % w);

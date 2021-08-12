@@ -1,4 +1,4 @@
-package res;
+package res.display;
 
 import haxe.io.Bytes;
 

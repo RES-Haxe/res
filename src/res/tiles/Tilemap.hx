@@ -1,6 +1,12 @@
 package res.tiles;
 
-import res.tools.MathTools.wrapi;
+import res.display.Renderable;
+import res.tools.MathTools.wrap;
+
+using Math;
+
+typedef ScanlineFuncCallback = ?Float->?Float->Void;
+typedef ScanlineFunc = Int->ScanlineFuncCallback->Void;
 
 class Tilemap extends Renderable {
 	var map:Array<Array<TilePlace>>;
@@ -10,7 +16,7 @@ class Tilemap extends Renderable {
 	public final hTiles:Int;
 	public final vTiles:Int;
 
-	public var onScanline:Int->Void;
+	public var scanlineFunc:ScanlineFunc;
 
 	public var colorMap:Array<Int> = null;
 
@@ -26,17 +32,8 @@ class Tilemap extends Renderable {
 	function get_pixelHeight():Int
 		return vTiles * tileset.tileSize;
 
-	public var scrollX(default, set):Int = 0;
-
-	function set_scrollX(val:Int):Int {
-		return scrollX = wrapi(val, pixelWidth);
-	}
-
-	public var scrollY(default, set):Int = 0;
-
-	function set_scrollY(val:Int):Int {
-		return scrollY = wrapi(val, pixelHeight);
-	}
+	public var scrollX:Float = 0;
+	public var scrollY:Float = 0;
 
 	public function new(tileset:Tileset, hTiles:Int, vTiles:Int, ?colorMap:Array<Int>) {
 		this.tileset = tileset;
@@ -122,44 +119,80 @@ class Tilemap extends Renderable {
 	}
 
 	/**
-		Render the tilemap
+		Draw a tilemap
 
-		@param frameBuffer Frame buffer to render at
+		@param tilemap Tilemap to render
+		@param frameBuffer FrameBuffer to render to
+		@param x screen X corrdinate
+		@param y screen Y coordinate
+		@param width width of the window to render (framWidth by default)
+		@param height height of the window to render (framHeight by default)
+		@param scrollX
+		@param scrollY
+		@param wrapping
+		@param scanlineFunc
 	 */
-	override public function render(frameBuffer:FrameBuffer) {
-		for (screenScanline in 0...frameBuffer.frameHeight) {
-			if (onScanline != null)
-				onScanline(screenScanline);
+	public static function drawTilemap(tilemap:Tilemap, frameBuffer:FrameBuffer, ?x:Int = 0, ?y:Int = 0, ?width:Int, ?height:Int, ?scrollX:Float = 0,
+			?scrollY:Float = 0, ?wrapping:Bool = true, ?scanlineFunc:ScanlineFunc) {
+		if (width == null)
+			width = frameBuffer.frameWidth;
+		if (height == null)
+			height = frameBuffer.frameHeight;
 
-			var tileScanline:Int = screenScanline + scrollY;
-			var tileLineIndex:Int = Math.floor(tileScanline / tileset.tileSize);
+		for (line in 0...height) {
+			final screenScanline = y + line;
 
-			if (tileLineIndex >= map.length)
-				tileLineIndex = tileLineIndex % map.length;
+			if (screenScanline >= 0 && screenScanline < frameBuffer.frameHeight) {
+				if (scanlineFunc != null)
+					scanlineFunc(line, (?sx:Float, ?sy:Float) -> {
+						if (sx != null)
+							scrollX = sx;
+						if (sy != null)
+							scrollY = sy;
+					});
 
-			final inTileScanline:Int = tileScanline % tileset.tileSize;
+				final tileScanline:Int = (line + wrap(scrollY, tilemap.pixelHeight)).floor();
+				var tileLineIndex:Int = (tileScanline / tilemap.tileset.tileSize).floor();
 
-			for (screenCol in 0...frameBuffer.frameWidth) {
-				var tileCol:Int = screenCol + scrollX;
-				var tileColIndex:Int = Math.floor(tileCol / tileset.tileSize);
+				if (tileLineIndex >= tilemap.vTiles)
+					tileLineIndex = tileLineIndex % tilemap.vTiles;
 
-				if (tileColIndex >= map[tileLineIndex].length)
-					tileColIndex = tileColIndex % map[tileLineIndex].length;
+				final inTileScanline:Int = tileScanline % tilemap.tileset.tileSize;
 
-				final inTileCol:Int = tileCol % tileset.tileSize;
+				for (col in 0...width) {
+					final screenCol = x + col;
 
-				final tilePlace = map[tileLineIndex][tileColIndex];
+					if (screenCol >= 0 && screenCol < frameBuffer.frameWidth) {
+						final tileCol:Int = (col + wrap(scrollX, tilemap.pixelWidth)).floor();
+						var tileColIndex:Int = (tileCol / tilemap.tileset.tileSize).floor();
 
-				if (tilePlace.index > 0 && tilePlace.index - 1 < tileset.numTiles) {
-					final tileColorIndex:Int = readTilePixel(tileColIndex, tileLineIndex, inTileCol, inTileScanline);
+						if (tileColIndex >= tilemap.hTiles)
+							tileColIndex = tileColIndex % tilemap.hTiles;
 
-					if (tileColorIndex != 0) {
-						final paletteColorIndex:Int = colorMap == null ? tileColorIndex : colorMap[tileColorIndex - 1];
+						final inTileCol:Int = tileCol % tilemap.tileset.tileSize;
 
-						frameBuffer.setIndex(screenCol, screenScanline, paletteColorIndex);
+						final tilePlace = tilemap.get(tileColIndex, tileLineIndex);
+
+						if (tilePlace != null && tilePlace.index > 0 && tilePlace.index - 1 < tilemap.tileset.numTiles) {
+							final tileColorIndex:Int = tilemap.readTilePixel(tileColIndex, tileLineIndex, inTileCol, inTileScanline);
+
+							if (tileColorIndex != 0) {
+								final paletteColorIndex:Int = tilemap.colorMap == null ? tileColorIndex : tilemap.colorMap[tileColorIndex - 1];
+
+								frameBuffer.setIndex(screenCol, screenScanline, paletteColorIndex);
+							}
+						}
 					}
 				}
 			}
 		}
 	}
+
+	/**
+		Render the tilemap
+
+		@param frameBuffer Frame buffer to render at
+	 */
+	override public function render(frameBuffer:FrameBuffer)
+		drawTilemap(this, frameBuffer, 0, 0, frameBuffer.frameWidth, frameBuffer.frameHeight, scrollX, scrollY, true);
 }

@@ -1,6 +1,5 @@
 package res.rom;
 
-import ase.Ase;
 import haxe.io.Bytes;
 import haxe.io.BytesInput;
 import haxe.io.BytesOutput;
@@ -36,11 +35,12 @@ class TilemapChunk extends RomChunk {
 		return tilemap;
 	}
 
+	#if macro
 	public static function fromAseprite(bytes:Bytes, name:String):{tilesetChunk:TilesetChunk, tilemapChunk:TilemapChunk} {
 		final tilesetChunk = TilesetChunk.fromAseprite(bytes, name);
 		final tileset = tilesetChunk.getTileset();
 
-		final ase = Ase.fromBytes(bytes);
+		final ase = ase.Ase.fromBytes(bytes);
 
 		final tileWidth = ase.header.gridWidth;
 		final tileHeight = ase.header.gridHeight;
@@ -93,4 +93,5 @@ class TilemapChunk extends RomChunk {
 			tilemapChunk: new TilemapChunk(name, bytesOutput.getBytes())
 		};
 	}
+	#end
 }

@@ -35,8 +35,6 @@ class RomChunk {
 				return new FontChunk(name, data);
 			case DATA:
 				return new DataChunk(name, data);
-			case _:
-				trace('TODO ${chunkType}');
 		}
 
 		return null;

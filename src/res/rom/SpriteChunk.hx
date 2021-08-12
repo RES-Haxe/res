@@ -1,8 +1,9 @@
 package res.rom;
 
-import res.rom.tools.AseTools;
-import haxe.io.BytesInput;
 import haxe.io.Bytes;
+import haxe.io.BytesInput;
+import res.display.Sprite;
+import res.display.SpriteFrame;
 
 class SpriteChunk extends RomChunk {
 	public function new(name:String, data:Bytes) {
@@ -29,6 +30,7 @@ class SpriteChunk extends RomChunk {
 		return new Sprite(width, height, frames);
 	}
 
+	#if macro
 	public static function fromAseprite(aseBytes:Bytes, name:String) {
 		var spriteData = ase.Ase.fromBytes(aseBytes);
 
@@ -45,7 +47,7 @@ class SpriteChunk extends RomChunk {
 			var frame = spriteData.frames[frame_num];
 			bytesOutput.writeInt32(frame.duration); // frame duration
 
-			var frameData = AseTools.merge(spriteData, frame_num);
+			var frameData = res.rom.tools.AseTools.merge(spriteData, frame_num);
 
 			bytesOutput.writeBytes(frameData, 0, frameData.length);
 		}
@@ -54,4 +56,5 @@ class SpriteChunk extends RomChunk {
 
 		return new RomChunk(SPRITE, name, data);
 	}
+	#end
 }

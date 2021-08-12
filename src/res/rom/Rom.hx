@@ -1,16 +1,21 @@
 package res.rom;
 
-import res.text.Font;
 import haxe.Int32;
 import haxe.io.Bytes;
 import haxe.io.BytesInput;
 import haxe.zip.InflateImpl;
+import res.display.Sprite;
+import res.text.Font;
 import res.tiles.Tilemap;
-import res.tiles.Tileset; #if macro import haxe.io.BytesOutput;
+import res.tiles.Tileset;
+#if macro
+import haxe.io.BytesOutput;
 import haxe.io.Path;
 import sys.FileSystem;
-import sys.io.File; #end class Rom {
+import sys.io.File;
+#end
 
+class Rom {
 	static inline var MAGIC_NUMBER:Int32 = 0x52524f4d;
 
 	public final tilesets:Map<String, Tileset>;
@@ -226,8 +231,6 @@ import sys.io.File; #end class Rom {
 	}
 
 	public static function fromBytes(bytes:Bytes, ?compressed:Bool):Rom {
-		trace('Loading ROM: ${bytes.length} bytes' + (compressed ? ' (compressed)' : ''));
-
 		var sprites:Map<String, Sprite> = [];
 		var tilesets:Map<String, Tileset> = [];
 		var tilemaps:Map<String, Tilemap> = [];

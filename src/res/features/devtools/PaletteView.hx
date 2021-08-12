@@ -1,6 +1,8 @@
-package res.devtools;
+package res.features.devtools;
 
+import res.display.Renderable;
 import res.input.Key;
+import res.input.KeyboardEvent;
 
 class PaletteRender extends Renderable {
 	var palette:Palette;
@@ -29,11 +31,15 @@ class PaletteView extends Scene {
 	public function new(res:RES) {
 		super(res);
 
-		renderList.push(new PaletteRender(res, res.palette));
+		add(new PaletteRender(res, res.palette));
 	}
 
-	override function keyDown(keyCode:Int) {
-		if (keyCode == Key.ESCAPE)
-			res.popScene();
+	override function keyboardEvent(event:KeyboardEvent) {
+		switch (event) {
+			case KEY_DOWN(keyCode):
+				if (keyCode == Key.ESCAPE)
+					res.popScene();
+			case _:
+		}
 	}
 }

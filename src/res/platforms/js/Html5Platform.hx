@@ -1,10 +1,16 @@
-#if js
 package res.platforms.js;
 
-import js.Browser;
+import js.Browser.console;
+import js.Browser.document;
+import js.Browser.window;
 import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
+import js.html.GamepadEvent;
+import js.html.KeyboardEvent;
+import js.html.PointerEvent;
 import res.platforms.Platform;
+
+using Math;
 
 class Html5Platform implements Platform {
 	public final pixelFormat:PixelFormat = ARGB;
@@ -19,14 +25,13 @@ class Html5Platform implements Platform {
 
 	public function new(?canvas:CanvasElement, ?scale:Int = 4) {
 		if (canvas == null) {
-			canvas = Browser.document.createCanvasElement();
-			Browser.document.body.appendChild(canvas);
+			canvas = document.createCanvasElement();
+			document.body.appendChild(canvas);
 		}
 
 		this.scale = scale;
 
 		this.canvas = canvas;
-
 		this.canvas.style.imageRendering = 'pixelated';
 
 		this.ctx = this.canvas.getContext2d();
@@ -40,7 +45,7 @@ class Html5Platform implements Platform {
 		res.update(dt);
 		res.render();
 
-		Browser.window.requestAnimationFrame(animationFrame);
+		window.requestAnimationFrame(animationFrame);
 	}
 
 	// TODO: Hook up gamepads
@@ -53,30 +58,59 @@ class Html5Platform implements Platform {
 		canvas.style.width = '${res.frameBuffer.frameWidth * scale}px';
 		canvas.style.height = '${res.frameBuffer.frameHeight * scale}px';
 
-		Browser.window.addEventListener('keydown', (event) -> {
+		canvas.addEventListener('pointermove', (event:PointerEvent) -> {
+			res.mouse.moveTo((event.x / scale).floor(), (event.y / scale).floor());
+		});
+
+		canvas.addEventListener('pointerdown', (event:PointerEvent) -> {
+			res.mouse.push(switch (event.button) {
+				case 0: LEFT;
+				case 1: MIDDLE;
+				case 2: RIGHT;
+				case _: LEFT;
+			}, (event.x / scale).floor(), (event.y / scale).floor());
+		});
+
+		canvas.addEventListener('pointerup', (event:PointerEvent) -> {
+			res.mouse.release(switch (event.button) {
+				case 0: LEFT;
+				case 1: MIDDLE;
+				case 2: RIGHT;
+				case _: LEFT;
+			}, (event.x / scale).floor(), (event.y / scale).floor());
+		});
+
+		window.addEventListener('keydown', (event:KeyboardEvent) -> {
+			if (event.key.length == 1)
+				res.keyboard.keyPress(event.key.charCodeAt(0));
+
 			res.keyboard.keyDown(event.keyCode);
 			event.preventDefault();
 		});
 
-		Browser.window.addEventListener('keypress', (event) -> {
+		window.addEventListener('keypress', (event:KeyboardEvent) -> {
+			trace('key press??');
 			res.keyboard.keyPress(event.charCode);
 			event.preventDefault();
 		});
 
-		Browser.window.addEventListener('keyup', (event) -> {
+		window.addEventListener('keyup', (event:KeyboardEvent) -> {
 			res.keyboard.keyUp(event.keyCode);
 			event.preventDefault();
 		});
 
-		Browser.document.addEventListener('visibilitychange', (event) -> {
-			lastTime = Browser.window.performance.now();
+		window.addEventListener('gamepadconnected', (event:GamepadEvent) -> {
+			console.log(event.gamepad);
 		});
 
-		Browser.window.requestAnimationFrame(animationFrame);
+		document.addEventListener('visibilitychange', (event) -> {
+			lastTime = window.performance.now();
+		});
+
+		window.requestAnimationFrame(animationFrame);
 	}
 
 	public function render(res:RES) {
 		ctx.putImageData(res.frameBuffer.getImageData(), 0, 0);
 	}
 }
-#end

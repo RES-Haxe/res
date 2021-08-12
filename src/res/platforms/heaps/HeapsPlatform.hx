@@ -1,7 +1,9 @@
-#if heaps
 package res.platforms.heaps;
 
+import h2d.Interactive;
 import hxd.Pad;
+
+using Math;
 
 class HeapsPlatform implements Platform {
 	public final pixelFormat:PixelFormat = ABGR;
@@ -24,26 +26,32 @@ class HeapsPlatform implements Platform {
 	public function connect(res:RES) {
 		s2d.scaleMode = LetterBox(res.frameBuffer.frameWidth, res.frameBuffer.frameHeight);
 
+		final interactive = new Interactive(res.frameBuffer.frameWidth, res.frameBuffer.frameHeight, s2d);
+
+		interactive.onMove = (ev) -> {
+			res.mouse.moveTo(ev.relX.floor(), ev.relY.floor());
+		};
+
+		interactive.onPush = (ev) -> {
+			res.mouse.push(switch (ev.button) {
+				case 0: LEFT;
+				case 1: RIGHT;
+				case 2: MIDDLE;
+				case _: LEFT;
+			}, ev.relX.floor(), ev.relY.floor());
+		};
+
+		interactive.onRelease = interactive.onReleaseOutside = (ev) -> {
+			res.mouse.release(switch (ev.button) {
+				case 0: LEFT;
+				case 1: RIGHT;
+				case 2: MIDDLE;
+				case _: LEFT;
+			}, ev.relX.floor(), ev.relY.floor());
+		};
+
 		hxd.Window.getInstance().addEventTarget((ev) -> {
 			switch (ev.kind) {
-				case EMove:
-					res.mouse.moveTo(Std.int(ev.relX / 4), Std.int(ev.relY / 4));
-				case EPush:
-					res.mouse.moveTo(Std.int(ev.relX / 4), Std.int(ev.relY / 4));
-					res.mouse.push(switch (ev.button) {
-						case 0: LEFT;
-						case 1: RIGHT;
-						case 2: MIDDLE;
-						case _: LEFT;
-					});
-				case ERelease:
-					res.mouse.moveTo(Std.int(ev.relX / 4), Std.int(ev.relY / 4));
-					res.mouse.release(switch (ev.button) {
-						case 0: LEFT;
-						case 1: RIGHT;
-						case 2: MIDDLE;
-						case _: LEFT;
-					});
 				case EKeyDown:
 					res.keyboard.keyDown(ev.keyCode);
 				case ETextInput:
@@ -59,4 +67,3 @@ class HeapsPlatform implements Platform {
 		screen.tile = h2d.Tile.fromPixels(new hxd.Pixels(res.frameBuffer.frameWidth, res.frameBuffer.frameHeight, res.frameBuffer.getFrame(), RGBA));
 	}
 }
-#end

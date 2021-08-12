@@ -1,8 +1,7 @@
-package res.devtools;
+package res.features.devtools;
 
-import res.devtools.sprites.SpritesMenu;
-import res.devtools.tilemaps.TilemapMenu;
 import res.input.Key;
+import res.input.KeyboardEvent;
 import res.text.Textmap;
 
 using String;
@@ -16,7 +15,7 @@ typedef ConsoleCommand = {
 	callback:ConsoleCommandFunc
 };
 
-class Console extends Scene {
+class ConsoleScene extends Scene {
 	static final BLINK_TIME:Float = 1;
 	static final CURSOR:String = '_';
 
@@ -44,11 +43,8 @@ class Console extends Scene {
 
 		addCommand('clear', 'Clear console', clear);
 		addCommand('help', 'Show help for commands', help);
-		addCommand('exit', 'Exit console', (_) -> {
-			res.popScene();
-		});
 
-		consoleText = res.createDefaultTextmap([res.palette.brightestIndex]);
+		consoleText = res.createTextmap();
 
 		consoleText.scrollY = consoleText.pixelHeight - res.frameBuffer.frameHeight;
 
@@ -73,67 +69,28 @@ class Console extends Scene {
 
 		addCommand('about', 'About this game', (_) -> {
 			println('RES      : v0.1.0'); // TODO: Make dynamic
-			println('Tile size: ${res.tileSize}');
 			println('Resol.   : ${res.frameBuffer.frameWidth}x${res.frameBuffer.frameHeight}');
 			println('Palette  : ${res.palette.colors.length} col.');
 		});
-
-		addCommand('palette', 'Show palette', (_) -> {
-			res.setScene(PaletteView);
-		});
-
-		addCommand('tileset', 'View tileset', (args) -> {
-			if (args.length == 0) {
-				println('Tilesets:');
-				for (id => set in res.rom.tilesets) {
-					println(' $id (${set.numTiles})');
-				}
-			} else if (args.length == 1) {
-				if (res.rom.tilesets.exists(args[0])) {
-					res.setScene(new TilesetView(res, res.rom.tilesets[args[0]]));
-				} else {
-					println('`${args[0]}` 404');
-				}
-			} else
-				println('Too many arguments');
-		});
-
-		addCommand('sprite', 'View/Edit sprites', (_) -> {
-			res.setScene(SpritesMenu);
-		});
-
-		addCommand('tilemap', 'View/Edit tilemaps', (args) -> {
-			if (args.length == 0) {
-				res.setScene(TilemapMenu, true);
-			} else {
-				if (res.rom.tilemaps.exists(args[0])) {
-					// TODO Editor
-				} else {
-					println('No such tilemap: ${args[0]}');
-				}
-			}
-		});
 	}
 
-	override function keyDown(keyCode:Int) {
-		switch (keyCode) {
-			case Key.BACKSPACE:
-				updateInput(commandInput.substr(0, -1));
-			case Key.ENTER:
-				if (commandInput.trim() != '') {
-					execute(commandInput.trim());
-					updateInput('');
+	override function keyboardEvent(event:KeyboardEvent) {
+		switch (event) {
+			case KEY_DOWN(keyCode):
+				switch (keyCode) {
+					case Key.BACKSPACE:
+						updateInput(commandInput.substr(0, -1));
+					case Key.ENTER:
+						if (commandInput.trim() != '') {
+							execute(commandInput.trim());
+							updateInput('');
+						}
 				}
-			case Key.ESCAPE:
-				res.popScene();
+			case KEY_PRESS(charCode):
+				if (charCode != '`'.code)
+					updateInput(commandInput += charCode.fromCharCode());
+			case _:
 		}
-	}
-
-	override function keyPress(charCode:Int) {
-		if (charCode != '`'.code)
-			updateInput(commandInput += charCode.fromCharCode());
-		else
-			res.popScene();
 	}
 
 	public function clear(?params:Array<String>) {
@@ -205,5 +162,26 @@ class Console extends Scene {
 			updateInput();
 		} else
 			blinkTimer += dt;
+	}
+}
+
+class Console implements Feature {
+	var shown:Bool = false;
+
+	public function enable(res:RES) {
+		res.keyboard.listen((ev) -> {
+			switch (ev) {
+				case KEY_DOWN(keyCode):
+					if (keyCode == 192) {
+						if (shown)
+							res.popScene();
+						else
+							res.setScene(ConsoleScene);
+
+						shown = !shown;
+					}
+				case _:
+			}
+		});
 	}
 }

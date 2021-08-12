@@ -8,8 +8,4 @@ class MenuScene extends Scene {
 
 		renderList.push(this.menu = menu);
 	}
-
-	override function keyDown(keyCode:Int) {
-		menu.keyDown(keyCode);
-	}
 }

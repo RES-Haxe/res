@@ -1,5 +1,6 @@
 package res.ui;
 
+import res.display.Renderable;
 import res.text.Textmap;
 import res.tools.MathTools.wrapi;
 

@@ -1,14 +1,10 @@
 package res;
 
-import res.data.CommodorKernalFontData;
-import res.devtools.Console;
-import res.extra.Splash;
+import res.features.Feature;
 import res.graphics.Graphics;
 import res.input.Controller;
 import res.input.Keyboard;
-import res.input.KeyboardEvent;
 import res.input.Mouse;
-import res.input.MouseEvent;
 import res.platforms.Platform;
 import res.rom.Rom;
 import res.text.Font;
@@ -20,28 +16,25 @@ using Math;
 using Type;
 
 class RES {
-	public final console:Console;
 	public final controllers:Map<Int, Controller> = [for (playerNum in 1...5) playerNum => new Controller(playerNum)];
 	public final frameBuffer:FrameBuffer;
-	public final hTiles:Int;
 	public final keyboard:Keyboard;
 	public final mouse:Mouse;
 	public final palette:Palette;
 	public final resolution:Resolution;
-	public final tileSize:Int;
-	public final vTiles:Int;
 	public final fonts:Map<String, Font> = [];
-	public final defaultFont:Font;
 	public final mainScene:Class<Scene>;
 
 	public final rom:Rom;
 
+	public var defaultFont:Font;
+
 	public var showFps:Bool = false;
 
-	private var frameCount:Int = 0;
+	private var features:Map<String, Feature> = [];
 	private var fpsMeasureTime:Float = 0;
+	private var frameCount:Int = 0;
 	private var lastFps:Int = 0;
-	private var fpsDisplay:Textmap;
 	private var platform:Platform;
 
 	private final _scenes:Map<String, Scene> = [];
@@ -65,9 +58,8 @@ class RES {
 	function get_height():Int
 		return frameBuffer.frameHeight;
 
-	function get_scene():Scene {
+	function get_scene():Scene
 		return _scene;
-	}
 
 	/**
 		@param resolution Tiles size and the number of them horizontally and vertically
@@ -83,41 +75,34 @@ class RES {
 
 		this.resolution = resolution;
 
-		switch (resolution) {
-			case TILES(tileSize, hTiles, vTiles):
-				this.tileSize = tileSize;
-				this.hTiles = hTiles;
-				this.vTiles = vTiles;
-			case PIXELS(width, height, defaultTIleSize):
-				this.tileSize = defaultTIleSize;
-				this.hTiles = Math.floor(width / defaultTIleSize);
-				this.vTiles = Math.floor(height / defaultTIleSize);
-		}
-
 		this.palette = new Palette(palette);
 
 		this.mainScene = mainScene;
 
-		for (controller in controllers) {
+		for (controller in controllers)
 			controller.listen((ev) -> if (scene != null) scene.controllerEvent(ev));
-		}
 
 		keyboard = new Keyboard(this);
-		keyboard.listen(keyboardListener);
+		keyboard.listen((event) -> {
+			if (scene != null)
+				scene.keyboardEvent(event);
+		});
 
 		mouse = new Mouse(this);
-		mouse.listen(mouseListener);
+		mouse.listen((event) -> {
+			if (scene != null)
+				scene.mouseEvent(event);
+		});
 
 		var usePixelFormat:PixelFormat = pixelFormat;
 
-		if (platform != null) {
+		if (platform != null)
 			usePixelFormat = platform.pixelFormat;
-		}
 
 		var frameSize:{w:Int, h:Int} = switch (resolution) {
 			case TILES(tileSize, hTiles, vTiles):
 				{w: hTiles * tileSize, h: vTiles * tileSize};
-			case PIXELS(width, height, defaultTIleSize):
+			case PIXELS(width, height):
 				{w: width, h: height}
 		};
 
@@ -125,76 +110,14 @@ class RES {
 
 		this.rom = rom != null ? rom : Rom.empty();
 
-		var _defaultFontTileset = createTileset('font:default', CommodorKernalFontData.H_TILES, CommodorKernalFontData.V_TILES,
-			CommodorKernalFontData.TILE_SIZE);
-		_defaultFontTileset.fromBytes(CommodorKernalFontData.DATA, CommodorKernalFontData.WIDTH, CommodorKernalFontData.HEIGHT);
-
-		defaultFont = createFont('font:default', _defaultFontTileset,
-			' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]↑_✓abcdefghijklmnopqrstuvwxyz£|←▒▓');
-
-		fpsDisplay = createDefaultTextmap([this.palette.brightestIndex]);
-
-		console = new Console(this);
-		console.initDefaultCommands();
-
 		if (platform != null)
 			connect(platform);
 
-		setScene(Splash);
-	}
-
-	function keyboardListener(event:KeyboardEvent) {
-		switch (event) {
-			case KEY_DOWN(keyCode):
-				if (scene != null)
-					scene.keyDown(keyCode);
-
-			case KEY_PRESS(charCode):
-				if (charCode == '`'.code) {
-					if (scene != console)
-						setScene(console);
-				} else {
-					if (scene != null)
-						scene.keyPress(charCode);
-				}
-
-			case KEY_UP(keyCode):
-				if (scene != null)
-					scene.keyUp(keyCode);
-		}
-	}
-
-	function mouseListener(event:MouseEvent) {
-		if (scene != null) {
-			scene.mouseEvent(event);
-		}
-	}
-
-	/**
-		Clear the frame buffer filling it with a color
-
-		@param colorIndex color index in the palette
-	 */
-	public function clear(colorIndex:Int = 1) {
-		frameBuffer.fill(colorIndex);
-	}
-
-	/**
-		Create text map with default font
-
-		@param indecies color indecies
-	 */
-	public function createDefaultTextmap(?hTiles:Int, ?vTiles:Int, ?indecies:Array<Int>):Textmap {
-		if (hTiles == null)
-			hTiles = Math.ceil(frameBuffer.frameWidth / defaultFont.tileset.tileSize);
-
-		if (vTiles == null)
-			vTiles = Math.ceil(frameBuffer.frameHeight / defaultFont.tileset.tileSize);
-
-		if (indecies == null)
-			indecies = [palette.brightestIndex];
-
-		return createTextmap(defaultFont, hTiles, vTiles, indecies);
+		#if !skipSplash
+		setScene(res.extra.Splash);
+		#else
+		setScene(mainScene);
+		#end
 	}
 
 	/**
@@ -233,7 +156,13 @@ class RES {
 		@param vTiles
 		@param indecies
 	 */
-	public function createTextmap(font:Font, ?hTiles:Int, ?vTiles:Int, ?indecies:Array<Int>):Textmap {
+	public function createTextmap(?font:Font, ?hTiles:Int, ?vTiles:Int, ?indecies:Array<Int>):Textmap {
+		if (font == null)
+			if (defaultFont != null)
+				font = defaultFont;
+			else
+				throw 'No default font';
+
 		if (hTiles == null)
 			hTiles = Math.ceil(frameBuffer.frameWidth / font.tileset.tileSize);
 
@@ -254,8 +183,8 @@ class RES {
 		@param vTiles
 		@param overrideTileSize
 	 */
-	public function createTileset(?name:String, hTiles:Int, vTiles:Int, ?overrideTileSize:Int):Tileset {
-		final tileset = new Tileset(overrideTileSize != null ? overrideTileSize : tileSize, hTiles, vTiles);
+	public function createTileset(?name:String, hTiles:Int, vTiles:Int, tileSize:Int):Tileset {
+		final tileset = new Tileset(tileSize, hTiles, vTiles);
 
 		if (name != null)
 			rom.tilesets[name] = tileset;
@@ -295,6 +224,21 @@ class RES {
 	public function connect(platform:Platform) {
 		this.platform = platform;
 		platform.connect(this);
+	}
+
+	/**
+		Enable features
+	 */
+	public function enable(...features:Class<Feature>) {
+		for (featureClass in features) {
+			final className = featureClass.getClassName();
+			this.features[className] = featureClass.createInstance([]);
+			this.features[className].enable(this);
+		}
+	}
+
+	public function feature<T>(featureClass:Class<T>):T {
+		return cast features[featureClass.getClassName()];
 	}
 
 	public function poweroff() {
@@ -358,9 +302,8 @@ class RES {
 
 		var cb = _sceneResultCb.pop();
 
-		if (cb != null) {
+		if (cb != null)
 			cb(result);
-		}
 	}
 
 	/**
@@ -374,8 +317,6 @@ class RES {
 
 		if (fpsMeasureTime >= 1) {
 			lastFps = frameCount;
-			if (showFps)
-				fpsDisplay.textAt(0, 0, 'FPS: $lastFps');
 			frameCount = 0;
 			fpsMeasureTime -= 1;
 		} else
@@ -383,13 +324,8 @@ class RES {
 	}
 
 	public function render() {
-		if (scene != null) {
+		if (scene != null)
 			scene.render(frameBuffer);
-		}
-
-		if (showFps) {
-			fpsDisplay.render(frameBuffer);
-		}
 
 		if (platform != null)
 			platform.render(this);

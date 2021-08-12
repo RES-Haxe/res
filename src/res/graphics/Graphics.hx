@@ -1,11 +1,14 @@
 package res.graphics;
 
 import haxe.io.Bytes;
-import res.geom.Recti;
+import res.display.Renderable;
+import res.geom.Rect;
 import res.tools.MathTools.maxi;
 import res.tools.MathTools.mini;
+import Math.abs;
 
 using res.tools.BytesTools;
+using Std;
 
 class Graphics extends Renderable {
 	public final width:Int;
@@ -46,14 +49,38 @@ class Graphics extends Renderable {
 	}
 
 	public function drawLine(x0:Int, y0:Int, x1:Int, y1:Int, index:Int) {
-		// TODO
+		final dx:Int = abs(x1 - x0).int();
+		final sx:Int = x0 < x1 ? 1 : -1;
+		final dy:Int = -abs(y1 - y0).int();
+		final sy:Int = y0 < y1 ? 1 : -1;
+
+		var err:Int = dx + dy;
+		var x:Int = x0;
+		var y:Int = y0;
+
+		while (true) {
+			setPixel(x, y);
+
+			if (x == x1 && y == y1)
+				break;
+
+			var e2 = 2 * err;
+
+			if (e2 >= dy) {
+				err += dy;
+				x += sx;
+			} else if (e2 <= dy) {
+				err += dx;
+				y += sy;
+			}
+		}
 	}
 
 	/**
 		Draw a rectangle
 	 */
 	public function drawRect(rx:Int, ry:Int, rwidth:Int, rheight:Int, index:Int) {
-		if (Recti.intersect(0, 0, width, height, rx, ry, rwidth, rheight)) {
+		if (Rect.intersect(0, 0, width, height, rx, ry, rwidth, rheight)) {
 			final fx = maxi(0, rx);
 			final fy = maxi(0, ry);
 

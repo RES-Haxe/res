@@ -1,7 +1,7 @@
 package res.geom;
 
-class Recti {
-	public static function intersect(x1:Int, y1:Int, w1:Int, h1:Int, x2:Int, y2:Int, w2:Int, h2:Int):Bool {
+class Rect {
+	public static function intersect(x1:Float, y1:Float, w1:Float, h1:Float, x2:Float, y2:Float, w2:Float, h2:Float):Bool {
 		final cx1 = x1 + w1 / 2;
 		final cy1 = y1 + h1 / 2;
 

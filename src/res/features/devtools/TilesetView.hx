@@ -1,4 +1,4 @@
-package res.devtools;
+package res.features.devtools;
 
 import res.input.Key;
 import res.tiles.Tilemap;

@@ -6,8 +6,7 @@ import res.tiles.Tileset;
 class Textmap extends Tilemap {
 	private var _charMap:Map<Int, Int> = [];
 
-	@:allow(res)
-	private function new(tileset:Tileset, hTiles:Int, vTiles:Int, characters:String, ?firstTileIndex:Int = 0, ?paletteIndecies:Array<Int>) {
+	public function new(tileset:Tileset, hTiles:Int, vTiles:Int, characters:String, ?firstTileIndex:Int = 0, ?paletteIndecies:Array<Int>) {
 		super(tileset, hTiles, vTiles, paletteIndecies);
 
 		for (ci in 0...characters.length)

@@ -21,7 +21,7 @@ class Tile {
 		indecies.set(size * y + x, index);
 	}
 
-	public function yank(from:Bytes, srcWidth:Int, srcHeight:Int, srcX:Int, srcY:Int) {
+	public function yank(from:Bytes, srcWidth:Int, srcX:Int, srcY:Int) {
 		for (scanline in 0...size) {
 			final pos:Int = scanline * size;
 			final srcPos:Int = (srcY * srcWidth) + (scanline * srcWidth) + srcX;

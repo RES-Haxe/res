@@ -1,6 +1,6 @@
-package res.devtools.tilemaps;
+package res.features.devtools.tilemaps;
 
-import res.devtools.tilesets.TilesetMenu;
+import res.features.devtools.tilesets.TilesetMenu;
 import res.tiles.Tilemap;
 import res.tiles.Tileset;
 import res.ui.Menu;

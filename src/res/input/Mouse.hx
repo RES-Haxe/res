@@ -16,12 +16,12 @@ class Mouse extends Emitter<MouseEvent> {
 		this.res = res;
 	}
 
-	public function push(button:MouseButton) {
-		emit(DOWN(button));
+	public function push(button:MouseButton, posX:Int, posY:Int) {
+		emit(DOWN(button, posX, posY));
 	}
 
-	public function release(button:MouseButton) {
-		emit(UP(button));
+	public function release(button:MouseButton, posX:Int, posY:Int) {
+		emit(UP(button, posX, posY));
 	}
 
 	public inline function moveTo(x:Int, y:Int) {

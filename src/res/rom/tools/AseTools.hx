@@ -1,10 +1,10 @@
 package res.rom.tools;
 
-import ase.Ase;
 import haxe.io.Bytes;
 
 class AseTools {
-	public static function merge(ase:Ase, ?frame:Int = 0):Bytes {
+	#if macro
+	public static function merge(ase:ase.Ase, ?frame:Int = 0):Bytes {
 		final merged = Bytes.alloc(ase.width * ase.height);
 
 		for (index in 0...ase.layers.length) {
@@ -26,4 +26,5 @@ class AseTools {
 
 		return merged;
 	}
+	#end
 }

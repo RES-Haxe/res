@@ -1,4 +1,4 @@
-package res.devtools.tilemaps;
+package res.features.devtools.tilemaps;
 
 import res.text.Textmap;
 import res.tiles.Tilemap;

@@ -1,6 +1,7 @@
 package res.ui;
 
 import res.input.Key;
+import res.input.KeyboardEvent;
 import res.text.Textmap;
 
 class ValueInputScene extends Scene {
@@ -13,10 +14,6 @@ class ValueInputScene extends Scene {
 
 		enteredValue = initial;
 
-		text = res.createDefaultTextmap([res.palette.brightestIndex]);
-		text.textCentered(Std.int(text.vTiles / 2 - 1), valueName);
-		renderList.push(text);
-
 		updateValue();
 	}
 
@@ -24,18 +21,20 @@ class ValueInputScene extends Scene {
 		text.textCentered(Std.int(text.vTiles / 2 + 1), enteredValue);
 	}
 
-	override function keyDown(keyCode:Int) {
-		switch (keyCode) {
-			case Key.BACKSPACE:
-				enteredValue = enteredValue.substr(0, -1);
+	override function keyboardEvent(event:KeyboardEvent) {
+		switch (event) {
+			case KEY_DOWN(keyCode):
+				switch (keyCode) {
+					case Key.BACKSPACE:
+						enteredValue = enteredValue.substr(0, -1);
+						updateValue();
+					case Key.ENTER:
+						res.popScene(enteredValue);
+				}
+			case KEY_PRESS(charCode):
+				enteredValue += String.fromCharCode(charCode);
 				updateValue();
-			case Key.ENTER:
-				res.popScene(enteredValue);
+			case _:
 		}
-	}
-
-	override function keyPress(charCode:Int) {
-		enteredValue += String.fromCharCode(charCode);
-		updateValue();
 	}
 }

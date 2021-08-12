@@ -1,7 +1,6 @@
 package res.input;
 
 import res.events.Emitter;
-import res.geom.Point2i;
 import res.input.ControllerEvent;
 
 class Controller extends Emitter<ControllerEvent> {
@@ -12,15 +11,15 @@ class Controller extends Emitter<ControllerEvent> {
 			button => false
 	];
 
-	var _direction:Point2i = new Point2i(0, 0);
+	var _direction:{x:Int, y:Int} = {x: 0, y: 0};
 
-	public var direction(get, never):Point2i;
+	public var direction(get, never):{x:Int, y:Int};
 
 	inline function get_direction() {
-		_direction.set((pressed[ControllerButton.LEFT] ? -1 : 0) + (pressed[ControllerButton.RIGTH] ? 1 : 0),
-			(pressed[ControllerButton.UP] ? -1 : 0) + (pressed[ControllerButton.DOWN] ? 1 : 0));
-
-		return _direction;
+		return {
+			x: (pressed[ControllerButton.LEFT] ? -1 : 0) + (pressed[ControllerButton.RIGTH] ? 1 : 0),
+			y: (pressed[ControllerButton.UP] ? -1 : 0) + (pressed[ControllerButton.DOWN] ? 1 : 0)
+		};
 	}
 
 	@:allow(res)

@@ -69,7 +69,7 @@ abstract Color(Int) from Int to Int from UInt to UInt {
 
 		From: https://www.w3.org/WAI/GL/wiki/Relative_luminance
 	 */
-	inline function get_luminance():Float {
+	function get_luminance():Float {
 		final lr:Float = rf <= 0.3928 ? rf / 12.92 : Math.pow((rf + 0.055) / 1.055, 2.4);
 		final lg:Float = gf <= 0.3928 ? gf / 12.92 : Math.pow((gf + 0.055) / 1.055, 2.4);
 		final lb:Float = bf <= 0.3928 ? bf / 12.92 : Math.pow((bf + 0.055) / 1.055, 2.4);
