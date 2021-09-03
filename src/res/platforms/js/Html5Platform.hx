@@ -1,11 +1,9 @@
 package res.platforms.js;
 
-import js.Browser.console;
 import js.Browser.document;
 import js.Browser.window;
 import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
-import js.html.GamepadEvent;
 import js.html.KeyboardEvent;
 import js.html.PointerEvent;
 import res.platforms.Platform;
@@ -88,19 +86,9 @@ class Html5Platform implements Platform {
 			event.preventDefault();
 		});
 
-		window.addEventListener('keypress', (event:KeyboardEvent) -> {
-			trace('key press??');
-			res.keyboard.keyPress(event.charCode);
-			event.preventDefault();
-		});
-
 		window.addEventListener('keyup', (event:KeyboardEvent) -> {
 			res.keyboard.keyUp(event.keyCode);
 			event.preventDefault();
-		});
-
-		window.addEventListener('gamepadconnected', (event:GamepadEvent) -> {
-			console.log(event.gamepad);
 		});
 
 		document.addEventListener('visibilitychange', (event) -> {

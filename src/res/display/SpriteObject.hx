@@ -22,7 +22,7 @@ class SpriteObject extends Object {
 
 	public final sprite:Sprite;
 
-	public var wrap:Bool = true;
+	public var wrap:Bool = false;
 
 	public var currentFrame(get, never):SpriteFrame;
 
@@ -33,11 +33,9 @@ class SpriteObject extends Object {
 
 	public var currentFrameIndex:Int = 0;
 
-	public function new(sprite:Sprite, ?x:Float = 0, ?y:Float, ?colorMap:Array<Int>) {
+	public function new(sprite:Sprite, ?colorMap:Array<Int>) {
 		this.sprite = sprite;
 		this.colorMap = colorMap;
-		this.x = x;
-		this.y = y;
 
 		width = sprite.width;
 		height = sprite.height;

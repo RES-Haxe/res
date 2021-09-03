@@ -1,5 +1,8 @@
 package res;
 
+import haxe.Rest;
+import haxe.Timer;
+import res.FrameBuffer;
 import res.features.Feature;
 import res.graphics.Graphics;
 import res.input.Controller;
@@ -15,6 +18,13 @@ import res.tiles.Tileset;
 using Math;
 using Type;
 
+typedef RenderHookFunction = RES->FrameBuffer->Void;
+
+typedef RenderHooks = {
+	before:Array<RenderHookFunction>,
+	after:Array<RenderHookFunction>
+};
+
 @:build(res.Macros.ver())
 class RES {
 	public final controllers:Map<Int, Controller> = [for (playerNum in 1...5) playerNum => new Controller(playerNum)];
@@ -25,18 +35,19 @@ class RES {
 	public final resolution:Resolution;
 	public final fonts:Map<String, Font> = [];
 	public final mainScene:Class<Scene>;
+	public final renderHooks:RenderHooks = {
+		before: [],
+		after: []
+	};
+	public var lastFrameTime:Float = 0;
 
 	public final rom:Rom;
 
 	public var defaultFont:Font;
 
-	public var showFps:Bool = false;
-
 	private var features:Map<String, Feature> = [];
-	private var fpsMeasureTime:Float = 0;
-	private var frameCount:Int = 0;
-	private var lastFps:Int = 0;
 	private var platform:Platform;
+	private var prevFrameTime:Null<Float> = null;
 
 	private final _scenes:Map<String, Scene> = [];
 
@@ -67,7 +78,8 @@ class RES {
 		@param palette Global palette
 		@param pixelFormat
 	 */
-	public function new(?platform:Platform, resolution:Resolution, palette:Array<Int>, mainScene:Class<Scene>, ?pixelFormat:PixelFormat = RGBA, ?rom:Rom) {
+	public function new(?platform:Platform, resolution:Resolution, palette:Array<Int>, ?mainScene:Class<Scene>, ?pixelFormat:PixelFormat = RGBA, ?rom:Rom,
+			?features:Array<Class<Feature>>) {
 		if (palette.length < 2)
 			throw 'Too few colors. I mean.. how you\'r gonna display anything if you have only one color?!';
 
@@ -114,10 +126,14 @@ class RES {
 		if (platform != null)
 			connect(platform);
 
+		if (features != null)
+			this.enable(...features);
+
 		#if !skipSplash
 		setScene(res.extra.Splash);
 		#else
-		setScene(mainScene);
+		if (mainScene != null)
+			setScene(mainScene);
 		#end
 	}
 
@@ -238,8 +254,17 @@ class RES {
 		}
 	}
 
-	public function feature<T>(featureClass:Class<T>):T {
+	public function feature<T>(featureClass:Class<T>):T
 		return cast features[featureClass.getClassName()];
+
+	public function hasFeature(?featureClass:Class<Feature>, ?featureClassName:String):Bool {
+		if (featureClass != null)
+			featureClassName = featureClass.getClassName();
+
+		if (featureClassName != null)
+			return features.exists(featureClassName);
+
+		return false;
 	}
 
 	public function poweroff() {
@@ -315,23 +340,28 @@ class RES {
 	public function update(dt:Float) {
 		if (scene != null)
 			scene.update(dt);
-
-		if (fpsMeasureTime >= 1) {
-			lastFps = frameCount;
-			frameCount = 0;
-			fpsMeasureTime -= 1;
-		} else
-			fpsMeasureTime += dt;
 	}
 
 	public function render() {
+		for (func in renderHooks.before)
+			func(this, frameBuffer);
+
 		if (scene != null)
 			scene.render(frameBuffer);
+
+		for (func in renderHooks.after)
+			func(this, frameBuffer);
 
 		if (platform != null)
 			platform.render(this);
 
-		frameCount++;
+		final currentStamp = Timer.stamp();
+
+		if (prevFrameTime != null) {
+			lastFrameTime = currentStamp - prevFrameTime;
+		}
+
+		prevFrameTime = currentStamp;
 	}
 }
 

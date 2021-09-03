@@ -53,13 +53,6 @@ class ConsoleScene extends Scene {
 	}
 
 	public function initDefaultCommands() {
-		addCommand('fps', 'Show/hide fps', (args) -> {
-			if (args.length >= 1) {
-				res.showFps = (args[0].toLowerCase() == 'true' || args[0] == '1');
-			}
-			println('Show fps: ${res.showFps}');
-		});
-
 		#if sys
 		addCommand('quit', 'Quit program', (_) -> {
 			Sys.exit(0);
@@ -166,23 +159,29 @@ class ConsoleScene extends Scene {
 
 class Console implements Feature {
 	var shown:Bool = false;
-	var consoleScene:ConsoleScene;
+	var res:RES;
+
+	public var console:ConsoleScene;
+
+	public function toggle() {
+		if (shown)
+			res.popScene();
+		else
+			res.setScene(console);
+
+		shown = !shown;
+	}
 
 	public function enable(res:RES) {
-		consoleScene = new ConsoleScene(res);
-		consoleScene.initDefaultCommands();
+		this.res = res;
+
+		console = new ConsoleScene(res);
+		console.initDefaultCommands();
 
 		res.keyboard.listen((ev) -> {
 			switch (ev) {
 				case KEY_DOWN(keyCode):
-					if (keyCode == 192) {
-						if (shown)
-							res.popScene();
-						else
-							res.setScene(consoleScene);
-
-						shown = !shown;
-					}
+					if (keyCode == 192) toggle();
 				case _:
 			}
 		});

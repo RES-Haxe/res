@@ -3,11 +3,14 @@ package res.display;
 using Math;
 
 class Object extends Renderable implements Updateable {
-	public var x:Float;
-	public var y:Float;
+	public var x:Float = 0;
+	public var y:Float = 0;
 
-	public var width:Float;
-	public var height:Float;
+	public var width:Float = 0;
+	public var height:Float = 0;
+
+	public var scrollX:Float = 0;
+	public var scrollY:Float = 0;
 
 	public var colorMap:Array<Int> = null;
 

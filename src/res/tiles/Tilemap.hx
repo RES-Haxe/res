@@ -9,12 +9,12 @@ typedef ScanlineFuncCallback = ?Float->?Float->Void;
 typedef ScanlineFunc = Int->ScanlineFuncCallback->Void;
 
 class Tilemap extends Renderable {
-	var map:Array<Array<TilePlace>>;
+	var map:Array<Array<TilePlace>> = [[]];
 
 	public final tileset:Tileset;
 
-	public final hTiles:Int;
-	public final vTiles:Int;
+	public var hTiles:Int;
+	public var vTiles:Int;
 
 	public var scanlineFunc:ScanlineFunc;
 
@@ -37,22 +37,23 @@ class Tilemap extends Renderable {
 
 	public function new(tileset:Tileset, hTiles:Int, vTiles:Int, ?colorMap:Array<Int>) {
 		this.tileset = tileset;
-		this.hTiles = hTiles;
-		this.vTiles = vTiles;
 		this.colorMap = colorMap;
-		this.map = [for (_ in 0...vTiles) [for (_ in 0...hTiles)
-			({
-				index:0, rot90cw:false, flipY:false, flipX:false
-			})]];
+
+		resize(hTiles, vTiles);
 	}
 
 	public function clear() {
 		for (line in 0...vTiles) {
+			if (map[line] == null)
+				map[line] = [for (_ in 0...hTiles) null];
+
 			for (col in 0...hTiles) {
-				map[line][col].index = 0;
-				map[line][col].flipX = false;
-				map[line][col].flipY = false;
-				map[line][col].rot90cw = false;
+				map[line][col] = {
+					index: 0,
+					flipX: false,
+					flipY: false,
+					rot90cw: false
+				}
 			}
 		}
 	}
@@ -77,7 +78,7 @@ class Tilemap extends Renderable {
 	}
 
 	inline function inBounds(tileCol:Int, tileLine:Int):Bool {
-		return (tileLine >= 0 && tileLine < map.length && tileCol >= 0 && tileCol < map[tileLine].length);
+		return (tileLine >= 0 && tileLine < vTiles && tileCol >= 0 && tileCol < hTiles);
 	}
 
 	public function get(tileCol:Int, tileLine:Int):Null<TilePlace> {
@@ -89,12 +90,35 @@ class Tilemap extends Renderable {
 
 	public function set(tileCol:Int, tileLine:Int, tileIndex:Int, flipX:Bool = false, flipY:Bool = false, rot90cw:Bool = false) {
 		if (inBounds(tileCol, tileLine)) {
+			if (map[tileLine][tileCol] == null)
+				map[tileLine][tileCol] = {
+					index: 0,
+					flipX: false,
+					flipY: false,
+					rot90cw: false
+				};
+
 			map[tileLine][tileCol].index = tileIndex;
 			map[tileLine][tileCol].flipX = flipX;
 			map[tileLine][tileCol].flipY = flipY;
 			map[tileLine][tileCol].rot90cw = rot90cw;
 		} else
 			throw 'Out of tile map bounds (col: $tileCol, line: $tileLine, size: $hTiles x $vTiles)';
+	}
+
+	public function resize(newWidth:Int, ?newHeight:Int) {
+		hTiles = newWidth;
+		vTiles = newHeight == null ? vTiles : newHeight;
+
+		map.resize(vTiles);
+
+		for (i in 0...map.length) {
+			if (map[i] == null)
+				map[i] = [for (_ in 0...hTiles)
+					({
+						index:0, flipX:false, flipY:false, rot90cw:false
+					})];
+		}
 	}
 
 	/**
@@ -143,13 +167,14 @@ class Tilemap extends Renderable {
 			final screenScanline = y + line;
 
 			if (screenScanline >= 0 && screenScanline < frameBuffer.frameHeight) {
-				if (scanlineFunc != null)
+				if (scanlineFunc != null) {
 					scanlineFunc(line, (?sx:Float, ?sy:Float) -> {
 						if (sx != null)
 							scrollX = sx;
 						if (sy != null)
 							scrollY = sy;
 					});
+				}
 
 				final tileScanline:Int = (line + wrap(scrollY, tilemap.pixelHeight)).floor();
 				var tileLineIndex:Int = (tileScanline / tilemap.tileset.tileSize).floor();
@@ -194,5 +219,5 @@ class Tilemap extends Renderable {
 		@param frameBuffer Frame buffer to render at
 	 */
 	override public function render(frameBuffer:FrameBuffer)
-		drawTilemap(this, frameBuffer, 0, 0, frameBuffer.frameWidth, frameBuffer.frameHeight, scrollX, scrollY, true);
+		drawTilemap(this, frameBuffer, 0, 0, frameBuffer.frameWidth, frameBuffer.frameHeight, scrollX, scrollY, true, scanlineFunc);
 }

@@ -28,8 +28,12 @@ class Sprite {
 		frames.push(new SpriteFrame(data, duration));
 	}
 
-	public function createObject(?x:Float = 0, ?y:Float = 0, ?colorMap:Array<Int>):SpriteObject
-		return new SpriteObject(this, x, y, colorMap);
+	public function createObject(?x:Float = 0, ?y:Float = 0, ?colorMap:Array<Int>):SpriteObject {
+		var obj = new SpriteObject(this, colorMap);
+		obj.x = x;
+		obj.y = y;
+		return obj;
+	}
 
 	public static function drawSprite(sprite:Sprite, frameBuffer:FrameBuffer, ?x:Int = 0, ?y:Int = 0, ?width:Int, ?height:Int, ?frameIndex:Int = 0,
 			?wrapping:Bool = true, ?colorMap:Array<Int>) {
