@@ -1,0 +1,3 @@
+common.hxml
+-lib linc_sdl
+--cpp bin/cpp

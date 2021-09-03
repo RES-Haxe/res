@@ -75,7 +75,7 @@ class RES {
 
 	/**
 		@param resolution Tiles size and the number of them horizontally and vertically
-		@param palette Global palette
+		@param palette Global palette, array of RGB colors
 		@param pixelFormat
 	 */
 	public function new(?platform:Platform, resolution:Resolution, palette:Array<Int>, ?mainScene:Class<Scene>, ?pixelFormat:PixelFormat = RGBA, ?rom:Rom,

@@ -43,7 +43,7 @@ class ConsoleScene extends Scene {
 		addCommand('clear', 'Clear console', clear);
 		addCommand('help', 'Show help for commands', help);
 
-		consoleText = res.createTextmap();
+		consoleText = res.createTextmap([res.palette.brightestIndex]);
 
 		consoleText.scrollY = consoleText.pixelHeight - res.frameBuffer.frameHeight;
 
@@ -181,7 +181,7 @@ class Console implements Feature {
 		res.keyboard.listen((ev) -> {
 			switch (ev) {
 				case KEY_DOWN(keyCode):
-					if (keyCode == 192) toggle();
+					if (String.fromCharCode(keyCode) == '`') toggle();
 				case _:
 			}
 		});
