@@ -4,6 +4,7 @@ import haxe.Int32;
 import haxe.io.Bytes;
 import haxe.io.BytesInput;
 import haxe.zip.InflateImpl;
+import res.audio.AudioSample;
 import res.display.Sprite;
 import res.text.Font;
 import res.tiles.Tilemap;
@@ -18,14 +19,16 @@ import sys.io.File;
 class Rom {
 	static inline var MAGIC_NUMBER:Int32 = 0x52524f4d;
 
-	public final tilesets:Map<String, Tileset>;
-	public final tilemaps:Map<String, Tilemap>;
-	public final sprites:Map<String, Sprite>;
-	public final fonts:Map<String, Font>;
+	public final audio:Map<String, AudioSample>;
 	public final data:Map<String, Bytes>;
+	public final fonts:Map<String, Font>;
+	public final sprites:Map<String, Sprite>;
+	public final tilemaps:Map<String, Tilemap>;
+	public final tilesets:Map<String, Tileset>;
 
-	private function new(tilesets:Map<String, Tileset>, tilemaps:Map<String, Tilemap>, sprites:Map<String, Sprite>, fonts:Map<String, Font>,
-			data:Map<String, Bytes>) {
+	private function new(audio:Map<String, AudioSample>, tilesets:Map<String, Tileset>, tilemaps:Map<String, Tilemap>, sprites:Map<String, Sprite>,
+			fonts:Map<String, Font>, data:Map<String, Bytes>) {
+		this.audio = audio;
 		this.tilesets = tilesets;
 		this.tilemaps = tilemaps;
 		this.sprites = sprites;
@@ -159,13 +162,14 @@ class Rom {
 		if (!FileSystem.exists(src))
 			throw 'Error: $src doesn\'t exists';
 
-		final resTypes:Array<String> = ['tilesets', 'tilemaps', 'sprites', 'fonts', 'data'];
+		final resTypes:Array<String> = ['audio', 'tilesets', 'tilemaps', 'sprites', 'fonts', 'data'];
 		final supportedTypes:Map<String, Array<String>> = [
 			'tilesets' => ['aseprite'],
 			'tilemaps' => ['aseprite'],
 			'sprites' => ['aseprite'],
 			'fonts' => ['txt'],
-			'data' => []
+			'data' => [],
+			'audio' => ['wav']
 		];
 
 		final byteOutput = new BytesOutput();
@@ -186,6 +190,11 @@ class Rom {
 							var fileBytes = File.getBytes(Path.join([path, file]));
 
 							switch (resourceType) {
+								case 'audio':
+									switch (fileExt) {
+										case 'wav':
+											AudioSampleChunk.fromWav(fileBytes, name).write(byteOutput);
+									}
 								case 'sprites':
 									switch (fileExt) {
 										case 'aseprite':
@@ -227,17 +236,20 @@ class Rom {
 	#end
 
 	public static function empty():Rom {
-		return new Rom([], [], [], [], []);
+		return new Rom([], [], [], [], [], []);
 	}
 
 	public static function fromBytes(bytes:Bytes, ?compressed:Bool):Rom {
-		var sprites:Map<String, Sprite> = [];
-		var tilesets:Map<String, Tileset> = [];
-		var tilemaps:Map<String, Tilemap> = [];
-		var fonts:Map<String, Font> = [];
-		var data:Map<String, Bytes> = [];
+		trace('ROM size: ${bytes.length} bytes');
 
-		var bytesInput = new BytesInput(compressed ? InflateImpl.run(new BytesInput(bytes)) : bytes);
+		final audio:Map<String, AudioSample> = [];
+		final sprites:Map<String, Sprite> = [];
+		final tilesets:Map<String, Tileset> = [];
+		final tilemaps:Map<String, Tilemap> = [];
+		final fonts:Map<String, Font> = [];
+		final data:Map<String, Bytes> = [];
+
+		final bytesInput = new BytesInput(compressed ? InflateImpl.run(new BytesInput(bytes)) : bytes);
 
 		if (bytesInput.readInt32() != MAGIC_NUMBER)
 			throw 'Invalid magic number';
@@ -246,6 +258,8 @@ class Rom {
 			final chunk = RomChunk.read(bytesInput);
 
 			switch (chunk.chunkType) {
+				case AUDIO_SAMPLE:
+					audio[chunk.name] = cast(chunk, AudioSampleChunk).getAudioSample();
 				case SPRITE:
 					sprites[chunk.name] = cast(chunk, SpriteChunk).getSprite();
 				case TILESET:
@@ -259,7 +273,7 @@ class Rom {
 			}
 		}
 
-		return new Rom(tilesets, tilemaps, sprites, fonts, data);
+		return new Rom(audio, tilesets, tilemaps, sprites, fonts, data);
 	}
 
 	public static macro function embed(src:String, ?compressed:Bool = true) {

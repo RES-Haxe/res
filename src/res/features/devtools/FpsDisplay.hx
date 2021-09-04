@@ -12,19 +12,19 @@ class FpsDisplay implements Feature {
 	public function enable(res:RES) {
 		this.res = res;
 
-		final text = res.createTextmap();
+		final text = res.createTextmap([res.palette.brightestIndex]);
 
 		res.renderHooks.after.push((res, frameBuffer) -> {
 			if (showFPS && res.lastFrameTime != 0) {
 				text.textAt(0, 0, 'FPS: ${1 / res.lastFrameTime}');
-				Tilemap.drawTilemap(text, frameBuffer);
+				Tilemap.drawTilemap(text, frameBuffer, 1, 1);
 			}
 		});
 
 		#if !hl
 		if (res.hasFeature(Console)) {
 			final console = res.feature(Console).console;
-			console.addCommand('fps', (args) -> {
+			console.addCommand('fps', 'Toggle FPS display', (args) -> {
 				if (args.length > 0)
 					showFPS = ['true', '1'].indexOf(args[0].toLowerCase()) != -1;
 				else

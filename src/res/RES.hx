@@ -363,6 +363,10 @@ class RES {
 
 		prevFrameTime = currentStamp;
 	}
+
+	public function playAudio(id:String) {
+		platform.playAudio(id);
+	}
 }
 
 function main() {}

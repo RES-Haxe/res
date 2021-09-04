@@ -42,6 +42,7 @@ class ConsoleScene extends Scene {
 
 		addCommand('clear', 'Clear console', clear);
 		addCommand('help', 'Show help for commands', help);
+		addCommand('lsrom', 'List ROM', lsrom);
 
 		consoleText = res.createTextmap([res.palette.brightestIndex]);
 
@@ -101,6 +102,17 @@ class ConsoleScene extends Scene {
 		}
 		println('----');
 		println('Press ESC to close console');
+	}
+
+	function lsrom(params:Array<String>) {
+		for (field in Reflect.fields(res.rom)) {
+			final map:Map<String, Any> = cast Reflect.getProperty(res.rom, field);
+
+			println('$field (${Lambda.count(map)})');
+			for (itemName => item in map) {
+				println(' $itemName');
+			}
+		}
 	}
 
 	public function addCommand(cmd:String, ?help:String, cb:ConsoleCommandFunc) {
@@ -180,8 +192,8 @@ class Console implements Feature {
 
 		res.keyboard.listen((ev) -> {
 			switch (ev) {
-				case KEY_DOWN(keyCode):
-					if (String.fromCharCode(keyCode) == '`') toggle();
+				case KEY_PRESS(charCode):
+					if (String.fromCharCode(charCode) == '`') toggle();
 				case _:
 			}
 		});

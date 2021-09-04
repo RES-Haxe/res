@@ -1,8 +1,8 @@
 package res.rom;
 
+import haxe.io.Bytes;
 import haxe.io.Input;
 import haxe.io.Output;
-import haxe.io.Bytes;
 import res.rom.RomChunkType;
 
 class RomChunk {
@@ -25,6 +25,8 @@ class RomChunk {
 		input.readBytes(data, 0, dataLen);
 
 		switch (chunkType) {
+			case AUDIO_SAMPLE:
+				return new AudioSampleChunk(name, data);
 			case SPRITE:
 				return new SpriteChunk(name, data);
 			case TILESET:

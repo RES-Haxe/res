@@ -6,4 +6,6 @@ interface Platform {
 	function connect(res:RES):Void;
 
 	function render(res:RES):Void;
+
+	function playAudio(id:String):Void;
 }

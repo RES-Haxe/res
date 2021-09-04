@@ -67,6 +67,10 @@ class Scene extends Renderable implements Updateable {
 			updateList.remove(updatable);
 	}
 
+	public function playAudio(id:String) {
+		res.playAudio(id);
+	}
+
 	public dynamic function controllerEvent(event:ControllerEvent) {}
 
 	public dynamic function keyboardEvent(event:KeyboardEvent) {}

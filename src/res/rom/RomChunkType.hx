@@ -6,4 +6,5 @@ package res.rom;
 	var SPRITE = 0x03;
 	var FONT = 0x04;
 	var DATA = 0x05;
+	var AUDIO_SAMPLE = 0x06;
 }

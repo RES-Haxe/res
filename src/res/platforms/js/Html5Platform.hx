@@ -21,6 +21,8 @@ class Html5Platform implements Platform {
 
 	var lastTime:Float = 0;
 
+	final audioSystem:AudioSystem = new AudioSystem();
+
 	public function new(?canvas:CanvasElement, ?scale:Int = 4) {
 		if (canvas == null) {
 			canvas = document.createCanvasElement();
@@ -95,10 +97,18 @@ class Html5Platform implements Platform {
 			lastTime = window.performance.now();
 		});
 
+		for (id => sample in res.rom.audio) {
+			audioSystem.createBuffer(id, sample);
+		}
+
 		window.requestAnimationFrame(animationFrame);
 	}
 
 	public function render(res:RES) {
 		ctx.putImageData(res.frameBuffer.getImageData(), 0, 0);
+	}
+
+	public function playAudio(id:String) {
+		audioSystem.playBuffer(id);
 	}
 }
