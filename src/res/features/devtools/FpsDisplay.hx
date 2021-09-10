@@ -12,7 +12,7 @@ class FpsDisplay implements Feature {
 	public function enable(res:RES) {
 		this.res = res;
 
-		final text = res.createTextmap([res.palette.brightestIndex]);
+		final text = res.createTextmap([res.rom.palette.brightestIndex]);
 
 		res.renderHooks.after.push((res, frameBuffer) -> {
 			if (showFPS && res.lastFrameTime != 0) {

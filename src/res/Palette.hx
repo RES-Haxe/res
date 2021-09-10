@@ -5,6 +5,9 @@ import res.tools.MathTools.clampi;
 class Palette {
 	var _colors:Array<Color>;
 
+	/**
+		Array of colors
+	 */
 	public var colors(get, never):Array<Color>;
 
 	function get_colors():Array<Color> {
@@ -13,26 +16,43 @@ class Palette {
 
 	var _byLuminance:Array<Int>;
 
+	/**
+		Color **indecies** sorted by their luminance
+	 */
 	public var byLuminance(get, never):Array<Int>;
 
 	inline function get_byLuminance() {
 		return _byLuminance;
 	}
 
+	/**
+		Index of the brightest color in the palette
+	 */
 	public var brightestIndex(get, never):Int;
 
 	inline function get_brightestIndex():Int
 		return _byLuminance[_byLuminance.length - 1];
 
+	/**
+		Index of the darkest color in the palette
+	 */
 	public var darkestIndex(get, never):Int;
 
 	inline function get_darkestIndex():Int
 		return _byLuminance[0];
 
+	/**
+		Creates a new array containing all the color indecies.
+
+		Suitable for creating index maps
+	 */
 	public function getIndecies():Array<Int> {
 		return [for (n in 0..._colors.length) n + 1];
 	};
 
+	/**
+		Get random color index
+	 */
 	public inline function rnd():Int {
 		return 1 + Math.floor(Math.random() * _colors.length);
 	}

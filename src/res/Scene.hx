@@ -20,7 +20,7 @@ class Scene extends Renderable implements Updateable {
 	public function new(res:RES) {
 		this.res = res;
 
-		clearColorIndex = res.palette.darkestIndex;
+		clearColorIndex = res.rom.palette.darkestIndex;
 	}
 
 	/**

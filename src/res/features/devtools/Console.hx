@@ -44,7 +44,7 @@ class ConsoleScene extends Scene {
 		addCommand('help', 'Show help for commands', help);
 		addCommand('lsrom', 'List ROM', lsrom);
 
-		consoleText = res.createTextmap([res.palette.brightestIndex]);
+		consoleText = res.createTextmap([res.rom.palette.brightestIndex]);
 
 		consoleText.scrollY = consoleText.pixelHeight - res.frameBuffer.frameHeight;
 
@@ -63,7 +63,7 @@ class ConsoleScene extends Scene {
 		addCommand('about', 'About this game', (_) -> {
 			println('Ver.  : ${RES.VERSION}');
 			println('Resol.: ${res.frameBuffer.frameWidth}x${res.frameBuffer.frameHeight}');
-			println('Pal.  : ${res.palette.colors.length} col.');
+			println('Pal.  : ${res.rom.palette.colors.length} col.');
 		});
 	}
 
@@ -100,8 +100,6 @@ class ConsoleScene extends Scene {
 				println(' ');
 			}
 		}
-		println('----');
-		println('Press ESC to close console');
 	}
 
 	function lsrom(params:Array<String>) {

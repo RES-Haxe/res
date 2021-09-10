@@ -14,6 +14,7 @@ import res.text.Font;
 import res.text.Textmap;
 import res.tiles.Tilemap;
 import res.tiles.Tileset;
+import res.types.RESConfig;
 
 using Math;
 using Type;
@@ -31,7 +32,6 @@ class RES {
 	public final frameBuffer:FrameBuffer;
 	public final keyboard:Keyboard;
 	public final mouse:Mouse;
-	public final palette:Palette;
 	public final resolution:Resolution;
 	public final fonts:Map<String, Font> = [];
 	public final mainScene:Class<Scene>;
@@ -74,22 +74,9 @@ class RES {
 		return _scene;
 
 	/**
-		@param resolution Tiles size and the number of them horizontally and vertically
-		@param palette Global palette, array of RGB colors
-		@param pixelFormat
 	 */
-	public function new(?platform:Platform, resolution:Resolution, palette:Array<Int>, ?mainScene:Class<Scene>, ?pixelFormat:PixelFormat = RGBA, ?rom:Rom,
-			?features:Array<Class<Feature>>) {
-		if (palette.length < 2)
-			throw 'Too few colors. I mean.. how you\'r gonna display anything if you have only one color?!';
-
-		if (palette.length > 256)
-			throw 'Too many colors (>=256)';
-
+	private function new(platform:Platform, resolution:Resolution, mainScene:Class<Scene>, rom:Rom, ?features:Array<Class<Feature>>) {
 		this.resolution = resolution;
-
-		this.palette = new Palette(palette);
-
 		this.mainScene = mainScene;
 
 		for (controller in controllers)
@@ -107,11 +94,6 @@ class RES {
 				scene.mouseEvent(event);
 		});
 
-		var usePixelFormat:PixelFormat = pixelFormat;
-
-		if (platform != null)
-			usePixelFormat = platform.pixelFormat;
-
 		var frameSize:{w:Int, h:Int} = switch (resolution) {
 			case TILES(tileSize, hTiles, vTiles):
 				{w: hTiles * tileSize, h: vTiles * tileSize};
@@ -119,12 +101,11 @@ class RES {
 				{w: width, h: height}
 		};
 
-		frameBuffer = new FrameBuffer(this.palette, frameSize.w, frameSize.h, usePixelFormat);
+		frameBuffer = new FrameBuffer(rom.palette, frameSize.w, frameSize.h, platform.pixelFormat);
 
-		this.rom = rom != null ? rom : Rom.empty();
+		this.rom = rom;
 
-		if (platform != null)
-			connect(platform);
+		connect(platform);
 
 		if (features != null)
 			this.enable(...features);
@@ -162,7 +143,8 @@ class RES {
 		@param colorMap
 	 */
 	public function createGraphics(?width:Int, ?height:Int, ?colorMap:Array<Int>):Graphics {
-		return new Graphics(width == null ? this.width : width, height == null ? this.height : height, colorMap == null ? palette.getIndecies() : colorMap);
+		return new Graphics(width == null ? this.width : width, height == null ? this.height : height,
+			colorMap == null ? rom.palette.getIndecies() : colorMap);
 	}
 
 	/**
@@ -187,7 +169,7 @@ class RES {
 			vTiles = Math.ceil(frameBuffer.frameHeight / font.tileset.tileSize);
 
 		if (indecies == null)
-			indecies = palette.getIndecies();
+			indecies = rom.palette.getIndecies();
 
 		return new Textmap(font.tileset, hTiles, vTiles, font.characters, font.firstTileIndex, indecies);
 	}
@@ -352,20 +334,22 @@ class RES {
 		for (func in renderHooks.after)
 			func(this, frameBuffer);
 
-		if (platform != null)
-			platform.render(this);
+		platform.render(this);
 
 		final currentStamp = Timer.stamp();
 
-		if (prevFrameTime != null) {
+		if (prevFrameTime != null)
 			lastFrameTime = currentStamp - prevFrameTime;
-		}
 
 		prevFrameTime = currentStamp;
 	}
 
 	public function playAudio(id:String) {
 		platform.playAudio(id);
+	}
+
+	public static function boot(config:RESConfig):RES {
+		return new RES(config.platform, config.resolution, config.mainScene, config.rom, config.features);
 	}
 }
 
