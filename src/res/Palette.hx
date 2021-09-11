@@ -73,6 +73,32 @@ class Palette {
 		return _colors[clampi(index - 1, 0, _colors.length - 1)];
 	}
 
+	/**
+		Create a color ramp of colors ascending by their luminance
+
+		@param numColor Number of colors in the ramp
+		@param shift 
+
+		@returns Array of color indecies. First index is the darkest in the ramp
+	 */
+	public function rampAsc(numColors:Int, shift:Int = 0):Array<Int> {
+		return _byLuminance.slice(shift, shift + numColors);
+	}
+
+	/**
+		Create a color ramp of colors descending by their luminance
+
+		@param numColor Number of colors in the ramp
+		@param shift 
+
+		@returns Array of color indecies. First index is the brightest in the ramp
+	 */
+	public function rampDesc(numColors:Int, shift:Int = 0):Array<Int> {
+		final rev = _byLuminance.copy();
+		rev.reverse();
+		return rev.slice(shift, shift + numColors);
+	}
+
 	@:allow(res)
 	private function new(rgbColors:Array<Int>) {
 		this._colors = rgbColors.map(col -> Color.fromInt24(col));

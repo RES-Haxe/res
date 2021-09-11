@@ -125,9 +125,10 @@ class RES {
 		@param tileset Tileset to use
 		@param characters Supported characters
 		@param firstTileIndex Index of the first tile in the tileset
+		@param numColors Number of colors requred for the font
 	 */
-	public function createFont(?name:String, tileset:Tileset, characters:String, ?firstTileIndex:Int = 0):Font {
-		final font = new Font(name, tileset, characters, firstTileIndex);
+	public function createFont(?name:String, tileset:Tileset, characters:String, ?firstTileIndex:Int = 0, ?numColors:Int = 1):Font {
+		final font = new Font(name, tileset, characters, firstTileIndex, numColors);
 
 		if (name != null)
 			fonts[name] = font;
@@ -169,7 +170,7 @@ class RES {
 			vTiles = Math.ceil(frameBuffer.frameHeight / font.tileset.tileSize);
 
 		if (indecies == null)
-			indecies = rom.palette.getIndecies();
+			indecies = rom.palette.rampDesc(font.numColors);
 
 		return new Textmap(font.tileset, hTiles, vTiles, font.characters, font.firstTileIndex, indecies);
 	}

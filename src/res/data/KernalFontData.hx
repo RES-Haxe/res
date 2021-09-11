@@ -6,7 +6,7 @@ package res.data;
 import haxe.io.Bytes;
 import haxe.io.UInt8Array;
 
-class CommodorKernalFontData {
+class KernalFontData {
 	public static final WIDTH:Int = 128;
 	public static final HEIGHT:Int = 48;
 	public static final TILE_SIZE:Int = 8;

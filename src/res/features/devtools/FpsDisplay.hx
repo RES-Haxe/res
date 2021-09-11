@@ -1,5 +1,6 @@
 package res.features.devtools;
 
+import res.features.devtools.console.Console;
 import res.tiles.Tilemap;
 
 class FpsDisplay implements Feature {

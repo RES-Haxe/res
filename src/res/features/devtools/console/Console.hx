@@ -1,4 +1,4 @@
-package res.features.devtools;
+package res.features.devtools.console;
 
 import res.input.Key;
 import res.input.KeyboardEvent;
@@ -103,12 +103,15 @@ class ConsoleScene extends Scene {
 	}
 
 	function lsrom(params:Array<String>) {
-		for (field in Reflect.fields(res.rom)) {
+		for (field in ['audio', 'sprites', 'tilesets', 'tilemaps', 'fonts', 'data']) {
 			final map:Map<String, Any> = cast Reflect.getProperty(res.rom, field);
+			final cnt:Int = Lambda.count(map);
 
-			println('$field (${Lambda.count(map)})');
-			for (itemName => item in map) {
-				println(' $itemName');
+			if (cnt > 0) {
+				println('$field ($cnt)');
+				for (itemName => item in map) {
+					println(' $itemName');
+				}
 			}
 		}
 	}

@@ -11,9 +11,9 @@ class Main {
 		final fonts:Array<{haxeFilename:String, aseFilename:String, className:String}> = [
 			{haxeFilename: 'src/res/data/Pico8FontData.hx', aseFilename: 'resources/pico8_font.aseprite', className: 'Pico8FontData'},
 			{
-				haxeFilename: 'src/res/data/CommodorKernalFontData.hx',
-				aseFilename: 'resources/commodor_kernal_font.aseprite',
-				className: 'CommodorKernalFontData'
+				haxeFilename: 'src/res/data/KernalFontData.hx',
+				aseFilename: 'resources/kernal_font.aseprite',
+				className: 'KernalFontData'
 			}
 		];
 
