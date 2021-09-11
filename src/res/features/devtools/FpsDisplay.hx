@@ -1,7 +1,26 @@
 package res.features.devtools;
 
 import res.features.devtools.console.Console;
+import res.features.devtools.console.ConsoleCommand;
+import res.features.devtools.console.ConsoleFeature;
 import res.tiles.Tilemap;
+
+class FpsDisplaCommand extends ConsoleCommand {
+	final fpsDisplay:FpsDisplay;
+
+	public function new(fpsDisplay:FpsDisplay) {
+		super('fps', 'Toggle fps display');
+
+		this.fpsDisplay = fpsDisplay;
+	}
+
+	override function run(args:Array<String>, res:RES, console:Console) {
+		if (args.length > 0)
+			fpsDisplay.showFPS = ['true', '1'].indexOf(args[0].toLowerCase()) != -1;
+		else
+			fpsDisplay.showFPS = !fpsDisplay.showFPS;
+	}
+}
 
 class FpsDisplay implements Feature {
 	public var showFPS:Bool = false;
@@ -23,14 +42,8 @@ class FpsDisplay implements Feature {
 		});
 
 		#if !hl
-		if (res.hasFeature(Console)) {
-			final console = res.feature(Console).console;
-			console.addCommand('fps', 'Toggle FPS display', (args) -> {
-				if (args.length > 0)
-					showFPS = ['true', '1'].indexOf(args[0].toLowerCase()) != -1;
-				else
-					showFPS = !showFPS;
-			});
+		if (res.hasFeature(ConsoleFeature)) {
+			res.feature(ConsoleFeature).console.addCommand(new FpsDisplaCommand(this));
 		}
 		#else
 		trace("For whatever reason fails on hl???");

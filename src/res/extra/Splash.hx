@@ -40,7 +40,7 @@ class Splash extends Scene {
 		var timeline = new Timeline();
 
 		timeline.every((2 / indexes.length) * 0.2, (_) -> {
-			paletteTest.indecies.unshift(paletteTest.indecies.pop());
+			paletteTest.colorMap.unshift(paletteTest.colorMap.pop());
 		});
 
 		timeline.after(1, (_) -> {

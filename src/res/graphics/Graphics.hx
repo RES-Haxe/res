@@ -13,17 +13,17 @@ using res.tools.BytesTools;
 class Graphics extends Renderable {
 	public final width:Int;
 	public final height:Int;
-	public final indecies:Array<Int>;
+	public final colorMap:Array<Int>;
 
 	public var x:Float = 0;
 	public var y:Float = 0;
 
 	var buffer:Bytes;
 
-	public function new(width:Int, height:Int, indecies:Array<Int>) {
+	public function new(width:Int, height:Int, colorMap:Array<Int>) {
 		this.width = width;
 		this.height = height;
-		this.indecies = indecies;
+		this.colorMap = colorMap;
 
 		buffer = Bytes.alloc(width * height);
 	}
@@ -108,7 +108,7 @@ class Graphics extends Renderable {
 			for (px in 0...width) {
 				final pixel = buffer.get(py * width + px);
 				if (pixel != 0) {
-					frameBuffer.setIndex(Math.floor(x + px), Math.floor(y + py), indecies[pixel - 1]);
+					frameBuffer.setIndex(Math.floor(x + px), Math.floor(y + py), colorMap[pixel - 1]);
 				}
 			}
 		}

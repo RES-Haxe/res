@@ -88,20 +88,22 @@ class Tilemap extends Renderable {
 			return null;
 	}
 
-	public function set(tileCol:Int, tileLine:Int, tileIndex:Int, flipX:Bool = false, flipY:Bool = false, rot90cw:Bool = false) {
+	public function set(tileCol:Int, tileLine:Int, tileIndex:Int, flipX:Bool = false, flipY:Bool = false, rot90cw:Bool = false, ?colorMap:Array<Int>) {
 		if (inBounds(tileCol, tileLine)) {
 			if (map[tileLine][tileCol] == null)
 				map[tileLine][tileCol] = {
 					index: 0,
 					flipX: false,
 					flipY: false,
-					rot90cw: false
+					rot90cw: false,
+					colorMap: colorMap
 				};
 
 			map[tileLine][tileCol].index = tileIndex;
 			map[tileLine][tileCol].flipX = flipX;
 			map[tileLine][tileCol].flipY = flipY;
 			map[tileLine][tileCol].rot90cw = rot90cw;
+			map[tileLine][tileCol].colorMap = colorMap;
 		} else
 			throw 'Out of tile map bounds (col: $tileCol, line: $tileLine, size: $hTiles x $vTiles)';
 	}
@@ -202,7 +204,8 @@ class Tilemap extends Renderable {
 							final tileColorIndex:Int = tilemap.readTilePixel(tileColIndex, tileLineIndex, inTileCol, inTileScanline);
 
 							if (tileColorIndex != 0) {
-								final paletteColorIndex:Int = tilemap.colorMap == null ? tileColorIndex : tilemap.colorMap[tileColorIndex - 1];
+								final paletteColorIndex:Int = tilePlace.colorMap != null ? tilePlace.colorMap[tileColorIndex - 1] : tilemap.colorMap == null ? tileColorIndex : tilemap.colorMap[tileColorIndex
+									- 1];
 
 								frameBuffer.setIndex(screenCol, screenScanline, paletteColorIndex);
 							}
