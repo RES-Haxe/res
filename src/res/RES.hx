@@ -10,6 +10,7 @@ import res.input.Keyboard;
 import res.input.Mouse;
 import res.platforms.Platform;
 import res.rom.Rom;
+import res.storage.Storage;
 import res.text.Font;
 import res.text.Textmap;
 import res.tiles.Tilemap;
@@ -35,6 +36,7 @@ class RES {
 	public final resolution:Resolution;
 	public final fonts:Map<String, Font> = [];
 	public final mainScene:Class<Scene>;
+	public final storage:Storage;
 	public final renderHooks:RenderHooks = {
 		before: [],
 		after: []
@@ -78,6 +80,8 @@ class RES {
 	private function new(platform:Platform, resolution:Resolution, mainScene:Class<Scene>, rom:Rom, ?features:Array<Class<Feature>>) {
 		this.resolution = resolution;
 		this.mainScene = mainScene;
+
+		this.storage = new Storage();
 
 		for (controller in controllers)
 			controller.listen((ev) -> if (scene != null) scene.controllerEvent(ev));
