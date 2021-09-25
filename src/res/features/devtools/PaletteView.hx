@@ -31,7 +31,7 @@ class PaletteView extends Scene {
 	public function new(res:RES) {
 		super(res);
 
-		add(new PaletteRender(res, res.palette));
+		add(new PaletteRender(res, res.rom.palette));
 	}
 
 	override function keyboardEvent(event:KeyboardEvent) {

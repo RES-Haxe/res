@@ -6,7 +6,7 @@ import res.platforms.Platform;
 import res.rom.Rom;
 
 typedef RESConfig = {
-	platform:Platform,
+	?platform:Platform,
 	resolution:Resolution,
 	rom:Rom,
 	mainScene:Class<Scene>,

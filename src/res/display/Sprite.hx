@@ -39,8 +39,8 @@ class Sprite {
 			?wrapping:Bool = true, ?colorMap:Array<Int>) {
 		final frame = sprite.frames[frameIndex];
 
-		final lines:Int = height;
-		final cols:Int = width;
+		final lines:Int = height == null ? sprite.height : height;
+		final cols:Int = width == null ? sprite.width : width;
 
 		final fromX:Int = x;
 		final fromY:Int = y;
@@ -58,7 +58,9 @@ class Sprite {
 
 						if (wrapping
 							|| (screenX >= 0 && screenY >= 0 && screenX < frameBuffer.frameWidth && screenY < frameBuffer.frameHeight)) {
-							frameBuffer.setIndex(screenX, screenY, colorMap == null ? sampleIndex : colorMap[sampleIndex - 1]);
+							final colorIndex = colorMap == null ? sampleIndex : colorMap[sampleIndex];
+							if (colorIndex != 0)
+								frameBuffer.setIndex(screenX, screenY, colorIndex);
 						}
 					}
 				}

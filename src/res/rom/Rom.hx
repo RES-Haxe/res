@@ -69,11 +69,13 @@ class Rom {
 			paletteColors.push(Std.parseInt('0x$colStr'));
 		}
 
+		final palette = new res.Palette(paletteColors);
+
 		final resTypes:Array<String> = ['audio', 'tilesets', 'tilemaps', 'sprites', 'fonts', 'data'];
 		final supportedTypes:Map<String, Array<String>> = [
 			'tilesets' => ['aseprite'],
 			'tilemaps' => ['aseprite'],
-			'sprites' => ['aseprite'],
+			'sprites' => ['aseprite', 'png'],
 			'fonts' => ['txt'],
 			'data' => [],
 			'audio' => ['wav']
@@ -113,6 +115,8 @@ class Rom {
 									switch (fileExt) {
 										case 'aseprite':
 											SpriteChunk.fromAseprite(fileBytes, name).write(byteOutput);
+										case 'png':
+											SpriteChunk.fromPNG(fileBytes, palette, name).write(byteOutput);
 									}
 								case 'tilesets':
 									switch (fileExt) {

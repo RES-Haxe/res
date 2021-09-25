@@ -12,7 +12,7 @@ class Splash extends Scene {
 	public function new(res:RES) {
 		super(res);
 
-		final indexes = res.rom.palette.byLuminance.copy();
+		final indexes = res.rom.palette.byLuminance.slice(1);
 
 		paletteTest = new Graphics(res.frameBuffer.frameWidth, res.frameBuffer.frameHeight, indexes);
 
@@ -28,7 +28,7 @@ class Splash extends Scene {
 
 		add(paletteTest);
 
-		logo = new Graphics(res.frameBuffer.frameWidth, res.frameBuffer.frameHeight, [res.rom.palette.brightestIndex]);
+		logo = new Graphics(res.frameBuffer.frameWidth, res.frameBuffer.frameHeight, [0, res.rom.palette.brightestIndex]);
 
 		final sx = Math.floor((res.frameBuffer.frameWidth - SplashData.WIDTH) / 2);
 		final sy = Math.floor((res.frameBuffer.frameHeight - SplashData.HEIGHT) / 2);

@@ -5,6 +5,8 @@ import res.features.devtools.console.ConsoleCommand;
 import res.features.devtools.console.ConsoleFeature;
 import res.tiles.Tilemap;
 
+using Type;
+
 class FpsDisplaCommand extends ConsoleCommand {
 	final fpsDisplay:FpsDisplay;
 
@@ -32,21 +34,19 @@ class FpsDisplay implements Feature {
 	public function enable(res:RES) {
 		this.res = res;
 
-		final text = res.createTextmap([res.rom.palette.brightestIndex]);
+		final text = res.createTextmap([res.rom.palette.darkestIndex, res.rom.palette.brightestIndex]);
 
 		res.renderHooks.after.push((res, frameBuffer) -> {
 			if (showFPS && res.lastFrameTime != 0) {
-				text.textAt(0, 0, 'FPS: ${1 / res.lastFrameTime}');
+				final fpsValue:Float = Math.round((1 / res.lastFrameTime) * 100) / 100;
+				text.textAt(0, 0, 'FPS: ${fpsValue}');
 				Tilemap.drawTilemap(text, frameBuffer, 1, 1);
 			}
 		});
 
-		#if !hl
-		if (res.hasFeature(ConsoleFeature)) {
-			res.feature(ConsoleFeature).console.addCommand(new FpsDisplaCommand(this));
+		if (res.hasFeature('res.features.devtools.console.ConsoleFeature')) {
+			var console:Console = cast(res.getFeature('res.features.devtools.console.ConsoleFeature'), ConsoleFeature).console;
+			console.addCommand(new FpsDisplaCommand(this));
 		}
-		#else
-		trace("For whatever reason fails on hl???");
-		#end
 	}
 }

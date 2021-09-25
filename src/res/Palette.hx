@@ -1,7 +1,5 @@
 package res;
 
-import res.tools.MathTools.clampi;
-
 class Palette {
 	var _colors:Array<Color>;
 
@@ -39,7 +37,31 @@ class Palette {
 	public var darkestIndex(get, never):Int;
 
 	inline function get_darkestIndex():Int
-		return _byLuminance[0];
+		return _byLuminance[1];
+
+	public var size(get, never):Int;
+
+	inline function get_size():Int
+		return _colors.length;
+
+	/**
+		Returns the index of the closest color to the given
+
+		@see https://en.wikipedia.org/wiki/Color_difference
+
+		@param color Color to find the closes color to
+		@returns the index of the closes color in the palette
+	 */
+	public function closest(color:Color):Int {
+		var distances:Array<{index:Int, distance:Float}> = [for (i in 0...size)
+			({
+				index:i, distance:get(i).distance(color)
+			})];
+
+		distances.sort((a, b) -> a.distance == b.distance ? 0 : a.distance < b.distance ? -1 : 1);
+
+		return distances[0].index;
+	}
 
 	/**
 		Creates a new array containing all the color indecies.
@@ -47,14 +69,14 @@ class Palette {
 		Suitable for creating index maps
 	 */
 	public function getIndecies():Array<Int> {
-		return [for (n in 0..._colors.length) n + 1];
+		return [for (n in 0..._colors.length) n];
 	};
 
 	/**
 		Get random color index
 	 */
 	public inline function rnd():Int {
-		return 1 + Math.floor(Math.random() * _colors.length);
+		return Math.floor(Math.random() * _colors.length);
 	}
 
 	/**
@@ -67,10 +89,10 @@ class Palette {
 	}
 
 	/**
-		1-based color index (0 = transparency)
+		Get color by its index 
 	 */
 	public function get(index:Int):Color {
-		return _colors[clampi(index - 1, 0, _colors.length - 1)];
+		return _colors[index];
 	}
 
 	/**
@@ -82,7 +104,7 @@ class Palette {
 		@returns Array of color indecies. First index is the darkest in the ramp
 	 */
 	public function rampAsc(numColors:Int, shift:Int = 0):Array<Int> {
-		return _byLuminance.slice(shift, shift + numColors);
+		return [0].concat(_byLuminance.slice(shift, shift + numColors));
 	}
 
 	/**
@@ -96,7 +118,7 @@ class Palette {
 	public function rampDesc(numColors:Int, shift:Int = 0):Array<Int> {
 		final rev = _byLuminance.copy();
 		rev.reverse();
-		return rev.slice(shift, shift + numColors);
+		return [0].concat(rev.slice(shift, shift + numColors));
 	}
 
 	@:allow(res)

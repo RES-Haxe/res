@@ -1,11 +1,20 @@
 package res.platforms;
 
-interface Platform {
+class Platform {
 	public final pixelFormat:PixelFormat;
+	public final name:String;
 
-	function connect(res:RES):Void;
+	public function connect(res:RES)
+		throw 'Not implemented';
 
-	function render(res:RES):Void;
+	public function render(res:RES)
+		throw 'Not implemented';
 
-	function playAudio(id:String):Void;
+	public function playAudio(id:String)
+		throw 'Not implemented';
+
+	public function new(name:String, pixelFormat:PixelFormat) {
+		this.name = name;
+		this.pixelFormat = pixelFormat;
+	}
 }

@@ -10,4 +10,8 @@ class Rect {
 
 		return Math.abs(cx1 - cx2) < (w1 / 2 + w2 / 2) && Math.abs(cy1 - cy2) < (h1 / 2 + h2 / 2);
 	}
+
+	public static function insidei(rx:Int, ry:Int, rw:Int, rh:Int, x:Int, y:Int):Bool {
+		return x >= rx && x <= rx + rw && y >= ry && x <= ry + rh;
+	}
 }

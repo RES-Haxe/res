@@ -9,6 +9,9 @@ class About extends ConsoleCommand {
 		console.println('Version:');
 		console.println(' ${RES.VERSION}');
 
+		console.println('Platform:');
+		console.println(' ${res.platform.name}');
+
 		console.println('Resolution:');
 		console.println(' ${res.frameBuffer.frameWidth}x${res.frameBuffer.frameHeight}');
 

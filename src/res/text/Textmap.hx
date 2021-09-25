@@ -13,13 +13,13 @@ class Textmap extends Tilemap {
 			_charMap[characters.charCodeAt(ci)] = firstTileIndex + ci + 1;
 	}
 
-	public function textAt(atx:Int, aty:Int, text:String, ?clearEnd:Bool = true) {
+	public function textAt(atx:Int, aty:Int, text:String, ?colorMap:Array<Int>, ?clearEnd:Bool = true) {
 		if (aty >= 0 && aty < map.length) {
 			for (tx in atx...hTiles) {
 				var ci = tx - atx;
 
 				if (ci < text.length)
-					set(tx, aty, _charMap[text.charCodeAt(ci)]);
+					set(tx, aty, _charMap[text.charCodeAt(ci)], colorMap);
 				else if (clearEnd)
 					set(tx, aty, 0);
 				else

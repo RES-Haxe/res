@@ -5,13 +5,13 @@ import hxd.Pad;
 
 using Math;
 
-class HeapsPlatform implements Platform {
-	public final pixelFormat:PixelFormat = ABGR;
-
+class HeapsPlatform extends Platform {
 	var screen:h2d.Bitmap;
 	var s2d:h2d.Scene;
 
 	public function new(s2d:h2d.Scene) {
+		super('Heaps', ARGB);
+
 		this.s2d = s2d;
 		screen = new h2d.Bitmap(s2d);
 
@@ -23,7 +23,7 @@ class HeapsPlatform implements Platform {
 	/**
 		Connect input
 	 */
-	public function connect(res:RES) {
+	override public function connect(res:RES) {
 		s2d.scaleMode = LetterBox(res.frameBuffer.frameWidth, res.frameBuffer.frameHeight);
 
 		final interactive = new Interactive(res.frameBuffer.frameWidth, res.frameBuffer.frameHeight, s2d);
@@ -63,7 +63,7 @@ class HeapsPlatform implements Platform {
 		});
 	}
 
-	public function render(res:RES) {
+	override public function render(res:RES) {
 		screen.tile = h2d.Tile.fromPixels(new hxd.Pixels(res.frameBuffer.frameWidth, res.frameBuffer.frameHeight, res.frameBuffer.getFrame(), RGBA));
 	}
 }

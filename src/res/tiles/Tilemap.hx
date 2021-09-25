@@ -202,13 +202,10 @@ class Tilemap extends Renderable {
 
 						if (tilePlace != null && tilePlace.index > 0 && tilePlace.index - 1 < tilemap.tileset.numTiles) {
 							final tileColorIndex:Int = tilemap.readTilePixel(tileColIndex, tileLineIndex, inTileCol, inTileScanline);
+							final paletteColorIndex:Int = tilePlace.colorMap != null ? tilePlace.colorMap[tileColorIndex] : tilemap.colorMap == null ? tileColorIndex : tilemap.colorMap[tileColorIndex];
 
-							if (tileColorIndex != 0) {
-								final paletteColorIndex:Int = tilePlace.colorMap != null ? tilePlace.colorMap[tileColorIndex - 1] : tilemap.colorMap == null ? tileColorIndex : tilemap.colorMap[tileColorIndex
-									- 1];
-
+							if (paletteColorIndex != 0)
 								frameBuffer.setIndex(screenCol, screenScanline, paletteColorIndex);
-							}
 						}
 					}
 				}

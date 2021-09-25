@@ -36,6 +36,7 @@ class RES {
 	public final resolution:Resolution;
 	public final fonts:Map<String, Font> = [];
 	public final mainScene:Class<Scene>;
+	public final platform:Platform;
 	public final storage:Storage;
 	public final renderHooks:RenderHooks = {
 		before: [],
@@ -48,7 +49,6 @@ class RES {
 	public var defaultFont:Font;
 
 	private var features:Map<String, Feature> = [];
-	private var platform:Platform;
 	private var prevFrameTime:Null<Float> = null;
 
 	private final _scenes:Map<String, Scene> = [];
@@ -109,7 +109,8 @@ class RES {
 
 		this.rom = rom;
 
-		connect(platform);
+		this.platform = platform;
+		this.platform.connect(this);
 
 		if (features != null)
 			this.enable(...features);
@@ -221,16 +222,6 @@ class RES {
 	}
 
 	/**
-		Connect the platform
-
-		@param platform
-	 */
-	public function connect(platform:Platform) {
-		this.platform = platform;
-		platform.connect(this);
-	}
-
-	/**
 		Enable features
 	 */
 	public function enable(...features:Class<Feature>) {
@@ -241,8 +232,13 @@ class RES {
 		}
 	}
 
-	public function feature<T>(featureClass:Class<T>):T
-		return cast features[featureClass.getClassName()];
+	public function getFeature(className:String):Feature {
+		return features[className];
+	}
+
+	public function feature<T>(featureClass:Class<T>):T {
+		return cast getFeature(featureClass.getClassName());
+	}
 
 	public function hasFeature(?featureClass:Class<Feature>, ?featureClassName:String):Bool {
 		if (featureClass != null)
@@ -329,6 +325,9 @@ class RES {
 			scene.update(dt);
 	}
 
+	/**
+		Produce a frame
+	 */
 	public function render() {
 		for (func in renderHooks.before)
 			func(this, frameBuffer);
@@ -353,6 +352,11 @@ class RES {
 		platform.playAudio(id);
 	}
 
+	/**
+		Boot an RES instance
+
+		@param config 
+	 */
 	public static function boot(config:RESConfig):RES {
 		return new RES(config.platform, config.resolution, config.mainScene, config.rom, config.features);
 	}

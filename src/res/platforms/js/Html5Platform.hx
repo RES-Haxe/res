@@ -10,9 +10,7 @@ import res.platforms.Platform;
 
 using Math;
 
-class Html5Platform implements Platform {
-	public final pixelFormat:PixelFormat = ARGB;
-
+class Html5Platform extends Platform {
 	var canvas:CanvasElement;
 	var ctx:CanvasRenderingContext2D;
 	var scale:Int;
@@ -24,6 +22,8 @@ class Html5Platform implements Platform {
 	final audioSystem:AudioSystem = new AudioSystem();
 
 	public function new(?canvas:CanvasElement, ?scale:Int = 4) {
+		super('HTML5', RGBA);
+
 		if (canvas == null) {
 			canvas = document.createCanvasElement();
 			document.body.appendChild(canvas);
@@ -49,7 +49,7 @@ class Html5Platform implements Platform {
 	}
 
 	// TODO: Hook up gamepads
-	public function connect(res:RES) {
+	override public function connect(res:RES) {
 		this.res = res;
 
 		canvas.width = res.frameBuffer.frameWidth;
@@ -104,11 +104,11 @@ class Html5Platform implements Platform {
 		window.requestAnimationFrame(animationFrame);
 	}
 
-	public function render(res:RES) {
+	override public function render(res:RES) {
 		ctx.putImageData(res.frameBuffer.getImageData(), 0, 0);
 	}
 
-	public function playAudio(id:String) {
+	override public function playAudio(id:String) {
 		audioSystem.playBuffer(id);
 	}
 }

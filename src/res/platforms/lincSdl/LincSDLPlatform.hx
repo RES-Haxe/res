@@ -1,19 +1,18 @@
 package res.platforms.lincSdl;
 
-import sdl.Event.TextInputEvent;
+import haxe.Timer;
 import sdl.Renderer;
 import sdl.SDL;
 import sdl.Surface;
 import sdl.Texture;
 import sdl.Window;
 
-class LincSDL implements Platform {
-	public final pixelFormat:PixelFormat;
-
+class LincSDLPlatform extends Platform {
 	var window:Window;
 	var res:RES;
 
 	var scale:Int;
+	var windowTitle:String;
 	var renderer:Renderer;
 
 	var surface:Surface;
@@ -21,12 +20,20 @@ class LincSDL implements Platform {
 
 	var rect:SDLRect;
 
-	public function connect(res:RES) {
+	public function new(?windowTitle:String = 'RES', ?scale:Int = 3) {
+		super('LincSDL', RGBA);
+		this.windowTitle = windowTitle;
+		this.scale = scale;
+	}
+
+	override public function connect(res:RES) {
 		this.res = res;
+
 		SDL.init(SDL_INIT_EVERYTHING);
 
-		window = SDL.createWindow('RES', SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, res.width * scale, res.height * scale, SDL_WINDOW_ALLOW_HIGHDPI);
-		renderer = SDL.createRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+		window = SDL.createWindow(windowTitle, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, res.width * scale, res.height * scale,
+			SDL_WINDOW_ALLOW_HIGHDPI);
+		renderer = SDL.createRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
 		texture = SDL.createTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, res.width, res.height);
 
@@ -36,9 +43,15 @@ class LincSDL implements Platform {
 			w: res.width,
 			h: res.height
 		};
+
+		Timer.delay(() -> {
+			run();
+		}, 0);
 	}
 
 	public function run() {
+		var lastTime = Timer.stamp();
+
 		while (true) {
 			while (SDL.hasAnEvent()) {
 				final event = SDL.pollEvent();
@@ -55,12 +68,14 @@ class LincSDL implements Platform {
 					case _:
 				}
 			}
-			SDL.delay(16);
-
 			SDL.renderClear(renderer);
 
-			res.update(60 / 1000);
+			var currentTime = Timer.stamp();
+
+			res.update(currentTime - lastTime);
 			res.render();
+
+			lastTime = currentTime;
 
 			SDL.renderCopy(renderer, texture, null, null);
 
@@ -68,7 +83,7 @@ class LincSDL implements Platform {
 		}
 	}
 
-	public function render(res:RES) {
+	override public function render(res:RES) {
 		SDL.updateTexture(texture, rect, res.frameBuffer.getFrame().getData(), res.width * 4);
 		// The following doesn't work for whatever reason but should be more efficient
 		/*
@@ -81,8 +96,5 @@ class LincSDL implements Platform {
 		 */
 	}
 
-	public function new(scale:Int = 3) {
-		this.pixelFormat = RGBA;
-		this.scale = scale;
-	}
+	override public function playAudio(id:String) {}
 }

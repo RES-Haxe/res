@@ -31,7 +31,7 @@ class ConsoleScene extends Scene {
 		this.console = console;
 		this.console.println = println;
 
-		consoleText = res.createTextmap([res.rom.palette.brightestIndex]);
+		consoleText = res.createTextmap();
 		consoleText.scrollY = consoleText.pixelHeight - res.frameBuffer.frameHeight;
 		renderList.push(consoleText);
 

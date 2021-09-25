@@ -1,5 +1,7 @@
 package res;
 
+using StringTools;
+
 /**
 	RGBA color
  */
@@ -67,7 +69,7 @@ abstract Color(Int) from Int to Int from UInt to UInt {
 		BsRGB = B8bit/255
 		```
 
-		From: https://www.w3.org/WAI/GL/wiki/Relative_luminance
+		@see https://www.w3.org/WAI/GL/wiki/Relative_luminance
 	 */
 	function get_luminance():Float {
 		final lr:Float = rf <= 0.3928 ? rf / 12.92 : Math.pow((rf + 0.055) / 1.055, 2.4);
@@ -75,6 +77,15 @@ abstract Color(Int) from Int to Int from UInt to UInt {
 		final lb:Float = bf <= 0.3928 ? bf / 12.92 : Math.pow((bf + 0.055) / 1.055, 2.4);
 
 		return 0.2126 * lr + 0.7152 * lg + 0.0722 * lb;
+	}
+
+	/**
+		Calculate distance to the given color
+
+		@param otherColor Color to compare to
+	 */
+	public function distance(otherColor:Color):Float {
+		return Math.pow(r - otherColor.r, 2) + Math.pow(g - otherColor.g, 2) + Math.pow(b - otherColor.b, 2);
 	}
 
 	public inline function format(pixelFormat:PixelFormat):Color {
@@ -111,7 +122,7 @@ abstract Color(Int) from Int to Int from UInt to UInt {
 	}
 
 	public function toString():String
-		return StringTools.hex(this, 8);
+		return this.hex(8) + ' r=${r.hex(2)},g=${g.hex(2)},b=${b.hex(2)},a=${a.hex(2)}';
 
 	public function new(rgba:Int = 0) {
 		this = rgba;

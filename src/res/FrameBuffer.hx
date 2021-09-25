@@ -41,6 +41,9 @@ class FrameBuffer {
 	}
 
 	#if js
+	/**
+		Get `ImageData` representing the current frame
+	 */
 	public function getImageData():ImageData {
 		for (n in 0...indexBuffer.length) {
 			var col = palette.get(indexBuffer.get(n));
@@ -55,6 +58,9 @@ class FrameBuffer {
 	}
 	#end
 
+	/**
+		Get RGBA colors representing the current frame
+	 */
 	public function getFrame():Bytes {
 		for (n in 0...indexBuffer.length) {
 			pixelsBuffer.setInt32(n * pixelByteSize, palette.get(indexBuffer.get(n)).format(pixelFormat));
@@ -63,14 +69,24 @@ class FrameBuffer {
 		return pixelsBuffer;
 	}
 
-	public function fill(index:Int) {
-		for (fx in 0...frameWidth)
-			for (fy in 0...frameHeight)
-				setIndex(fx, fy, index);
+	/**
+		Fill frame buffer with color index
+
+		@param index Color index
+	 */
+	public function fill(index:Int, ?pos:Int = 0, ?len:Int) {
+		len = len == null ? indexBuffer.length : len;
+		indexBuffer.fill(pos, len, index);
 	}
 
+	/**
+		Set color index at given position
+
+		@param atx screen coordinate x
+		@param aty scrren coordinate y
+		@param index Color index
+	 */
 	public inline function setIndex(atx:Int, aty:Int, index:Int) {
-		final pos = aty * frameWidth + atx;
-		indexBuffer.set(pos, index);
+		indexBuffer.set(aty * frameWidth + atx, index);
 	}
 }

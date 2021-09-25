@@ -108,7 +108,7 @@ class Graphics extends Renderable {
 			for (px in 0...width) {
 				final pixel = buffer.get(py * width + px);
 				if (pixel != 0) {
-					frameBuffer.setIndex(Math.floor(x + px), Math.floor(y + py), colorMap[pixel - 1]);
+					frameBuffer.setIndex(Math.floor(x + px), Math.floor(y + py), colorMap[pixel]);
 				}
 			}
 		}
