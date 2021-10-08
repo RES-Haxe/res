@@ -158,7 +158,7 @@ class Tilemap extends Renderable {
 		@param wrapping
 		@param scanlineFunc
 	 */
-	public static function drawTilemap(tilemap:Tilemap, frameBuffer:FrameBuffer, ?x:Int = 0, ?y:Int = 0, ?width:Int, ?height:Int, ?scrollX:Float = 0,
+	public static function drawTilemap(tilemap:Tilemap, frameBuffer:IFrameBuffer, ?x:Int = 0, ?y:Int = 0, ?width:Int, ?height:Int, ?scrollX:Float = 0,
 			?scrollY:Float = 0, ?wrapping:Bool = true, ?scanlineFunc:ScanlineFunc) {
 		if (width == null)
 			width = frameBuffer.frameWidth;
@@ -218,6 +218,6 @@ class Tilemap extends Renderable {
 
 		@param frameBuffer Frame buffer to render at
 	 */
-	override public function render(frameBuffer:FrameBuffer)
+	override public function render(frameBuffer:IFrameBuffer)
 		drawTilemap(this, frameBuffer, 0, 0, frameBuffer.frameWidth, frameBuffer.frameHeight, scrollX, scrollY, true, scanlineFunc);
 }

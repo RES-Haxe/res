@@ -20,7 +20,7 @@ class Splash extends Scene {
 
 		for (col in 0...res.frameBuffer.frameWidth) {
 			for (t in 0...barHeight) {
-				final idx = 1 + wrapi(col, indexes.length);
+				final idx = wrapi(col, indexes.length - 1);
 				paletteTest.setPixel(col, t, idx);
 				paletteTest.setPixel(col, res.frameBuffer.frameHeight - t - 1, idx);
 			}
@@ -43,7 +43,7 @@ class Splash extends Scene {
 			paletteTest.colorMap.unshift(paletteTest.colorMap.pop());
 		});
 
-		timeline.after(1, (_) -> {
+		timeline.after(2, (_) -> {
 			res.setScene(res.mainScene);
 		});
 

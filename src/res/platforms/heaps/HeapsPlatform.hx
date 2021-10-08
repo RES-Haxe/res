@@ -1,17 +1,27 @@
 package res.platforms.heaps;
 
+import res.types.RESConfig;
 import h2d.Interactive;
 import hxd.Pad;
 
 using Math;
+using res.tools.ResolutionTools;
 
 class HeapsPlatform extends Platform {
 	var screen:h2d.Bitmap;
 	var s2d:h2d.Scene;
 
-	public function new(s2d:h2d.Scene) {
-		super('Heaps', ARGB);
+	var _frameBuffer:FrameBuffer;
 
+	override function get_name():String {
+		return 'Heaps';
+	}
+
+	override function get_frameBuffer():IFrameBuffer {
+		return _frameBuffer;
+	}
+
+	public function new(s2d:h2d.Scene) {
 		this.s2d = s2d;
 		screen = new h2d.Bitmap(s2d);
 
@@ -24,9 +34,13 @@ class HeapsPlatform extends Platform {
 		Connect input
 	 */
 	override public function connect(res:RES) {
-		s2d.scaleMode = LetterBox(res.frameBuffer.frameWidth, res.frameBuffer.frameHeight);
+		final frameSize = res.config.resolution.pixelSize();
 
-		final interactive = new Interactive(res.frameBuffer.frameWidth, res.frameBuffer.frameHeight, s2d);
+		_frameBuffer = new FrameBuffer(s2d, frameSize.width, frameSize.height, res.rom.palette);
+
+		s2d.scaleMode = LetterBox(frameSize.width, frameSize.height);
+
+		final interactive = new Interactive(frameSize.width, frameSize.height, s2d);
 
 		interactive.onMove = (ev) -> {
 			res.mouse.moveTo(ev.relX.floor(), ev.relY.floor());
@@ -61,9 +75,5 @@ class HeapsPlatform extends Platform {
 				case _:
 			}
 		});
-	}
-
-	override public function render(res:RES) {
-		screen.tile = h2d.Tile.fromPixels(new hxd.Pixels(res.frameBuffer.frameWidth, res.frameBuffer.frameHeight, res.frameBuffer.getFrame(), RGBA));
 	}
 }

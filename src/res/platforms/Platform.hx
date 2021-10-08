@@ -1,20 +1,21 @@
 package res.platforms;
 
+import res.types.RESConfig;
+
 class Platform {
-	public final pixelFormat:PixelFormat;
-	public final name:String;
+	public var name(get, never):String;
+
+	function get_name():String
+		return 'Unknown';
+
+	public var frameBuffer(get, never):IFrameBuffer;
+
+	function get_frameBuffer():IFrameBuffer
+		throw 'Not implemented';
 
 	public function connect(res:RES)
 		throw 'Not implemented';
 
-	public function render(res:RES)
-		throw 'Not implemented';
-
 	public function playAudio(id:String)
 		throw 'Not implemented';
-
-	public function new(name:String, pixelFormat:PixelFormat) {
-		this.name = name;
-		this.pixelFormat = pixelFormat;
-	}
 }

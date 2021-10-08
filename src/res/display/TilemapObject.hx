@@ -15,7 +15,7 @@ class TilemapObject extends Object {
 		this.height = tilemap.vTiles * tilemap.tileset.tileSize;
 	}
 
-	override function selfRender(frameBuffer:FrameBuffer, atx:Float, aty:Float) {
+	override function selfRender(frameBuffer:IFrameBuffer, atx:Float, aty:Float) {
 		Tilemap.drawTilemap(tilemap, frameBuffer, Math.floor(atx), Math.floor(aty), Math.floor(width), Math.floor(height), Math.floor(scrollX),
 			Math.floor(scrollY));
 	}

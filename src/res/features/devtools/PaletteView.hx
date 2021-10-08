@@ -13,7 +13,7 @@ class PaletteRender extends Renderable {
 		this.palette = palette;
 	}
 
-	override public function render(frameBuffer:FrameBuffer) {
+	override public function render(frameBuffer:IFrameBuffer) {
 		final colSize:Int = Std.int(frameBuffer.frameWidth / palette.colors.length);
 
 		for (scanline in 0...frameBuffer.frameHeight) {

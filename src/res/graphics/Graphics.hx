@@ -101,7 +101,7 @@ class Graphics extends Renderable {
 			buffer.setxy(width, x, y, index);
 	}
 
-	override public function render(frameBuffer:FrameBuffer) {
+	override public function render(frameBuffer:IFrameBuffer) {
 		draw(this);
 
 		for (py in 0...height) {

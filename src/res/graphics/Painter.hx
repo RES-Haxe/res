@@ -8,7 +8,7 @@ import res.tools.MathTools.mini;
 using Std;
 
 /**
-	Can be used as a static extension for FrameBuffer
+	Can be used as a static extension for IFrameBuffer
 
 	e.g.:
 
@@ -17,18 +17,18 @@ using Std;
 
 	// ...
 
-	function render(frameBuffer:FrameBuffer) {
+	function render(frameBuffer:IFrameBuffer) {
 		frameBuffer.line(0, 0, 100, 100, 5);
 	}
 
 	```
  */
 class Painter {
-	public static function ellipse(frameBuffer:FrameBuffer, cx:Int, cy:Int, rx:Int, ry:Int, colorIndex:Int) {
+	public static function ellipse(frameBuffer:IFrameBuffer, cx:Int, cy:Int, rx:Int, ry:Int, colorIndex:Int) {
 		// TODO
 	}
 
-	public static function circle(frameBuffer:FrameBuffer, cx:Int, cy:Int, r:Int, colorIndex:Int) {
+	public static function circle(frameBuffer:IFrameBuffer, cx:Int, cy:Int, r:Int, colorIndex:Int) {
 		ellipse(frameBuffer, cx, cy, r, r, colorIndex);
 	}
 
@@ -42,7 +42,7 @@ class Painter {
 		@param y1 Destination Y
 		@param colorIndex
 	 */
-	public static function line(frameBuffer:FrameBuffer, x0:Int, y0:Int, x1:Int, y1:Int, colorIndex:Int) {
+	public static function line(frameBuffer:IFrameBuffer, x0:Int, y0:Int, x1:Int, y1:Int, colorIndex:Int) {
 		final dx:Int = abs(x1 - x0).int();
 		final dy:Int = abs(y1 - y0).int();
 
@@ -87,20 +87,19 @@ class Painter {
 		@param h Height
 		@param colorIndex Index of the color to fill the rectangle
 	 */
-	public static function rect(frameBuffer:FrameBuffer, x:Int, y:Int, w:Int, h:Int, colorIndex:Int) {
+	public static function rect(frameBuffer:IFrameBuffer, x:Int, y:Int, w:Int, h:Int, colorIndex:Int) {
 		if (Rect.intersect(0, 0, frameBuffer.frameWidth, frameBuffer.frameHeight, x, y, w, h)) {
 			final fx = maxi(0, x);
 			final fy = maxi(0, y);
 
-			final tx = mini(frameBuffer.frameWidth, x + w);
-			final ty = mini(frameBuffer.frameHeight, y + h);
+			final tx = mini(frameBuffer.frameWidth - 1, x + w);
+			final ty = mini(frameBuffer.frameHeight - 1, y + h);
 
 			if (tx - fx > 0 && ty - fy > 0) {
 				for (line in fy...ty + 1) {
-					final pos = line * frameBuffer.frameWidth + fx;
-					final len = tx - fx;
-
-					frameBuffer.fill(colorIndex, pos, len);
+					for (col in fx...tx) {
+						frameBuffer.setIndex(col, line, colorIndex);
+					}
 				}
 			}
 		}

@@ -4,6 +4,7 @@ import res.Scene;
 import res.input.Key;
 import res.input.KeyboardEvent;
 import res.text.Textmap;
+import res.tiles.Tilemap;
 
 using String;
 using StringTools;
@@ -33,7 +34,6 @@ class ConsoleScene extends Scene {
 
 		consoleText = res.createTextmap();
 		consoleText.scrollY = consoleText.pixelHeight - res.frameBuffer.frameHeight;
-		renderList.push(consoleText);
 
 		updateInput('');
 	}
@@ -92,6 +92,11 @@ class ConsoleScene extends Scene {
 			index--;
 			line--;
 		}
+	}
+
+	override function render(frameBuffer:IFrameBuffer) {
+		frameBuffer.clear(res.rom.palette.darkestIndex);
+		Tilemap.drawTilemap(consoleText, frameBuffer);
 	}
 
 	override function update(dt:Float) {

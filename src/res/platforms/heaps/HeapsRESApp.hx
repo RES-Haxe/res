@@ -6,7 +6,7 @@ import res.types.RESConfig;
 class HeapsRESApp extends App {
 	var config:RESConfig;
 
-	var res:RES;
+	public var res:RES;
 
 	public function new(config:RESConfig) {
 		super();
@@ -14,8 +14,7 @@ class HeapsRESApp extends App {
 	}
 
 	override function init() {
-		config.platform = new HeapsPlatform(s2d);
-		res = RES.boot(config);
+		res = RES.boot(new HeapsPlatform(s2d), config);
 	}
 
 	override function update(dt:Float) {

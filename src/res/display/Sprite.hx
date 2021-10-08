@@ -35,7 +35,7 @@ class Sprite {
 		return obj;
 	}
 
-	public static function drawSprite(sprite:Sprite, frameBuffer:FrameBuffer, ?x:Int = 0, ?y:Int = 0, ?width:Int, ?height:Int, ?frameIndex:Int = 0,
+	public static function drawSprite(sprite:Sprite, frameBuffer:IFrameBuffer, ?x:Int = 0, ?y:Int = 0, ?width:Int, ?height:Int, ?frameIndex:Int = 0,
 			?wrapping:Bool = true, ?colorMap:Array<Int>) {
 		final frame = sprite.frames[frameIndex];
 

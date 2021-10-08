@@ -1,5 +1,6 @@
 package res.features.devtools;
 
+import haxe.Timer;
 import res.features.devtools.console.Console;
 import res.features.devtools.console.ConsoleCommand;
 import res.features.devtools.console.ConsoleFeature;
@@ -24,21 +25,47 @@ class FpsDisplaCommand extends ConsoleCommand {
 	}
 }
 
+enum FpsDisplayMethod {
+	PER_SECOND;
+	DELTA_EXTRAPOLATION;
+}
+
 class FpsDisplay implements Feature {
 	public var showFPS:Bool = false;
+	public var method:FpsDisplayMethod = PER_SECOND;
 
 	var res:RES;
+
+	var frameCount:Int = 0;
+	var time:Float;
+	var fpsValue:Float = 0;
 
 	public function new() {}
 
 	public function enable(res:RES) {
 		this.res = res;
 
-		final text = res.createTextmap([res.rom.palette.darkestIndex, res.rom.palette.brightestIndex]);
+		time = Timer.stamp();
+
+		final text = res.createTextmap();
 
 		res.renderHooks.after.push((res, frameBuffer) -> {
 			if (showFPS && res.lastFrameTime != 0) {
-				final fpsValue:Float = Math.round((1 / res.lastFrameTime) * 100) / 100;
+				switch (method) {
+					case PER_SECOND:
+						frameCount++;
+
+						final currentTime = Timer.stamp();
+
+						if (currentTime - time >= 1) {
+							fpsValue = frameCount;
+							frameCount = 0;
+							time = currentTime;
+						}
+					case DELTA_EXTRAPOLATION:
+						fpsValue = Math.round((1 / res.lastFrameTime) * 100) / 100;
+				}
+
 				text.textAt(0, 0, 'FPS: ${fpsValue}');
 				Tilemap.drawTilemap(text, frameBuffer, 1, 1);
 			}

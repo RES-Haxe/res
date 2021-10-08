@@ -78,6 +78,6 @@ class SpriteObject extends Object {
 		}
 	}
 
-	override function selfRender(frameBuffer:FrameBuffer, atx:Float, aty:Float)
+	override function selfRender(frameBuffer:IFrameBuffer, atx:Float, aty:Float)
 		Sprite.drawSprite(sprite, frameBuffer, atx.floor(), aty.floor(), width.floor(), height.floor(), currentFrameIndex, wrap, colorMap);
 }

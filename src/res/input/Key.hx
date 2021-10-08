@@ -4,7 +4,7 @@ package res.input;
 class Key {
 	public static inline final BACKSPACE = 8;
 	public static inline final TAB = 9;
-	public static inline final ENTER = 13;
+	public static inline final ENTER = #if java 10 #else 13 #end;
 	public static inline final SHIFT = 16;
 	public static inline final CTRL = 17;
 	public static inline final ALT = 18;

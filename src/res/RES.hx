@@ -2,7 +2,6 @@ package res;
 
 import haxe.Rest;
 import haxe.Timer;
-import res.FrameBuffer;
 import res.features.Feature;
 import res.graphics.Graphics;
 import res.input.Controller;
@@ -20,7 +19,7 @@ import res.types.RESConfig;
 using Math;
 using Type;
 
-typedef RenderHookFunction = RES->FrameBuffer->Void;
+typedef RenderHookFunction = RES->IFrameBuffer->Void;
 
 typedef RenderHooks = {
 	before:Array<RenderHookFunction>,
@@ -29,8 +28,8 @@ typedef RenderHooks = {
 
 @:build(res.Macros.ver())
 class RES {
+	public final config:RESConfig;
 	public final controllers:Map<Int, Controller> = [for (playerNum in 1...5) playerNum => new Controller(playerNum)];
-	public final frameBuffer:FrameBuffer;
 	public final keyboard:Keyboard;
 	public final mouse:Mouse;
 	public final resolution:Resolution;
@@ -60,26 +59,33 @@ class RES {
 
 	public var scene(get, never):Scene;
 
-	/** Shorthand for `frameBuffer.frameWidth` */
+	public var frameBuffer(get, never):IFrameBuffer;
+
+	function get_frameBuffer()
+		return platform.frameBuffer;
+
+	/** Shorthand for `platform.frameBuffer.frameWidth` */
 	public var width(get, never):Int;
 
 	function get_width():Int
-		return frameBuffer.frameWidth;
+		return platform.frameBuffer.frameWidth;
 
-	/** Shorthand for `frameBuffer.frameHeight` */
+	/** Shorthand for `platform.frameBuffer.frameHeight` */
 	public var height(get, never):Int;
 
 	function get_height():Int
-		return frameBuffer.frameHeight;
+		return platform.frameBuffer.frameHeight;
 
 	function get_scene():Scene
 		return _scene;
 
 	/**
 	 */
-	private function new(platform:Platform, resolution:Resolution, mainScene:Class<Scene>, rom:Rom, ?features:Array<Class<Feature>>) {
-		this.resolution = resolution;
-		this.mainScene = mainScene;
+	private function new(platform:Platform, config:RESConfig) {
+		this.config = config;
+
+		this.resolution = config.resolution;
+		this.mainScene = config.mainScene;
 
 		this.storage = new Storage();
 
@@ -98,22 +104,13 @@ class RES {
 				scene.mouseEvent(event);
 		});
 
-		var frameSize:{w:Int, h:Int} = switch (resolution) {
-			case TILES(tileSize, hTiles, vTiles):
-				{w: hTiles * tileSize, h: vTiles * tileSize};
-			case PIXELS(width, height):
-				{w: width, h: height}
-		};
-
-		frameBuffer = new FrameBuffer(rom.palette, frameSize.w, frameSize.h, platform.pixelFormat);
-
-		this.rom = rom;
+		this.rom = config.rom;
 
 		this.platform = platform;
 		this.platform.connect(this);
 
-		if (features != null)
-			this.enable(...features);
+		if (config.features != null)
+			this.enable(...config.features);
 
 		#if !skipSplash
 		setScene(res.extra.Splash);
@@ -169,10 +166,10 @@ class RES {
 				throw 'No default font';
 
 		if (hTiles == null)
-			hTiles = Math.ceil(frameBuffer.frameWidth / font.tileset.tileSize);
+			hTiles = Math.ceil(width / font.tileset.tileSize);
 
 		if (vTiles == null)
-			vTiles = Math.ceil(frameBuffer.frameHeight / font.tileset.tileSize);
+			vTiles = Math.ceil(height / font.tileset.tileSize);
 
 		if (indecies == null)
 			indecies = rom.palette.rampDesc(font.numColors);
@@ -208,10 +205,10 @@ class RES {
 	 */
 	public function createTilemap(?name:String, tileset:Tileset, ?hTiles:Int, ?vTiles:Int, ?indecies:Array<Int>):Tilemap {
 		if (hTiles == null)
-			hTiles = Math.ceil(frameBuffer.frameWidth / tileset.tileSize);
+			hTiles = Math.ceil(width / tileset.tileSize);
 
 		if (vTiles == null)
-			vTiles = Math.ceil(frameBuffer.frameHeight / tileset.tileSize);
+			vTiles = Math.ceil(height / tileset.tileSize);
 
 		var tilemap = new Tilemap(tileset, hTiles, vTiles, indecies);
 
@@ -329,16 +326,18 @@ class RES {
 		Produce a frame
 	 */
 	public function render() {
+		platform.frameBuffer.beginFrame();
+
 		for (func in renderHooks.before)
-			func(this, frameBuffer);
+			func(this, platform.frameBuffer);
 
 		if (scene != null)
-			scene.render(frameBuffer);
+			scene.render(platform.frameBuffer);
 
 		for (func in renderHooks.after)
-			func(this, frameBuffer);
+			func(this, platform.frameBuffer);
 
-		platform.render(this);
+		platform.frameBuffer.endFrame();
 
 		final currentStamp = Timer.stamp();
 
@@ -355,10 +354,11 @@ class RES {
 	/**
 		Boot an RES instance
 
-		@param config 
+		@param platform Platform
+		@param config RES Config
 	 */
-	public static function boot(config:RESConfig):RES {
-		return new RES(config.platform, config.resolution, config.mainScene, config.rom, config.features);
+	public static function boot(platform:Platform, config:RESConfig):RES {
+		return new RES(platform, config);
 	}
 }
 
