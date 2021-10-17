@@ -52,4 +52,11 @@ class Controller extends Emitter<ControllerEvent> {
 			pressed[button] = false;
 		}
 	}
+
+	public function buttonState(button:ControllerButton, state:Bool) {
+		if (pressed[button] && !state)
+			release(button);
+		else if (!pressed[button] && state)
+			push(button);
+	}
 }

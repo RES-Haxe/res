@@ -20,6 +20,16 @@ class MathTools {
 		return x;
 	}
 
+	public static inline function wrapf(x:Float, w:Float):Float {
+		if (x < 0)
+			x = w + (x % w);
+
+		if (x >= w)
+			x = x % w;
+
+		return x;
+	}
+
 	public static inline function wrapi(x:Int, w:Int):Int {
 		if (x < 0)
 			x = w + (x % w);

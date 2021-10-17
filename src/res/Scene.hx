@@ -1,5 +1,6 @@
 package res;
 
+import res.audio.IAudioMixer;
 import res.display.Renderable;
 import res.input.ControllerButton;
 import res.input.ControllerEvent;
@@ -17,10 +18,24 @@ class Scene extends Renderable implements Updateable {
 
 	var clearColorIndex:Null<Int>;
 
+	final audioMixer:IAudioMixer;
+
 	public function new(res:RES) {
 		this.res = res;
 
+		audioMixer = res.platform.createAudioMixer();
+
 		clearColorIndex = res.rom.palette.darkestIndex;
+	}
+
+	public function enter() {
+		audioMixer.resume();
+	}
+
+	public function init() {}
+
+	public function leave() {
+		audioMixer.pause();
 	}
 
 	/**
@@ -65,10 +80,6 @@ class Scene extends Renderable implements Updateable {
 
 		if (updatable != null)
 			updateList.remove(updatable);
-	}
-
-	public function playAudio(id:String) {
-		res.playAudio(id);
 	}
 
 	public dynamic function controllerEvent(event:ControllerEvent) {}

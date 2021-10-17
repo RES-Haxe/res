@@ -3,7 +3,7 @@ package res.audio;
 import haxe.io.Bytes;
 import haxe.io.BytesInput;
 
-class AudioSample {
+class AudioData {
 	/** Number of channels */
 	public final channels:Int;
 
@@ -81,5 +81,9 @@ class AudioSample {
 			case _:
 				0;
 		};
+	}
+
+	public function iterator():AudioDataStream {
+		return new AudioDataStream(this);
 	}
 }

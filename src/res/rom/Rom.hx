@@ -4,7 +4,8 @@ import haxe.Int32;
 import haxe.io.Bytes;
 import haxe.io.BytesInput;
 import haxe.zip.InflateImpl;
-import res.audio.AudioSample;
+import res.audio.AudioData;
+import res.audio.IAudioBuffer;
 import res.display.Sprite;
 import res.text.Font;
 import res.tiles.Tilemap;
@@ -20,17 +21,18 @@ class Rom {
 	static inline var MAGIC_NUMBER:Int32 = 0x52524f4d;
 
 	public final palette:Palette;
-	public final audio:Map<String, AudioSample>;
+	public final audioData:Map<String, AudioData>;
+	public final audioBuffers:Map<String, IAudioBuffer> = [];
 	public final data:Map<String, Bytes>;
 	public final fonts:Map<String, Font>;
 	public final sprites:Map<String, Sprite>;
 	public final tilemaps:Map<String, Tilemap>;
 	public final tilesets:Map<String, Tileset>;
 
-	private function new(palette:Palette, audio:Map<String, AudioSample>, tilesets:Map<String, Tileset>, tilemaps:Map<String, Tilemap>,
+	private function new(palette:Palette, audioData:Map<String, AudioData>, tilesets:Map<String, Tileset>, tilemaps:Map<String, Tilemap>,
 			sprites:Map<String, Sprite>, fonts:Map<String, Font>, data:Map<String, Bytes>) {
 		this.palette = palette;
-		this.audio = audio;
+		this.audioData = audioData;
 		this.tilesets = tilesets;
 		this.tilemaps = tilemaps;
 		this.sprites = sprites;
@@ -42,8 +44,33 @@ class Rom {
 	public static function create(src:String):Bytes {
 		trace('Generating ROM Data');
 
-		if (!FileSystem.exists(src))
-			throw 'Error: $src doesn\'t exists';
+		if (!FileSystem.exists(src)) {
+			FileSystem.createDirectory(src);
+
+			// Default palette
+			final defaultPaletteContent = [
+				'-- SWEETIE 16 PALETTE: https://lospec.com/palette-list/sweetie-16',
+				'#000000',
+				'#1a1c2c',
+				'#5d275d',
+				'#b13e53',
+				'#ef7d57',
+				'#ffcd75',
+				'#a7f070',
+				'#38b764',
+				'#257179',
+				'#29366f',
+				'#3b5dc9',
+				'#41a6f6',
+				'#73eff7',
+				'#f4f4f4',
+				'#94b0c2',
+				'#566c86',
+				'#333c57'
+			];
+
+			File.saveContent('$src/palette', defaultPaletteContent.join('\n'));
+		}
 
 		final paletteFile = Path.join([src, 'palette']);
 
@@ -56,6 +83,9 @@ class Rom {
 
 		while (paletteColors.length < 256 && !file.eof()) {
 			var colStr:String = file.readLine();
+
+			if (colStr.substr(0, 2) == '--') // comment
+				continue;
 
 			/** TODO: Parse some other formats like rgb(r, g, b) or maybe simple
 				"r,g,b" string or somethign like that */
@@ -164,7 +194,7 @@ class Rom {
 		// Read number of colors
 		final numColors = bytesInput.readByte();
 		final palette:Palette = new Palette([for (_ in 0...numColors) bytesInput.readUInt24()]);
-		final audio:Map<String, AudioSample> = [];
+		final audioData:Map<String, AudioData> = [];
 		final sprites:Map<String, Sprite> = [];
 		final tilesets:Map<String, Tileset> = [];
 		final tilemaps:Map<String, Tilemap> = [];
@@ -176,7 +206,7 @@ class Rom {
 
 			switch (chunk.chunkType) {
 				case AUDIO_SAMPLE:
-					audio[chunk.name] = cast(chunk, AudioSampleChunk).getAudioSample();
+					audioData[chunk.name] = cast(chunk, AudioSampleChunk).getAudio();
 				case SPRITE:
 					sprites[chunk.name] = cast(chunk, SpriteChunk).getSprite();
 				case TILESET:
@@ -190,7 +220,7 @@ class Rom {
 			}
 		}
 
-		return new Rom(palette, audio, tilesets, tilemaps, sprites, fonts, data);
+		return new Rom(palette, audioData, tilesets, tilemaps, sprites, fonts, data);
 	}
 
 	public static macro function embed(src:String, ?compressed:Bool = true) {

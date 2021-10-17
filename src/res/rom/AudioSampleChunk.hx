@@ -4,14 +4,14 @@ import format.wav.Reader;
 import haxe.io.Bytes;
 import haxe.io.BytesInput;
 import haxe.io.BytesOutput;
-import res.audio.AudioSample;
+import res.audio.AudioData;
 
 class AudioSampleChunk extends RomChunk {
 	public function new(name, data) {
 		super(AUDIO_SAMPLE, name, data);
 	}
 
-	public function getAudioSample():AudioSample {
+	public function getAudio():AudioData {
 		final input = new BytesInput(data);
 
 		final channels = input.readByte();
@@ -21,7 +21,7 @@ class AudioSampleChunk extends RomChunk {
 		final data = Bytes.alloc(dataLen);
 		input.readBytes(data, 0, dataLen);
 
-		return new AudioSample(channels, rate, bps, data);
+		return new AudioData(channels, rate, bps, data);
 	}
 
 	public static function fromWav(wavData:Bytes, name:String):AudioSampleChunk {

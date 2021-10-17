@@ -2,6 +2,8 @@ package res;
 
 import haxe.Rest;
 import haxe.Timer;
+import res.audio.IAudioBuffer;
+import res.audio.IAudioStream;
 import res.features.Feature;
 import res.graphics.Graphics;
 import res.input.Controller;
@@ -79,8 +81,6 @@ class RES {
 	function get_scene():Scene
 		return _scene;
 
-	/**
-	 */
 	private function new(platform:Platform, config:RESConfig) {
 		this.config = config;
 
@@ -109,6 +109,10 @@ class RES {
 		this.platform = platform;
 		this.platform.connect(this);
 
+		for (id => audioData in rom.audioData) {
+			createAudioBuffer(id, audioData.iterator());
+		}
+
 		if (config.features != null)
 			this.enable(...config.features);
 
@@ -118,6 +122,16 @@ class RES {
 		if (mainScene != null)
 			setScene(mainScene);
 		#end
+	}
+
+	public function createAudioBuffer(?name:String, audioStream:IAudioStream):IAudioBuffer {
+		final buffer = platform.createAudioBuffer(audioStream);
+
+		if (name != null) {
+			rom.audioBuffers[name] = buffer;
+		}
+
+		return buffer;
 	}
 
 	/**
@@ -229,10 +243,22 @@ class RES {
 		}
 	}
 
+	/**
+		Get a feature by it's class name
+
+		@param className Full class name (e.g. `my.package.ClassName`)
+
+		@returns Feature
+	 */
 	public function getFeature(className:String):Feature {
 		return features[className];
 	}
 
+	/**
+		Access a feature with it's class
+
+		@param featureClass
+	 */
 	public function feature<T>(featureClass:Class<T>):T {
 		return cast getFeature(featureClass.getClassName());
 	}
@@ -258,14 +284,15 @@ class RES {
 
 		@param sceneClass Class of the scene to create
 		@param sceneInstance Scene instance to set. sceneClass will be ignored is set
-		@param args Scene class constructor arguments
 		@param forceCreate Force create a new instance, instead of using a cached one
 		@param historyReplace Replace the current scene in history, instead of adding a new entry
 	 */
-	public function setScene(?sceneClass:Class<Scene>, ?sceneInstance:Scene = null, ?args:Array<Dynamic>, ?forceCreate:Bool = false,
-			?historyReplace:Bool = false):Scene {
-		if (_scene != null && historyReplace == false)
-			_sceneHistory.push(_scene);
+	public function setScene(?sceneClass:Class<Scene>, ?sceneInstance:Scene = null, ?forceCreate:Bool = false, ?historyReplace:Bool = false):Scene {
+		if (_scene != null) {
+			_scene.leave();
+			if (historyReplace == false)
+				_sceneHistory.push(_scene);
+		}
 
 		var scene:Scene = sceneInstance;
 
@@ -280,22 +307,20 @@ class RES {
 		}
 
 		if (scene == null) {
-			if (args == null)
-				args = [];
-
-			args.unshift(this);
-
-			scene = sceneClass.createInstance(args);
+			scene = sceneClass.createInstance([this]);
+			scene.init();
 		}
+
+		scene.enter();
 
 		_scenes[sceneClassName] = scene;
 
 		return _scene = scene;
 	}
 
-	public function pushScene(?sceneClass:Class<Scene>, ?sceneInstance:Scene = null, ?args:Array<Dynamic>, ?forceCreate:Bool = false,
-			?historyReplace:Bool = false, onResult:Dynamic->Void):Scene {
-		var scene = setScene(sceneClass, sceneInstance, args, forceCreate, historyReplace);
+	public function pushScene(?sceneClass:Class<Scene>, ?sceneInstance:Scene = null, ?forceCreate:Bool = false, ?historyReplace:Bool = false,
+			onResult:Dynamic->Void):Scene {
+		var scene = setScene(sceneClass, sceneInstance, forceCreate, historyReplace);
 		_sceneResultCb.push(onResult);
 		return scene;
 	}
@@ -303,13 +328,15 @@ class RES {
 	public function popScene(?result:Dynamic) {
 		var scene = _sceneHistory.pop();
 
-		if (scene != null)
+		if (scene != null) {
 			_scene = scene;
+			_scene.enter();
 
-		var cb = _sceneResultCb.pop();
+			var cb = _sceneResultCb.pop();
 
-		if (cb != null)
-			cb(result);
+			if (cb != null)
+				cb(result);
+		}
 	}
 
 	/**
@@ -345,10 +372,6 @@ class RES {
 			lastFrameTime = currentStamp - prevFrameTime;
 
 		prevFrameTime = currentStamp;
-	}
-
-	public function playAudio(id:String) {
-		platform.playAudio(id);
 	}
 
 	/**

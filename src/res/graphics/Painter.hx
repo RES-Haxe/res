@@ -92,11 +92,11 @@ class Painter {
 			final fx = maxi(0, x);
 			final fy = maxi(0, y);
 
-			final tx = mini(frameBuffer.frameWidth - 1, x + w);
-			final ty = mini(frameBuffer.frameHeight - 1, y + h);
+			final tx = mini(frameBuffer.frameWidth, x + w);
+			final ty = mini(frameBuffer.frameHeight, y + h);
 
 			if (tx - fx > 0 && ty - fy > 0) {
-				for (line in fy...ty + 1) {
+				for (line in fy...ty) {
 					for (col in fx...tx) {
 						frameBuffer.setIndex(col, line, colorIndex);
 					}
