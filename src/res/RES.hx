@@ -9,7 +9,7 @@ import res.graphics.Graphics;
 import res.input.Controller;
 import res.input.Keyboard;
 import res.input.Mouse;
-import res.platforms.Platform;
+import res.platforms.IPlatform;
 import res.rom.Rom;
 import res.storage.Storage;
 import res.text.Font;
@@ -20,6 +20,7 @@ import res.types.RESConfig;
 
 using Math;
 using Type;
+using res.tools.ResolutionTools;
 
 typedef RenderHookFunction = RES->IFrameBuffer->Void;
 
@@ -37,7 +38,7 @@ class RES {
 	public final resolution:Resolution;
 	public final fonts:Map<String, Font> = [];
 	public final mainScene:Class<Scene>;
-	public final platform:Platform;
+	public final platform:IPlatform;
 	public final storage:Storage;
 	public final renderHooks:RenderHooks = {
 		before: [],
@@ -61,27 +62,24 @@ class RES {
 
 	public var scene(get, never):Scene;
 
-	public var frameBuffer(get, never):IFrameBuffer;
-
-	function get_frameBuffer()
-		return platform.frameBuffer;
+	public final frameBuffer:IFrameBuffer;
 
 	/** Shorthand for `platform.frameBuffer.frameWidth` */
 	public var width(get, never):Int;
 
 	function get_width():Int
-		return platform.frameBuffer.frameWidth;
+		return frameBuffer.frameWidth;
 
 	/** Shorthand for `platform.frameBuffer.frameHeight` */
 	public var height(get, never):Int;
 
 	function get_height():Int
-		return platform.frameBuffer.frameHeight;
+		return frameBuffer.frameHeight;
 
 	function get_scene():Scene
 		return _scene;
 
-	private function new(platform:Platform, config:RESConfig) {
+	private function new(platform:IPlatform, config:RESConfig) {
 		this.config = config;
 
 		this.resolution = config.resolution;
@@ -106,8 +104,11 @@ class RES {
 
 		this.rom = config.rom;
 
+		final frameSize = config.resolution.pixelSize();
+
 		this.platform = platform;
 		this.platform.connect(this);
+		this.frameBuffer = platform.createFrameBuffer(frameSize.width, frameSize.height, rom.palette);
 
 		for (id => audioData in rom.audioData) {
 			createAudioBuffer(id, audioData.iterator());
@@ -353,18 +354,18 @@ class RES {
 		Produce a frame
 	 */
 	public function render() {
-		platform.frameBuffer.beginFrame();
+		frameBuffer.beginFrame();
 
 		for (func in renderHooks.before)
-			func(this, platform.frameBuffer);
+			func(this, frameBuffer);
 
 		if (scene != null)
-			scene.render(platform.frameBuffer);
+			scene.render(frameBuffer);
 
 		for (func in renderHooks.after)
-			func(this, platform.frameBuffer);
+			func(this, frameBuffer);
 
-		platform.frameBuffer.endFrame();
+		frameBuffer.endFrame();
 
 		final currentStamp = Timer.stamp();
 
@@ -380,7 +381,7 @@ class RES {
 		@param platform Platform
 		@param config RES Config
 	 */
-	public static function boot(platform:Platform, config:RESConfig):RES {
+	public static function boot(platform:IPlatform, config:RESConfig):RES {
 		return new RES(platform, config);
 	}
 }

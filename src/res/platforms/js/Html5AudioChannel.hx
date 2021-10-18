@@ -68,10 +68,12 @@ class Html5AudioChannel extends AudioChannel {
 	}
 
 	override function stop() {
-		source.stop();
-		source.disconnect(ctx.destination);
-		playing = false;
-		ended = true;
-		super.stop();
+		if (!ended) {
+			source.stop();
+			source.disconnect(ctx.destination);
+			playing = false;
+			ended = true;
+			super.stop();
+		}
 	}
 }

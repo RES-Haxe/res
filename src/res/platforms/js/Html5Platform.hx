@@ -12,12 +12,13 @@ import js.html.audio.AudioContext;
 import res.audio.IAudioBuffer;
 import res.audio.IAudioMixer;
 import res.audio.IAudioStream;
-import res.platforms.Platform;
 
 using Math;
 using res.tools.ResolutionTools;
 
-class Html5Platform extends Platform {
+class Html5Platform implements IPlatform {
+	public final name:String;
+
 	var canvas:CanvasElement;
 	var ctx:CanvasRenderingContext2D;
 	var scale:Int;
@@ -26,19 +27,9 @@ class Html5Platform extends Platform {
 
 	var lastTime:Float = 0;
 
-	var _frameBuffer:FrameBuffer;
-
 	var gamepads:Map<Int, Gamepad> = [];
 
 	var audioContext:AudioContext;
-
-	override function get_frameBuffer():IFrameBuffer {
-		return _frameBuffer;
-	}
-
-	override function get_name():String {
-		return 'HTML5';
-	}
 
 	/**
 		@param canvas Canvas element. Will create and add a new one if not set
@@ -46,6 +37,8 @@ class Html5Platform extends Platform {
 		@param injectCSS Inject CSS to make the canvas look crisp
 	 */
 	public function new(?canvas:CanvasElement, ?scale:Int = 4, ?injectCSS:Bool = true) {
+		name = 'HTML5';
+
 		if (canvas == null) {
 			canvas = document.createCanvasElement();
 			document.body.appendChild(canvas);
@@ -98,12 +91,10 @@ class Html5Platform extends Platform {
 		window.requestAnimationFrame(animationFrame);
 	}
 
-	override public function connect(res:RES) {
+	public function connect(res:RES) {
 		this.res = res;
 
 		final frameSize = res.config.resolution.pixelSize();
-
-		_frameBuffer = new FrameBuffer(frameSize.width, frameSize.height, res.rom.palette, canvas);
 
 		canvas.width = frameSize.width;
 		canvas.height = frameSize.height;
@@ -153,11 +144,15 @@ class Html5Platform extends Platform {
 		window.requestAnimationFrame(animationFrame);
 	}
 
-	override function createAudioBuffer(audioStream:IAudioStream):IAudioBuffer {
+	public function createAudioBuffer(audioStream:IAudioStream):IAudioBuffer {
 		return new Html5AudioBuffer(audioContext, audioStream);
 	}
 
-	override function createAudioMixer():IAudioMixer {
+	public function createAudioMixer():IAudioMixer {
 		return new Html5AudioMixer(audioContext);
+	}
+
+	public function createFrameBuffer(width:Int, height:Int, palette:Palette):IFrameBuffer {
+		return new FrameBuffer(width, height, palette, canvas);
 	}
 }
