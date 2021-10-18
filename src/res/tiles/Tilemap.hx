@@ -1,7 +1,7 @@
 package res.tiles;
 
 import res.display.Renderable;
-import res.tools.MathTools.wrap;
+import res.tools.MathTools.wrapf;
 
 using Math;
 
@@ -178,7 +178,7 @@ class Tilemap extends Renderable {
 					});
 				}
 
-				final tileScanline:Int = (line + wrap(scrollY, tilemap.pixelHeight)).floor();
+				final tileScanline:Int = (line + wrapf(scrollY, tilemap.pixelHeight)).floor();
 				var tileLineIndex:Int = (tileScanline / tilemap.tileset.tileSize).floor();
 
 				if (tileLineIndex >= tilemap.vTiles)
@@ -190,7 +190,7 @@ class Tilemap extends Renderable {
 					final screenCol = x + col;
 
 					if (screenCol >= 0 && screenCol < frameBuffer.frameWidth) {
-						final tileCol:Int = (col + wrap(scrollX, tilemap.pixelWidth)).floor();
+						final tileCol:Int = (col + wrapf(scrollX, tilemap.pixelWidth)).floor();
 						var tileColIndex:Int = (tileCol / tilemap.tileset.tileSize).floor();
 
 						if (tileColIndex >= tilemap.hTiles)
