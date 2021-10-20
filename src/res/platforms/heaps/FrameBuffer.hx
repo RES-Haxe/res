@@ -1,10 +1,10 @@
 package res.platforms.heaps;
 
+import h2d.Bitmap;
+import h2d.Scene;
 import h2d.Tile;
 import haxe.io.Bytes;
 import hxd.Pixels;
-import h2d.Bitmap;
-import h2d.Scene;
 import res.IFrameBuffer;
 
 class FrameBuffer implements IFrameBuffer {
@@ -23,7 +23,7 @@ class FrameBuffer implements IFrameBuffer {
 
 		_pixels = new Pixels(width, height, Bytes.alloc(width * height * 4), ARGB);
 
-		_indexBuffer = [for (line in 0...height) [for (col in 0...width) 0]];
+		_indexBuffer = [for (_ in 0...height) [for (_ in 0...width) 0]];
 		_palette = palette;
 	}
 
