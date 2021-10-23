@@ -5,7 +5,7 @@ class AudioMixerBase implements IAudioMixer {
 
 	var pausedChannels:Array<AudioChannel> = [];
 
-	public function play(buffer:IAudioBuffer, ?loop:Bool):AudioChannel {
+	public function play(buffer:IAudioBuffer, ?loop:Bool = false):AudioChannel {
 		final newChannel = createAudioChannel(buffer, loop);
 		playing.push(newChannel);
 		newChannel.listen((e) -> {

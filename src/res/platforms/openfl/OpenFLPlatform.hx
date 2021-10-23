@@ -1,21 +1,19 @@
-#if openfl
 package res.platforms.openfl;
 
-import openfl.events.MouseEvent;
 import openfl.Lib;
 import openfl.display.Bitmap;
-import openfl.display.BitmapData;
 import openfl.display.DisplayObjectContainer;
 import openfl.events.Event;
 import openfl.events.KeyboardEvent;
+import openfl.events.MouseEvent;
 import openfl.ui.GameInput;
+import res.audio.IAudioBuffer;
+import res.audio.IAudioMixer;
+import res.audio.IAudioStream;
 
-class OpenFLPlatform implements Platform {
-	public final pixelFormat:PixelFormat = ARGB;
-
+class OpenFLPlatform implements IPlatform {
 	public var bitmap:Bitmap;
 
-	var bitmapData:BitmapData;
 	var container:DisplayObjectContainer;
 	var res:RES;
 	var autosize:Bool;
@@ -39,19 +37,19 @@ class OpenFLPlatform implements Platform {
 	}
 
 	function resize() {
-		final s = Math.min(container.stage.stageWidth / res.width, container.stage.stageHeight / res.height);
+		if (bitmap != null && frameBuffer != null) {
+			final s = Math.min(container.stage.stageWidth / frameBuffer.frameWidth, container.stage.stageHeight / frameBuffer.frameHeight);
 
-		bitmap.width = res.width * s;
-		bitmap.height = res.height * s;
+			bitmap.width = frameBuffer.frameWidth * s;
+			bitmap.height = frameBuffer.frameHeight * s;
 
-		bitmap.x = (container.stage.stageWidth - bitmap.width) / 2;
-		bitmap.y = (container.stage.stageHeight - bitmap.height) / 2;
+			bitmap.x = (container.stage.stageWidth - bitmap.width) / 2;
+			bitmap.y = (container.stage.stageHeight - bitmap.height) / 2;
+		}
 	}
 
 	public function connect(res:RES) {
 		this.res = res;
-		bitmap = new Bitmap(bitmapData = new BitmapData(res.width, res.height, false));
-		container.addChild(bitmap);
 
 		container.stage.addEventListener(KeyboardEvent.KEY_DOWN, (event:KeyboardEvent) -> {
 			res.keyboard.keyDown(event.keyCode);
@@ -70,11 +68,11 @@ class OpenFLPlatform implements Platform {
 		});
 
 		container.stage.addEventListener(MouseEvent.MOUSE_DOWN, (event) -> {
-			res.mouse.push(LEFT);
+			res.mouse.push(LEFT, Std.int(event.localX), Std.int(event.localY));
 		});
 
 		container.stage.addEventListener(MouseEvent.MOUSE_UP, (event) -> {
-			res.mouse.release(LEFT);
+			res.mouse.release(LEFT, Std.int(event.localX), Std.int(event.localY));
 		});
 
 		if (GameInput.isSupported) {}
@@ -90,10 +88,26 @@ class OpenFLPlatform implements Platform {
 		lastTime = Lib.getTimer();
 	}
 
-	public function render(res:RES) {
-		bitmapData.lock();
-		bitmapData.setPixels(bitmapData.rect, res.frameBuffer.getFrame());
-		bitmapData.unlock();
+	public final name:String = 'OpenFL';
+
+	public function createAudioBuffer(audioStream:IAudioStream):IAudioBuffer {
+		return new AudioBuffer(audioStream);
 	}
+
+	public function createAudioMixer():IAudioMixer {
+		return new AudioMixer();
+	}
+
+	public function createFrameBuffer(width:Int, height:Int, palette:Palette):IFrameBuffer {
+		frameBuffer = new FrameBuffer(width, height, palette);
+
+		container.addChild(bitmap = new Bitmap(frameBuffer.bitmapData));
+
+		if (autosize)
+			resize();
+
+		return frameBuffer;
+	}
+
+	var frameBuffer:FrameBuffer;
 }
-#end
