@@ -1,9 +1,5 @@
 package res.audio;
 
-import res.audio.WaveFunc.sawtooth;
-import res.audio.WaveFunc.sine;
-import res.audio.WaveFunc.square;
-import res.audio.WaveFunc.triangle;
 import res.tools.MathTools.clampf;
 import res.tools.MathTools.wrapi;
 
@@ -17,22 +13,13 @@ class Tone implements IAudioStream {
 	var samplesPerCycle:Int;
 	var func:WaveFunc;
 
-	public function new(waveType:WaveType, frequency:Float, length:Float = 1, volume:Float = 1, channels:Int = 1, sampleRate:Int = 22050) {
+	public function new(waveFunc:WaveFunc, frequency:Float, length:Float = 1, volume:Float = 1, channels:Int = 1, sampleRate:Int = 22050) {
 		this.sampleRate = sampleRate;
 		this.volume = clampf(volume, -1, 1);
 		this.numSamples = Std.int(sampleRate * length);
 		this.numChannels = channels;
 
-		func = switch (waveType) {
-			case SINE:
-				sine;
-			case SQUARE:
-				square;
-			case TRIANGLE:
-				triangle;
-			case SAWTOOTH:
-				sawtooth;
-		}
+		func = waveFunc;
 
 		samplesPerCycle = Std.int(sampleRate / frequency);
 	}
