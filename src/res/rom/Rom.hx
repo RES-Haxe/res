@@ -103,7 +103,7 @@ class Rom {
 
 		final resTypes:Array<String> = ['audio', 'tilesets', 'tilemaps', 'sprites', 'fonts', 'data'];
 		final supportedTypes:Map<String, Array<String>> = [
-			'tilesets' => ['aseprite'],
+			'tilesets' => ['aseprite', 'json'],
 			'tilemaps' => ['aseprite'],
 			'sprites' => ['aseprite', 'png'],
 			'fonts' => ['txt'],
@@ -152,6 +152,8 @@ class Rom {
 									switch (fileExt) {
 										case 'aseprite':
 											TilesetChunk.fromAseprite(fileBytes, name).write(byteOutput);
+										case 'json':
+											TilesetChunk.fromJson(filePath, name, palette).write(byteOutput);
 									}
 								case 'tilemaps':
 									switch (fileExt) {
@@ -184,8 +186,6 @@ class Rom {
 	#end
 
 	public static function fromBytes(bytes:Bytes, ?compressed:Bool):Rom {
-		trace('ROM size: ${bytes.length} bytes');
-
 		final bytesInput = new BytesInput(compressed ? InflateImpl.run(new BytesInput(bytes)) : bytes);
 
 		if (bytesInput.readInt32() != MAGIC_NUMBER)

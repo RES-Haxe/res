@@ -1,9 +1,17 @@
 package res.rom;
 
+import format.png.Reader;
+import format.png.Tools;
+import haxe.Json;
 import haxe.io.Bytes;
 import haxe.io.BytesInput;
 import haxe.io.BytesOutput;
+import haxe.io.Path;
 import res.tiles.Tileset;
+
+typedef TilesetJson = {
+	size:Int
+};
 
 class TilesetChunk extends RomChunk {
 	public function new(name:String, data:Bytes) {
@@ -29,6 +37,62 @@ class TilesetChunk extends RomChunk {
 	}
 
 	#if macro
+	public static function fromJson(filename:String, name:String, palette:Palette):TilesetChunk {
+		final meta:TilesetJson = Json.parse(sys.io.File.getContent(filename));
+		final pngData = new Reader(new BytesInput(sys.io.File.getBytes(Path.withoutExtension(filename) + '.png'))).read();
+		final pngHeader = Tools.getHeader(pngData);
+
+		if (pngHeader.width % meta.size != 0 || pngHeader.height % meta.size != 0)
+			throw 'Invalid PNG size: width % ${meta.size} != 0 || height % ${meta.size} != 0';
+
+		final hTiles:Int = Std.int(pngHeader.width / meta.size);
+		final vTiles:Int = Std.int(pngHeader.height / meta.size);
+
+		final pixels = Tools.extract32(pngData);
+
+		final empty = Bytes.alloc(meta.size * meta.size);
+		empty.fill(0, empty.length, 0);
+
+		final tiles:Array<Bytes> = [];
+
+		for (yTile in 0...vTiles) {
+			for (xTile in 0...hTiles) {
+				final tileBytes = Bytes.alloc(meta.size * meta.size);
+
+				for (line in 0...meta.size) {
+					for (col in 0...meta.size) {
+						final srcx = xTile * meta.size + col;
+						final srcy = yTile * meta.size + line;
+						final pixel:Color = pixels.getInt32((srcy * pngHeader.width + srcx) * 4);
+
+						if (pixel != 0x0) {
+							final color = Color.fromRGBA(pixel.g, pixel.b, pixel.a, pixel.r);
+							final index = palette.closest(color);
+
+							tileBytes.set(line * meta.size + col, index);
+						}
+					}
+				}
+
+				if (tileBytes.compare(empty) != 0) {
+					tiles.push(tileBytes);
+				}
+			}
+		}
+
+		final bytesOutput = new BytesOutput();
+
+		bytesOutput.writeByte(meta.size);
+		bytesOutput.writeByte(meta.size);
+		bytesOutput.writeInt32(tiles.length);
+
+		for (tile in tiles) {
+			bytesOutput.writeBytes(tile, 0, tile.length);
+		}
+
+		return new TilesetChunk(name, bytesOutput.getBytes());
+	}
+
 	public static function fromAseprite(bytes:Bytes, name:String, ?reuseRepeated:Bool = true):TilesetChunk {
 		final ase = ase.Ase.fromBytes(bytes);
 

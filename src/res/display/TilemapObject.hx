@@ -16,7 +16,7 @@ class TilemapObject extends Object {
 	}
 
 	override function selfRender(frameBuffer:IFrameBuffer, atx:Float, aty:Float) {
-		Tilemap.drawTilemap(tilemap, frameBuffer, Math.floor(atx), Math.floor(aty), Math.floor(width), Math.floor(height), Math.floor(scrollX),
+		Tilemap.drawTilemap(frameBuffer, tilemap, Math.floor(atx), Math.floor(aty), Math.floor(width), Math.floor(height), Math.floor(scrollX),
 			Math.floor(scrollY));
 	}
 }

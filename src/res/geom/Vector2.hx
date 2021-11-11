@@ -6,40 +6,80 @@ class Vector2 {
 
 	public var xi(get, never):Int;
 
-	function get_xi()
+	inline function get_xi()
 		return Std.int(x);
 
 	public var yi(get, never):Int;
 
-	function get_yi()
+	inline function get_yi()
 		return Std.int(y);
-
-	public var len2(get, never):Float;
-
-	function get_len2():Float
-		return x * x + y * y;
-
-	public var len(get, set):Float;
-
-	function get_len():Float
-		return Math.sqrt(len2);
-
-	function set_len(val:Float) {
-		final l = len;
-
-		x = x / l * val;
-		y = y / l * val;
-
-		return len;
-	}
 
 	public inline function new(?x:Float = 0, ?y:Float) {
 		set(x, y);
+	}
+
+	public function clone():Vector2 {
+		return new Vector2(x, y);
+	}
+
+	public static function xy(?x:Float = 0, ?y:Float) {
+		return new Vector2(x, y);
+	}
+
+	public function add(v:Vector2):Vector2 {
+		return addxy(v.x, v.y);
+	}
+
+	public function addxy(x:Float, y:Float):Vector2 {
+		this.x += x;
+		this.y += y;
+		return this;
+	}
+
+	public function length() {
+		return Math.sqrt(length2());
+	}
+
+	public function length2() {
+		return x * x + y * y;
+	}
+
+	public function mult(v:Vector2) {
+		multxy(v.x, v.y);
+		return this;
+	}
+
+	public function multxy(x:Float, y:Float):Vector2 {
+		this.x *= x;
+		this.y *= y;
+		return this;
+	}
+
+	public function mults(scalar:Float):Vector2 {
+		multxy(scalar, scalar);
+		return this;
+	}
+
+	/**
+		Set the length of the vector
+	 */
+	public function normalize(len:Float = 1):Vector2 {
+		final l = length();
+		set(x / l * len, y / l * len);
+		return this;
 	}
 
 	public function set(x:Float, ?y:Float):Vector2 {
 		this.x = x;
 		this.y = y == null ? x : y;
 		return this;
+	}
+
+	public function toRad():Float {
+		return Math.atan2(y, x);
+	}
+
+	public function toString():String {
+		return '($x, $y)';
 	}
 }

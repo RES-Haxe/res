@@ -129,12 +129,10 @@ class Html5Platform implements IPlatform {
 				res.keyboard.keyPress(event.key.charCodeAt(0));
 
 			res.keyboard.keyDown(event.keyCode);
-			event.preventDefault();
 		});
 
 		window.addEventListener('keyup', (event:KeyboardEvent) -> {
 			res.keyboard.keyUp(event.keyCode);
-			event.preventDefault();
 		});
 
 		document.addEventListener('visibilitychange', (event) -> {

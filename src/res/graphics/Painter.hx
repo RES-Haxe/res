@@ -1,9 +1,9 @@
 package res.graphics;
 
 import Math.*;
+import res.collisions.Shape;
 import res.geom.Rect;
-import res.tools.MathTools.maxi;
-import res.tools.MathTools.mini;
+import res.tools.MathTools.*;
 
 using Std;
 
@@ -24,12 +24,51 @@ using Std;
 	```
  */
 class Painter {
-	public static function ellipse(frameBuffer:IFrameBuffer, cx:Int, cy:Int, rx:Int, ry:Int, colorIndex:Int) {
-		// TODO
-	}
+	/**
+		Draw a circle
 
+		Midpoint circle algorithm
+
+		@param frameBuffer
+		@param cx Center x
+		@param cy Center y
+		@param r radius
+		@param colorIndex Color index
+	 */
 	public static function circle(frameBuffer:IFrameBuffer, cx:Int, cy:Int, r:Int, colorIndex:Int) {
-		ellipse(frameBuffer, cx, cy, r, r, colorIndex);
+		final plot = (dx:Int, dy:Int) -> {
+			for (p in [
+				[cx + dx, cy + dy],
+				[cx - dx, cy + dy],
+				[cx + dx, cy - dy],
+				[cx - dx, cy - dy],
+				[cx + dy, cy + dx],
+				[cx - dy, cy + dx],
+				[cx + dy, cy - dx],
+				[cx - dy, cy - dx]
+			]) {
+				frameBuffer.setIndex(p[0], p[1], colorIndex);
+			}
+		};
+
+		var x = 0;
+		var y = r;
+		var d = 3 - 2 * r;
+
+		plot(x, y);
+
+		while (y >= x) {
+			x++;
+
+			if (d > 0) {
+				y--;
+				d = d + 4 * (x - y) + 10;
+			} else {
+				d = d + 4 * x + 6;
+			}
+
+			plot(x, y);
+		}
 	}
 
 	/**
@@ -45,6 +84,9 @@ class Painter {
 	public static function line(frameBuffer:IFrameBuffer, x0:Int, y0:Int, x1:Int, y1:Int, colorIndex:Int) {
 		final dx:Int = abs(x1 - x0).int();
 		final dy:Int = abs(y1 - y0).int();
+
+		if (dx == 0 && dy == 0)
+			return;
 
 		var x:Int = x0;
 		var y:Int = y0;
@@ -89,19 +131,40 @@ class Painter {
 	 */
 	public static function rect(frameBuffer:IFrameBuffer, x:Int, y:Int, w:Int, h:Int, colorIndex:Int) {
 		if (Rect.intersect(0, 0, frameBuffer.frameWidth, frameBuffer.frameHeight, x, y, w, h)) {
-			final fx = maxi(0, x);
-			final fy = maxi(0, y);
+			final fx = mini(x, x + w);
+			final fy = mini(y, y + h);
 
-			final tx = mini(frameBuffer.frameWidth, x + w);
-			final ty = mini(frameBuffer.frameHeight, y + h);
+			final tx = maxi(x, x + w) + 1;
+			final ty = maxi(y, y + h) + 1;
 
 			if (tx - fx > 0 && ty - fy > 0) {
 				for (line in fy...ty) {
-					for (col in fx...tx) {
-						frameBuffer.setIndex(col, line, colorIndex);
+					if (line == fy || line == ty - 1) {
+						for (col in fx...tx) {
+							frameBuffer.setIndex(col, line, colorIndex);
+						}
+					} else {
+						frameBuffer.setIndex(fx, line, colorIndex);
+						frameBuffer.setIndex(tx - 1, line, colorIndex);
 					}
 				}
 			}
+		}
+	}
+
+	/**
+		Draw a shape
+
+		@param frameBuffer
+		@param shape
+		@param colorIndex
+	 */
+	public static function shape(frameBuffer:IFrameBuffer, shape:Shape, colorIndex:Int) {
+		switch (shape) {
+			case CIRCLE(cx, cy, r):
+				circle(frameBuffer, cx.int(), cy.int(), r.int(), colorIndex);
+			case RECT(cx, cy, w, h):
+				rect(frameBuffer, (cx - w / 2).int(), (cy - h / 2).int(), w.int(), h.int(), colorIndex);
 		}
 	}
 }

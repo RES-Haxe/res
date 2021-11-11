@@ -46,14 +46,16 @@ class FrameBuffer implements IFrameBuffer {
 	}
 
 	public function setIndex(x:Int, y:Int, index:Int) {
-		_indexBuffer[y][x] = index;
-		final color = _palette.get(index);
-		final pos = y * _width + x;
+		if (x >= 0 && y >= 0 && x < frameWidth && y < frameHeight) {
+			_indexBuffer[y][x] = index;
+			final color = _palette.get(index);
+			final pos = y * _width + x;
 
-		_imageData.data[pos * 4] = color.r;
-		_imageData.data[pos * 4 + 1] = color.g;
-		_imageData.data[pos * 4 + 2] = color.b;
-		_imageData.data[pos * 4 + 3] = 255;
+			_imageData.data[pos * 4] = color.r;
+			_imageData.data[pos * 4 + 1] = color.g;
+			_imageData.data[pos * 4 + 2] = color.b;
+			_imageData.data[pos * 4 + 3] = 255;
+		}
 	}
 
 	public function new(width:Int, height:Int, palette:Palette, canvas:CanvasElement) {

@@ -31,7 +31,7 @@ enum FpsDisplayMethod {
 }
 
 class FpsDisplay implements Feature {
-	public var showFPS:Bool = false;
+	public var showFPS:Bool = true;
 	public var method:FpsDisplayMethod = PER_SECOND;
 
 	var res:RES;
@@ -67,7 +67,7 @@ class FpsDisplay implements Feature {
 				}
 
 				text.textAt(0, 0, 'FPS: ${fpsValue}');
-				Tilemap.drawTilemap(text, frameBuffer, 1, 1);
+				Tilemap.drawTilemap(frameBuffer, text, 1, 1);
 			}
 		});
 

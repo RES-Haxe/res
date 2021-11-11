@@ -35,8 +35,8 @@ class Sprite {
 		return obj;
 	}
 
-	public static function drawSprite(sprite:Sprite, frameBuffer:IFrameBuffer, ?x:Int = 0, ?y:Int = 0, ?width:Int, ?height:Int, ?frameIndex:Int = 0,
-			?wrapping:Bool = true, ?colorMap:Array<Int>) {
+	public static function drawSprite(frameBuffer:IFrameBuffer, sprite:Sprite, ?x:Int = 0, ?y:Int = 0, ?width:Int, ?height:Int, ?frameIndex:Int = 0,
+			?flipX:Bool = false, ?flipY:Bool = false, ?wrapping:Bool = true, ?colorMap:Array<Int>) {
 		final frame = sprite.frames[frameIndex];
 
 		final lines:Int = height == null ? sprite.height : height;
@@ -48,8 +48,9 @@ class Sprite {
 		for (scanline in 0...lines) {
 			if (!((!wrapping && (scanline < 0 || scanline >= frameBuffer.frameHeight)))) {
 				for (col in 0...cols) {
-					final spriteLine = wrapi(scanline, sprite.height);
-					final spriteCol = wrapi(col, sprite.width);
+					final spriteCol = wrapi(flipX ? sprite.width - 1 - col : col, sprite.width);
+					final spriteLine = wrapi(flipY ? sprite.height - 1 - scanline : scanline, sprite.height);
+
 					final sampleIndex:Int = frame.data.getxy(sprite.width, spriteCol, spriteLine);
 
 					if (sampleIndex != 0) {

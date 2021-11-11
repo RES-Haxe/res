@@ -43,7 +43,7 @@ class Splash extends Scene {
 			paletteTest.colorMap.unshift(paletteTest.colorMap.pop());
 		});
 
-		timeline.after(2, (_) -> {
+		timeline.after(1, (_) -> {
 			res.setScene(res.mainScene);
 		});
 

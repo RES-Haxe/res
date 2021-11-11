@@ -48,12 +48,7 @@ class Tilemap extends Renderable {
 				map[line] = [for (_ in 0...hTiles) null];
 
 			for (col in 0...hTiles) {
-				map[line][col] = {
-					index: 0,
-					flipX: false,
-					flipY: false,
-					rot90cw: false
-				}
+				empty(col, line);
 			}
 		}
 	}
@@ -64,7 +59,7 @@ class Tilemap extends Renderable {
 			for (col in 0...hTiles) {
 				final t = get(col, line);
 
-				cloned.set(col, line, t.index, t.flipX, t.flipY, t.rot90cw);
+				cloned.set(col, line, t.index, t.flipX, t.flipY, t.rot90cw, t.data);
 			}
 		}
 
@@ -88,24 +83,27 @@ class Tilemap extends Renderable {
 			return null;
 	}
 
-	public function set(tileCol:Int, tileLine:Int, tileIndex:Int, flipX:Bool = false, flipY:Bool = false, rot90cw:Bool = false, ?colorMap:Array<Int>) {
-		if (inBounds(tileCol, tileLine)) {
-			if (map[tileLine][tileCol] == null)
-				map[tileLine][tileCol] = {
-					index: 0,
-					flipX: false,
-					flipY: false,
-					rot90cw: false,
-					colorMap: colorMap
-				};
+	public function empty(tileCol:Int, tileLine:Int) {
+		map[tileLine][tileCol] = null;
+	}
 
-			map[tileLine][tileCol].index = tileIndex;
-			map[tileLine][tileCol].flipX = flipX;
-			map[tileLine][tileCol].flipY = flipY;
-			map[tileLine][tileCol].rot90cw = rot90cw;
-			map[tileLine][tileCol].colorMap = colorMap;
+	public function place(x:Int, y:Int, place:TilePlace) {
+		if (inBounds(x, y)) {
+			map[y][x] = place;
 		} else
-			throw 'Out of tile map bounds (col: $tileCol, line: $tileLine, size: $hTiles x $vTiles)';
+			throw 'Out of tile map bounds (col: $x, line: $y, size: $hTiles x $vTiles)';
+	}
+
+	public function set(tileCol:Int, tileLine:Int, tileIndex:Int, flipX:Bool = false, flipY:Bool = false, rot90cw:Bool = false, ?colorMap:Array<Int>,
+			?data:Dynamic) {
+		place(tileCol, tileLine, {
+			index: tileIndex,
+			flipX: flipX,
+			flipY: flipY,
+			rot90cw: rot90cw,
+			colorMap: colorMap,
+			data: data
+		});
 	}
 
 	public function resize(newWidth:Int, ?newHeight:Int) {
@@ -116,10 +114,7 @@ class Tilemap extends Renderable {
 
 		for (i in 0...map.length) {
 			if (map[i] == null)
-				map[i] = [for (_ in 0...hTiles)
-					({
-						index:0, flipX:false, flipY:false, rot90cw:false
-					})];
+				map[i] = [for (_ in 0...hTiles) null];
 		}
 	}
 
@@ -147,8 +142,8 @@ class Tilemap extends Renderable {
 	/**
 		Draw a tilemap
 
-		@param tilemap Tilemap to render
 		@param frameBuffer FrameBuffer to render to
+		@param tilemap Tilemap to render
 		@param x screen X corrdinate
 		@param y screen Y coordinate
 		@param width width of the window to render (framWidth by default)
@@ -158,7 +153,7 @@ class Tilemap extends Renderable {
 		@param wrapping
 		@param scanlineFunc
 	 */
-	public static function drawTilemap(tilemap:Tilemap, frameBuffer:IFrameBuffer, ?x:Int = 0, ?y:Int = 0, ?width:Int, ?height:Int, ?scrollX:Float = 0,
+	public static function drawTilemap(frameBuffer:IFrameBuffer, tilemap:Tilemap, ?x:Int = 0, ?y:Int = 0, ?width:Int, ?height:Int, ?scrollX:Float = 0,
 			?scrollY:Float = 0, ?wrapping:Bool = true, ?scanlineFunc:ScanlineFunc) {
 		if (width == null)
 			width = frameBuffer.frameWidth;
@@ -219,5 +214,5 @@ class Tilemap extends Renderable {
 		@param frameBuffer Frame buffer to render at
 	 */
 	override public function render(frameBuffer:IFrameBuffer)
-		drawTilemap(this, frameBuffer, 0, 0, frameBuffer.frameWidth, frameBuffer.frameHeight, scrollX, scrollY, true, scanlineFunc);
+		drawTilemap(frameBuffer, this, 0, 0, frameBuffer.frameWidth, frameBuffer.frameHeight, scrollX, scrollY, true, scanlineFunc);
 }

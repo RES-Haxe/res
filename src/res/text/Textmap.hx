@@ -4,7 +4,7 @@ import res.tiles.Tilemap;
 import res.tiles.Tileset;
 
 class Textmap extends Tilemap {
-	private var _charMap:Map<Int, Int> = [];
+	private final _charMap:Map<Int, Int> = [];
 
 	public function new(tileset:Tileset, hTiles:Int, vTiles:Int, characters:String, ?firstTileIndex:Int = 0, ?paletteIndecies:Array<Int>) {
 		super(tileset, hTiles, vTiles, paletteIndecies);
@@ -13,13 +13,36 @@ class Textmap extends Tilemap {
 			_charMap[characters.charCodeAt(ci)] = firstTileIndex + ci + 1;
 	}
 
+	/**
+		Set a particular character at specified tile place
+
+		@param atx Tile x coordinate
+		@param aty Tile y coordinate
+		@param char String containing the character to place. Only the first character will be used if the string is longer
+		@param colorMap Array of color indecies to use
+	 */
+	public function setChar(atx:Int, aty:Int, char:String, ?colorMap:Array<Int>) {
+		if (char.length == 0)
+			throw '`char` must contain a character to set';
+		set(atx, aty, _charMap[char.charCodeAt(0)], colorMap);
+	}
+
+	/**
+		Set character indecies for the given text
+
+		@param atx Tile x coordinate to start setting characters
+		@param aty Tile y coordinate
+		@param text Text to set
+		@param colorMap Array of color indecies to use
+		@param clearEnd Clear any tiles to the end of the line
+	 */
 	public function textAt(atx:Int, aty:Int, text:String, ?colorMap:Array<Int>, ?clearEnd:Bool = true) {
 		if (aty >= 0 && aty < map.length) {
 			for (tx in atx...hTiles) {
 				var ci = tx - atx;
 
 				if (ci < text.length)
-					set(tx, aty, _charMap[text.charCodeAt(ci)], colorMap);
+					setChar(tx, aty, text.charAt(ci), colorMap);
 				else if (clearEnd)
 					set(tx, aty, 0);
 				else
@@ -31,12 +54,13 @@ class Textmap extends Tilemap {
 	/**
 		Set a centered line of text
 
-		@param aty line at which the text should be displayed
-		@param text text to display
-		@param clearStart remove any tiles from the left side to the first character of the string
-		@param clearEnd remove any tiles to the end of the line
+		@param aty Line at which the text should be displayed
+		@param text Text to display
+		@param colorMap Array of color indecies to use
+		@param clearStart Remove any tiles from the left side to the first character of the string
+		@param clearEnd Clear any tiles to the end of the line
 	 */
-	public function textCentered(aty:Int, text:String, ?clearStart:Bool = true, ?clearEnd:Bool = true) {
+	public function textCentered(aty:Int, text:String, ?colorMap:Array<Int>, ?clearStart:Bool = true, ?clearEnd:Bool = true) {
 		final pos:Int = Std.int((hTiles - text.length) / 2);
 
 		if (clearStart)
@@ -44,6 +68,6 @@ class Textmap extends Tilemap {
 				for (x in 0...pos)
 					set(x, aty, 0);
 
-		textAt(pos, aty, text, clearEnd);
+		textAt(pos, aty, text, colorMap, clearEnd);
 	}
 }

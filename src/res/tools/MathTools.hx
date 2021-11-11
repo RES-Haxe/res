@@ -32,4 +32,8 @@ class MathTools {
 
 		return x;
 	}
+
+	public static inline function sign(x:Float):Int {
+		return x == 0 ? 0 : x < 0 ? -1 : 1;
+	}
 }
