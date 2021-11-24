@@ -12,6 +12,7 @@ import js.html.audio.AudioContext;
 import res.audio.IAudioBuffer;
 import res.audio.IAudioMixer;
 import res.audio.IAudioStream;
+import res.storage.IStorage;
 
 using Math;
 using res.tools.ResolutionTools;
@@ -152,5 +153,9 @@ class Html5Platform implements IPlatform {
 
 	public function createFrameBuffer(width:Int, height:Int, palette:Palette):IFrameBuffer {
 		return new FrameBuffer(width, height, palette, canvas);
+	}
+
+	public function createStorage():IStorage {
+		return new Html5Storage();
 	}
 }

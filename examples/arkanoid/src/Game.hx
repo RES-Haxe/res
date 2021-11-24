@@ -15,6 +15,7 @@ using Std;
 using res.display.Sprite;
 using res.graphics.Painter;
 using res.tiles.Tilemap;
+using StringTools;
 
 typedef Block = {
 	hits:Null<Int>,
@@ -24,7 +25,7 @@ typedef Block = {
 };
 
 enum BlockType {
-	XX;
+	__;
 	GR;
 	OR;
 	LB;
@@ -47,10 +48,10 @@ typedef Ball = {
 
 final PATTERNS:Array<Pattern> = [
 	[
-		[XX, XX, XX, XX, XX, XX, XX, XX, XX, XX, XX],
-		[XX, XX, XX, XX, XX, XX, XX, XX, XX, XX, XX],
-		[XX, XX, XX, XX, XX, XX, XX, XX, XX, XX, XX],
-		[XX, XX, XX, XX, XX, XX, XX, XX, XX, XX, XX],
+		[__, __, __, __, __, __, __, __, __, __, __],
+		[__, __, __, __, __, __, __, __, __, __, __],
+		[__, __, __, __, __, __, __, __, __, __, __],
+		[__, __, __, __, __, __, __, __, __, __, __],
 		[SL, SL, SL, SL, SL, SL, SL, SL, SL, SL, SL],
 		[RD, RD, RD, RD, RD, RD, RD, RD, RD, RD, RD],
 		[BL, BL, BL, BL, BL, BL, BL, BL, BL, BL, BL],
@@ -58,13 +59,34 @@ final PATTERNS:Array<Pattern> = [
 		[PR, PR, PR, PR, PR, PR, PR, PR, PR, PR, PR],
 		[GN, GN, GN, GN, GN, GN, GN, GN, GN, GN, GN],
 	],
+	[
+		[__, __, __, __, __, __, __, __, __, __, __],
+		[__, __, __, __, __, __, __, __, __, __, __],
+		[PR, __, __, __, __, __, __, __, __, __, __],
+		[PR, LB, __, __, __, __, __, __, __, __, __],
+		[PR, LB, GR, __, __, __, __, __, __, __, __],
+		[PR, LB, GR, BL, __, __, __, __, __, __, __],
+		[PR, LB, GR, BL, RD, __, __, __, __, __, __],
+		[PR, LB, GR, BL, RD, PR, __, __, __, __, __],
+		[PR, LB, GR, BL, RD, PR, LB, __, __, __, __],
+		[PR, LB, GR, BL, RD, PR, LB, GR, __, __, __],
+		[PR, LB, GR, BL, RD, PR, LB, GR, BL, __, __],
+		[PR, LB, GR, BL, RD, PR, LB, GR, BL, RD, __],
+		[SL, SL, SL, SL, SL, SL, SL, SL, SL, SL, SL],
+	],
 ];
 
+final FIELD_COL:Int = 2;
+final FIELD_WIDTH_TILES:Int = 22;
+final BALL_RADIUS:Float = 2.5;
+final MIN_STEP:Float = 1;
+final MAX_LIVES_DISPLAY:Int = 3;
+
 class Game extends Scene {
-	final FIELD_COL:Int = 2;
-	final FIELD_WIDTH_TILES:Int = 22;
-	final BALL_RADIUS:Float = 2.5;
-	final MIN_STEP:Float = 1;
+	public static var sessionScore:Int = 0;
+
+	static var nextRoundNum:Int = 0;
+	static var nextLives:Int = 2;
 
 	var bg:Tilemap;
 	var blocks:Tilemap;
@@ -75,8 +97,10 @@ class Game extends Scene {
 
 	var ballSpeed:Float = 150;
 
+	var numBlocks:Int = 0;
+
 	var paused:Bool = true;
-	var ready:Bool = true;
+	var hidePlatform:Bool = true;
 	var timeline:Timeline;
 
 	var balls:Array<Ball> = [];
@@ -88,9 +112,20 @@ class Game extends Scene {
 	var score(default, set):Int = 0;
 
 	function set_score(val:Int):Int {
-		final str = '$val';
+		final str = '$val'.lpad('0', 2);
 		text.textAt(text.hTiles - 1 - str.length, 7, str);
-		return score = val;
+		return score = sessionScore = val;
+	}
+
+	var lives(default, set):Int;
+
+	function set_lives(val:Int):Int {
+		for (n in 0...MAX_LIVES_DISPLAY) {
+			bg.set(FIELD_COL + FIELD_WIDTH_TILES + 1 + n * 2, 16, n < val ? 15 : 0);
+			bg.set(FIELD_COL + FIELD_WIDTH_TILES + 1 + n * 2 + 1, 16, n < val ? 15 : 0, true);
+		}
+
+		return lives = val;
 	}
 
 	function setBlock(x:Int, y:Int, block:Block) {
@@ -133,8 +168,10 @@ class Game extends Scene {
 					case _: null;
 				};
 
-				if (block != null)
+				if (block != null) {
 					setBlock(FIELD_COL + col * 2, 1 + line, block);
+					numBlocks++;
+				}
 			}
 		}
 	}
@@ -183,12 +220,9 @@ class Game extends Scene {
 		text = res.createTextmap();
 		text.textAt(25, 2, 'HIGH', [0, 3]);
 		text.textAt(26, 3, 'SCORE', [0, 3]);
-		text.textAt(26, 4, '50000');
+		text.textAt(26, 4, '${res.storage.getInt('high_score', 50000)}');
 
 		text.textAt(26, 6, '1UP', [0, 3]);
-		text.textAt(29, 7, '00');
-
-		text.textAt(11, 25, 'READY');
 	}
 
 	function spawnBall(x:Float, y:Float, velocity:Vector2):Ball {
@@ -211,21 +245,33 @@ class Game extends Scene {
 
 		blocks = res.createTilemap(res.rom.tilesets['tiles']);
 
+		timeline = new Timeline();
+
+		initBlocks(PATTERNS[nextRoundNum]);
+
+		lives = nextLives;
+		score = sessionScore;
+
+		res.mouse.x = (res.width / 2).int();
+
+		resetBall();
+	}
+
+	function resetBall() {
+		hidePlatform = true;
+
+		text.textAt(11, 25, 'READY');
+
 		platformX = (FIELD_COL + FIELD_WIDTH_TILES / 2) * 8 / 2;
 		platformY = res.frameBuffer.frameHeight - 36;
 
 		spawnBall(platformX, platformY - 4 - 2, new Vector2()).stuck = true;
 
-		timeline = new Timeline();
 		timeline.after(2, (_) -> {
-			ready = false;
+			hidePlatform = false;
 			paused = false;
 			text.textAt(11, 25, '');
 		});
-
-		initBlocks(PATTERNS[0]);
-
-		res.mouse.x = (res.width / 2).int();
 	}
 
 	function drawPlatform(fb:IFrameBuffer) {
@@ -243,7 +289,7 @@ class Game extends Scene {
 		switch (event) {
 			case DOWN(_, _, _):
 				for (ball in balls) {
-					if (ball.stuck && !paused && !ready) {
+					if (ball.stuck && !paused && !hidePlatform) {
 						ball.velocity.set(sign(-1 + Math.random() * 2), -1).normalize(ballSpeed);
 						ball.stuck = false;
 					}
@@ -291,6 +337,12 @@ class Game extends Scene {
 									blocks.empty(blockTile.tileX, blockTile.tileY);
 
 								score += block.scores;
+								numBlocks--;
+
+								if (numBlocks == 0) {
+									nextRound();
+									return;
+								}
 							}
 
 							if (dx == 0)
@@ -308,14 +360,22 @@ class Game extends Scene {
 					}
 				}
 
-				if (hasBlockCollision) {}
-
 				if (ball.position.y > res.height + 2) {
 					paused = true;
 
-					timeline.after(2, (_) -> {
-						res.setScene(Game, true, true);
-					});
+					balls.remove(ball);
+
+					if (balls.length == 0) {
+						timeline.after(2, (_) -> {
+							lives--;
+
+							if (lives >= 0) {
+								resetBall();
+							} else {
+								gameOver();
+							}
+						});
+					}
 					return;
 				}
 
@@ -378,11 +438,35 @@ class Game extends Scene {
 		fb.drawTilemap(blocks);
 		fb.drawTilemap(text);
 
-		if (!ready) {
+		if (!hidePlatform) {
 			drawPlatform(fb);
 
 			for (ball in balls)
 				drawBall(fb, ball);
 		}
+	}
+
+	function gameOver() {
+		text.textAt(9, 25, 'GAME OVER');
+
+		hidePlatform = true;
+
+		timeline.after(2, (_) -> {
+			res.setScene(MainMenu);
+		});
+	}
+
+	function nextRound() {
+		paused = true;
+		nextRoundNum++;
+
+		if (nextRoundNum >= PATTERNS.length)
+			nextRoundNum = 0;
+
+		nextLives = lives;
+
+		timeline.after(2, (_) -> {
+			res.setScene(Game, true);
+		});
 	}
 }

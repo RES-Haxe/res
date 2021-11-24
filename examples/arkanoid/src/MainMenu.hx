@@ -8,10 +8,12 @@ import res.input.ControllerEvent;
 import res.text.Textmap;
 import res.tools.MathTools.wrapi;
 
+using StringTools;
+
 class MainMenu extends Scene {
 	var textmap:Textmap;
 
-	final menuItems:Array<String> = ['1 PLAYER', '2 PLAYERS'];
+	final menuItems:Array<String> = ['START GAME'];
 
 	var selectedItem:Int = 0;
 
@@ -22,10 +24,15 @@ class MainMenu extends Scene {
 		textmap = res.createTextmap();
 
 		textmap.textAt(0, 0, '1UP', [0, 3]);
-		textmap.textAt(2, 1, '00');
+		textmap.textAt(2, 1, '${Game.sessionScore}'.lpad('0', 2));
 
 		textmap.textCentered(0, 'HIGH SCORE', [0, 3], false);
-		textmap.textAt(13, 1, '50000');
+		textmap.textCentered(1, '${res.storage.getInt('high_score', 50000)}', false);
+
+		textmap.textCentered(26, '(c) TAITO CORPORATION 1987');
+		textmap.textCentered(27, 'LICENSED BY');
+		textmap.textCentered(28, 'NINTENDO OF AMERICA INC.');
+		textmap.textCentered(29, 'Made with RES 2021');
 
 		selectSound = res.createAudioBuffer(new Tone(sawtooth, Note.A4, 0.05));
 		startSound = res.createAudioBuffer(new Tone(square, Note.G4, 0.075));
@@ -33,6 +40,8 @@ class MainMenu extends Scene {
 		updateMenu();
 
 		add(textmap);
+		add(res.rom.sprites['logo'].createObject(67, 57));
+		add(res.rom.sprites['taito_logo'].createObject(92, 169));
 	}
 
 	function menuSelect(inc:Int) {
@@ -51,7 +60,7 @@ class MainMenu extends Scene {
 						menuSelect(1);
 					case START:
 						audioMixer.play(startSound);
-						res.setScene(Game);
+						res.setScene(Game, true);
 					case _:
 				}
 			case _:
@@ -60,7 +69,7 @@ class MainMenu extends Scene {
 
 	function updateMenu() {
 		for (n => text in menuItems) {
-			textmap.textAt(10, 14 + n, '${(n == selectedItem ? '> ' : '  ')}$text');
+			textmap.textCentered(15 + n, '${(n == selectedItem ? '> ' : '  ')}$text');
 		}
 	}
 }

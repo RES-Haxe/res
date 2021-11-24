@@ -33,7 +33,7 @@ class Collider {
 			case RECT(rx, ry, rw, rh):
 				switch (versus) {
 					case CIRCLE(vcx, vcy, vr):
-						if ((vcx > rx - rw / 2 && vcx < rx + rw / 2) || (vcy > ry - rh / 2 && vcy < ry + rh / 2))
+						if ((vcx >= rx - rw / 2 && vcx <= rx + rw / 2) || (vcy >= ry - rh / 2 && vcy <= ry + rh / 2))
 							return collide(RECT(rx, ry, rw, rh), RECT(vcx, vcy, vr * 2, vr * 2));
 
 						final corners = [[rx - rw / 2, ry - rh / 2], [rx + rw / 2, ry - rh / 2], [rx + rw / 2, ry + rh / 2], [rx - rw / 2, ry + rh / 2]];

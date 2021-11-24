@@ -6,7 +6,7 @@ import res.rom.Rom;
 function main() {
 	RES.boot(new Html5Platform(3), {
 		resolution: PIXELS(256, 240),
-		mainScene: Game,
+		mainScene: MainMenu,
 		rom: Rom.embed('rom'),
 		features: [KernalFont]
 	});

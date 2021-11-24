@@ -11,7 +11,7 @@ import res.input.Keyboard;
 import res.input.Mouse;
 import res.platforms.IPlatform;
 import res.rom.Rom;
-import res.storage.Storage;
+import res.storage.IStorage;
 import res.text.Font;
 import res.text.Textmap;
 import res.tiles.Tilemap;
@@ -39,7 +39,7 @@ class RES {
 	public final fonts:Map<String, Font> = [];
 	public final mainScene:Class<Scene>;
 	public final platform:IPlatform;
-	public final storage:Storage;
+	public final storage:IStorage;
 	public final renderHooks:RenderHooks = {
 		before: [],
 		after: []
@@ -85,8 +85,6 @@ class RES {
 		this.resolution = config.resolution;
 		this.mainScene = config.mainScene;
 
-		this.storage = new Storage();
-
 		for (controller in controllers)
 			controller.listen((ev) -> if (scene != null) scene.controllerEvent(ev));
 
@@ -109,6 +107,7 @@ class RES {
 		this.platform = platform;
 		this.platform.connect(this);
 		this.frameBuffer = platform.createFrameBuffer(frameSize.width, frameSize.height, rom.palette);
+		this.storage = platform.createStorage();
 
 		for (id => audioData in rom.audioData) {
 			createAudioBuffer(id, audioData.iterator());
