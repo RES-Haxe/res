@@ -44,9 +44,10 @@ class Rom {
 	public static function create(src:String):Bytes {
 		trace('Generating ROM Data');
 
-		if (!FileSystem.exists(src)) {
+		if (!FileSystem.exists(src))
 			FileSystem.createDirectory(src);
 
+		if (!FileSystem.exists('$src/palette')) {
 			// Default palette
 			final defaultPaletteContent = [
 				'-- SWEETIE 16 PALETTE: https://lospec.com/palette-list/sweetie-16',
