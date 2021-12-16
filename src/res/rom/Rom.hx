@@ -7,6 +7,8 @@ import haxe.zip.InflateImpl;
 import res.audio.AudioData;
 import res.audio.IAudioBuffer;
 import res.display.Sprite;
+import res.rom.converters.Converter;
+import res.rom.converters.palette.PaletteConverter;
 import res.text.Font;
 import res.tiles.Tilemap;
 import res.tiles.Tileset;
@@ -17,8 +19,18 @@ import sys.FileSystem;
 import sys.io.File;
 #end
 
+final CONVERTERS:Map<String, Map<String, Converter>> = [
+	'palette' => [
+		'' => new res.rom.converters.palette.text.Converter(),
+		'png' => new res.rom.converters.palette.png.Converter()
+	],
+	'sprites' => [
+		'aseprite' => new res.rom.converters.sprites.aseprite.Converter()
+	]
+];
+
 class Rom {
-	static inline var MAGIC_NUMBER:Int32 = 0x52524f4d;
+	static inline var MAGIC_NUMBER:Int32 = 0x52524f4d; // RROM
 
 	public final palette:Palette;
 	public final audioData:Map<String, AudioData>;
@@ -47,60 +59,40 @@ class Rom {
 		if (!FileSystem.exists(src))
 			FileSystem.createDirectory(src);
 
-		if (!FileSystem.exists('$src/palette')) {
-			// Default palette
-			final defaultPaletteContent = [
-				'-- SWEETIE 16 PALETTE: https://lospec.com/palette-list/sweetie-16',
-				'#000000',
-				'#1a1c2c',
-				'#5d275d',
-				'#b13e53',
-				'#ef7d57',
-				'#ffcd75',
-				'#a7f070',
-				'#38b764',
-				'#257179',
-				'#29366f',
-				'#3b5dc9',
-				'#41a6f6',
-				'#73eff7',
-				'#f4f4f4',
-				'#94b0c2',
-				'#566c86',
-				'#333c57'
-			];
+		var paletteConverter:PaletteConverter = null;
 
-			File.saveContent('$src/palette', defaultPaletteContent.join('\n'));
+		for (ext => converter in CONVERTERS['palette']) {
+			final paletteFile = Path.withExtension(Path.join([src, 'palette']), ext);
+
+			if (FileSystem.exists(paletteFile)) {
+				paletteConverter = cast converter;
+				paletteConverter.process(paletteFile);
+			}
 		}
 
-		final paletteFile = Path.join([src, 'palette']);
+		if (paletteConverter == null)
+			// SWEETIE 16 PALETTE: https://lospec.com/palette-list/sweetie-16
+			paletteConverter = new PaletteConverter([
+				0x000000,
+				0x1a1c2c,
+				0x5d275d,
+				0xb13e53,
+				0xef7d57,
+				0xffcd75,
+				0xa7f070,
+				0x38b764,
+				0x257179,
+				0x29366f,
+				0x3b5dc9,
+				0x41a6f6,
+				0x73eff7,
+				0xf4f4f4,
+				0x94b0c2,
+				0x566c86,
+				0x333c57
+			]);
 
-		if (!FileSystem.exists(paletteFile) || FileSystem.isDirectory(paletteFile))
-			throw 'Error: palette file is required ($paletteFile not found)';
-
-		final paletteColors:Array<Int> = [];
-
-		final file = File.read(paletteFile, false);
-
-		while (paletteColors.length < 256 && !file.eof()) {
-			var colStr:String = file.readLine();
-
-			if (colStr.substr(0, 2) == '--') // comment
-				continue;
-
-			/** TODO: Parse some other formats like rgb(r, g, b) or maybe simple
-				"r,g,b" string or somethign like that */
-
-			if (colStr.charAt(0) == '#')
-				colStr = colStr.substr(1);
-
-			if (colStr.substr(0, 2) == '0x')
-				colStr = colStr.substr(2);
-
-			paletteColors.push(Std.parseInt('0x$colStr'));
-		}
-
-		final palette = new res.Palette(paletteColors);
+		final palette = new res.Palette(paletteConverter.colors);
 
 		final resTypes:Array<String> = ['audio', 'tilesets', 'tilemaps', 'sprites', 'fonts', 'data'];
 		final supportedTypes:Map<String, Array<String>> = [
@@ -117,11 +109,29 @@ class Rom {
 		// Write magic number
 		byteOutput.writeInt32(MAGIC_NUMBER);
 
-		// Write number of colors in the pallet
-		byteOutput.writeByte(paletteColors.length);
+		final paletteBytes = paletteConverter.getBytes();
+		byteOutput.writeBytes(paletteBytes, 0, paletteBytes.length);
 
-		for (col in paletteColors)
-			byteOutput.writeUInt24(col);
+		for (resourceType => converters in CONVERTERS) {
+			final path = Path.join([src, resourceType]);
+
+			if (FileSystem.isDirectory(path)) {
+				for (file in FileSystem.readDirectory(path)) {
+					final filePath = Path.join([path, file]);
+					if (!FileSystem.isDirectory(filePath)) {
+						final fileExt = Path.extension(file).toLowerCase();
+						final fileConverter = converters[fileExt];
+
+						if (fileConverter != null) {
+							final chunks = fileConverter.process(filePath).getChunks();
+
+							for (chunk in chunks)
+								chunk.write(byteOutput);
+						}
+					}
+				}
+			}
+		}
 
 		for (resourceType in resTypes) {
 			final path = Path.join([src, resourceType]);
@@ -144,8 +154,10 @@ class Rom {
 									}
 								case 'sprites':
 									switch (fileExt) {
-										case 'aseprite':
-											SpriteChunk.fromAseprite(fileBytes, name).write(byteOutput);
+										/*
+											case 'aseprite':
+												SpriteChunk.fromAseprite(fileBytes, name).write(byteOutput);
+										 */
 										case 'png':
 											SpriteChunk.fromPNG(fileBytes, palette, name).write(byteOutput);
 									}

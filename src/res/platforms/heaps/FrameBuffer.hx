@@ -56,10 +56,12 @@ class FrameBuffer implements IFrameBuffer {
 	}
 
 	public function setIndex(x:Int, y:Int, index:Int) {
-		_indexBuffer[y][x] = index;
+		if (x >= 0 && y >= 0 && x < frameWidth && y < frameHeight) {
+			_indexBuffer[y][x] = index;
 
-		final c = _palette.get(index).format(ARGB);
+			final c = _palette.get(index).format(ARGB);
 
-		_pixels.setPixel(x, y, c);
+			_pixels.setPixel(x, y, c);
+		}
 	}
 }

@@ -3,7 +3,6 @@ package res.rom.tools;
 import haxe.io.Bytes;
 
 class AseTools {
-	#if macro
 	public static function merge(ase:ase.Ase, ?frame:Int = 0):Bytes {
 		final merged = Bytes.alloc(ase.width * ase.height);
 
@@ -26,5 +25,4 @@ class AseTools {
 
 		return merged;
 	}
-	#end
 }

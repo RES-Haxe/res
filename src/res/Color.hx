@@ -1,5 +1,8 @@
 package res;
 
+import haxe.io.Bytes;
+import res.types.ColorComponent;
+
 using StringTools;
 
 /**
@@ -88,8 +91,26 @@ abstract Color(Int) from Int to Int from UInt to UInt {
 		return Math.pow(r - otherColor.r, 2) + Math.pow(g - otherColor.g, 2) + Math.pow(b - otherColor.b, 2);
 	}
 
+	public inline function arrange(cmp:Array<ColorComponent>):Color {
+		if (cmp.length > 4)
+			throw '4 bytes max';
+
+		final input = Bytes.alloc(4);
+		input.setInt32(0, this);
+
+		final output = Bytes.alloc(4);
+
+		for (p in 0...cmp.length) {
+			output.set(p, input.get(cmp[p]));
+		}
+
+		return output.getInt32(0);
+	}
+
 	public inline function format(pixelFormat:PixelFormat):Color {
 		switch (pixelFormat) {
+			case BGR:
+				return (((b & 0xFF) << 16) | ((g & 0xFF) << 8) | (r & 0xFF));
 			case BGRA:
 				return fromARGB(b, g, r, a);
 			case ABGR:

@@ -5,6 +5,7 @@ import hxd.Pad;
 import res.audio.IAudioBuffer;
 import res.audio.IAudioMixer;
 import res.audio.IAudioStream;
+import res.storage.IStorage;
 
 using Math;
 using res.tools.ResolutionTools;
@@ -79,5 +80,13 @@ class HeapsPlatform implements IPlatform {
 
 	public function createFrameBuffer(width:Int, height:Int, palette:Palette):IFrameBuffer {
 		return new FrameBuffer(s2d, width, height, palette);
+	}
+
+	public function createStorage():IStorage {
+		#if js
+		return new res.platforms.js.Html5Storage();
+		#else
+		return new res.platforms.common.FileStorage();
+		#end
 	}
 }
