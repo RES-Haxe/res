@@ -27,63 +27,31 @@ class Painter {
 	/**
 		Draw a circle
 
-		Midpoint circle algorithm
-
 		@param frameBuffer
 		@param cx Center x
 		@param cy Center y
 		@param r radius
-		@param colorIndex Color index
+		@param strokeIndex Stroke color index
+		@param fillIndex Fill color index
 	 */
-	public static function circle(frameBuffer:IFrameBuffer, cx:Int, cy:Int, r:Int, colorIndex:Int) {
-		final plot = (dx:Int, dy:Int) -> {
-			for (p in [
-				[cx + dx, cy + dy],
-				[cx - dx, cy + dy],
-				[cx + dx, cy - dy],
-				[cx - dx, cy - dy],
-				[cx + dy, cy + dx],
-				[cx - dy, cy + dx],
-				[cx + dy, cy - dx],
-				[cx - dy, cy - dx]
-			]) {
-				frameBuffer.setIndex(p[0], p[1], colorIndex);
-			}
-		};
-
-		var x = 0;
-		var y = r;
-		var d = 3 - 2 * r;
-
-		plot(x, y);
-
-		while (y >= x) {
-			x++;
-
-			if (d > 0) {
-				y--;
-				d = d + 4 * (x - y) + 10;
-			} else {
-				d = d + 4 * x + 6;
-			}
-
-			plot(x, y);
-		}
+	public static function circle(frameBuffer:IFrameBuffer, cx:Int, cy:Int, r:Int, strokeIndex:Int, ?fillIndex:Int) {
+		ellipse(frameBuffer, cx, cy, r, r, strokeIndex, fillIndex);
 	}
 
 	/**
-		Draw an ellipse using midpoint algorithm
+		Draw an ellipse
 
 		@param frameBuffer
 		@param cx
 		@param cy
 		@param rx
 		@param ry
-		@param index
+		@param strokeIndex
+		@param fillIndex
 
 		@see https://www.geeksforgeeks.org/midpoint-ellipse-drawing-algorithm/
 	 */
-	public static function ellipse(frameBuffer:IFrameBuffer, cx:Int, cy:Int, rx:Int, ry:Int, index:Int) {
+	public static function ellipse(frameBuffer:IFrameBuffer, cx:Int, cy:Int, rx:Int, ry:Int, strokeIndex:Int, ?fillIndex:Int) {
 		var dx:Float;
 		var dy:Float;
 		var d1:Float;
@@ -98,11 +66,27 @@ class Painter {
 		dx = 2 * ry * ry * x;
 		dy = 2 * rx * rx * y;
 
+		final plot = () -> {
+			if (fillIndex != null) {
+				final fx = (-x + cx).int();
+				final tx = (x + cx).int();
+
+				for (px in fx...tx + 1) {
+					final index = px == fx || px == tx ? strokeIndex : fillIndex;
+
+					frameBuffer.setIndex(px, (y + cy).int(), index);
+					frameBuffer.setIndex(px, (-y + cy).int(), index);
+				}
+			} else {
+				frameBuffer.setIndex((x + cx).int(), (y + cy).int(), strokeIndex);
+				frameBuffer.setIndex((-x + cx).int(), (y + cy).int(), strokeIndex);
+				frameBuffer.setIndex((x + cx).int(), (-y + cy).int(), strokeIndex);
+				frameBuffer.setIndex((-x + cx).int(), (-y + cy).int(), strokeIndex);
+			}
+		};
+
 		while (dx < dy) {
-			frameBuffer.setIndex((x + cx).int(), (y + cy).int(), index);
-			frameBuffer.setIndex((-x + cx).int(), (y + cy).int(), index);
-			frameBuffer.setIndex((x + cx).int(), (-y + cy).int(), index);
-			frameBuffer.setIndex((-x + cx).int(), (-y + cy).int(), index);
+			plot();
 
 			if (d1 < 0) {
 				x++;
@@ -120,10 +104,7 @@ class Painter {
 		d2 = ((ry * ry) * ((x + 0.5) * (x + 0.5))) + ((rx * rx) * ((y - 1) * (y - 1))) - (rx * rx * ry * ry);
 
 		while (y >= 0) {
-			frameBuffer.setIndex((x + cx).int(), (y + cy).int(), index);
-			frameBuffer.setIndex((-x + cx).int(), (y + cy).int(), index);
-			frameBuffer.setIndex((x + cx).int(), (-y + cy).int(), index);
-			frameBuffer.setIndex((-x + cx).int(), (-y + cy).int(), index);
+			plot();
 
 			if (d2 > 0) {
 				y--;
@@ -195,9 +176,10 @@ class Painter {
 		@param y Y screen coordinate
 		@param w Width
 		@param h Height
-		@param colorIndex Index of the color to fill the rectangle
+		@param strokeIndex Stroke color index 
+		@param fillIndex Fill color index
 	 */
-	public static function rect(frameBuffer:IFrameBuffer, x:Int, y:Int, w:Int, h:Int, colorIndex:Int) {
+	public static function rect(frameBuffer:IFrameBuffer, x:Int, y:Int, w:Int, h:Int, strokeIndex:Int, ?fillIndex:Int) {
 		if (Rect.intersect(0, 0, frameBuffer.frameWidth, frameBuffer.frameHeight, x, y, w, h)) {
 			final fx = mini(x, x + w);
 			final fy = mini(y, y + h);
@@ -207,13 +189,11 @@ class Painter {
 
 			if (tx - fx > 0 && ty - fy > 0) {
 				for (line in fy...ty) {
-					if (line == fy || line == ty - 1) {
-						for (col in fx...tx) {
-							frameBuffer.setIndex(col, line, colorIndex);
-						}
-					} else {
-						frameBuffer.setIndex(fx, line, colorIndex);
-						frameBuffer.setIndex(tx - 1, line, colorIndex);
+					for (col in fx...tx) {
+						if (line == fy || line == ty - 1 || col == fx || col == tx - 1)
+							frameBuffer.setIndex(col, line, strokeIndex);
+						else if (fillIndex != null)
+							frameBuffer.setIndex(col, line, fillIndex);
 					}
 				}
 			}
@@ -226,13 +206,14 @@ class Painter {
 		@param frameBuffer
 		@param shape
 		@param colorIndex
+		@param fillIndex
 	 */
-	public static function shape(frameBuffer:IFrameBuffer, shape:Shape, colorIndex:Int) {
+	public static function shape(frameBuffer:IFrameBuffer, shape:Shape, strokeIndex:Int, ?fillIndex:Int) {
 		switch (shape) {
 			case CIRCLE(cx, cy, r):
-				circle(frameBuffer, cx.int(), cy.int(), r.int(), colorIndex);
+				circle(frameBuffer, cx.int(), cy.int(), r.int(), strokeIndex, fillIndex);
 			case RECT(cx, cy, w, h):
-				rect(frameBuffer, (cx - w / 2).int(), (cy - h / 2).int(), w.int(), h.int(), colorIndex);
+				rect(frameBuffer, (cx - w / 2).int(), (cy - h / 2).int(), w.int(), h.int(), strokeIndex, fillIndex);
 		}
 	}
 }
