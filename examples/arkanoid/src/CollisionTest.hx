@@ -2,7 +2,7 @@ import res.IFrameBuffer;
 import res.Scene;
 import res.collisions.Collider;
 import res.collisions.CollisionResult;
-import res.collisions.Shape;
+import res.types.Shape;
 
 using res.graphics.Painter;
 using res.text.Textmap;

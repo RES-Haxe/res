@@ -21,7 +21,11 @@ class Timeline implements Updateable {
 		return event;
 	}
 
-	public function every(time:Float, callback:TimelineCallback, ?repeats:Int = -1) {
+	public function every(time:Float, callback:TimelineCallback, ?repeats:Int = -1, ?startImmediately:Bool = false) {
+		if (startImmediately) {
+			callback(0);
+			repeats--;
+		}
 		var event = add(time, repeats, callback);
 		return event;
 	}
@@ -36,7 +40,7 @@ class Timeline implements Updateable {
 				final late = totalTime - event.runAt;
 				event.callback(late);
 
-				if (event.repeats == -1 || --event.repeats > 0) {
+				if (event.repeats < 0 || --event.repeats > 0) {
 					event.runAt = totalTime + event.interval - late;
 				} else {
 					events.remove(event);

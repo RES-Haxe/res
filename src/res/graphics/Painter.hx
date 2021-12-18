@@ -1,9 +1,9 @@
 package res.graphics;
 
 import Math.*;
-import res.collisions.Shape;
 import res.geom.Rect;
 import res.tools.MathTools.*;
+import res.types.Shape;
 
 using Std;
 

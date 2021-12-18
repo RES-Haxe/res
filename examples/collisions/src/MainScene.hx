@@ -1,10 +1,10 @@
 import res.IFrameBuffer;
 import res.Scene;
 import res.collisions.Collider;
-import res.collisions.Shape;
 import res.geom.Vector2;
 import res.input.ControllerEvent;
 import res.text.Textmap;
+import res.types.Shape;
 
 using Std;
 using res.graphics.Painter;
