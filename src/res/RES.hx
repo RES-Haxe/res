@@ -186,7 +186,7 @@ class RES {
 			vTiles = Math.ceil(height / font.tileset.tileSize);
 
 		if (indecies == null)
-			indecies = rom.palette.rampDesc(font.numColors);
+			indecies = rom.palette.getIndecies();
 
 		return new Textmap(font.tileset, hTiles, vTiles, font.characters, font.firstTileIndex, indecies);
 	}

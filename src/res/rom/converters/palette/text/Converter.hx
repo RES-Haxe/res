@@ -3,7 +3,7 @@ package res.rom.converters.palette.text;
 import sys.io.File;
 
 class Converter extends PaletteConverter {
-	override function process(fileName:String) {
+	override function process(fileName:String, _) {
 		final file = File.read(fileName, false);
 
 		while (colors.length < 256 && !file.eof()) {

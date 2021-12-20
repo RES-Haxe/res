@@ -24,6 +24,9 @@ final CONVERTERS:Map<String, Map<String, Converter>> = [
 		'' => new res.rom.converters.palette.text.Converter(),
 		'png' => new res.rom.converters.palette.png.Converter()
 	],
+	'fonts' => [
+		'json' => new res.rom.converters.fonts.json.Converter()
+	],
 	'sprites' => [
 		'aseprite' => new res.rom.converters.sprites.aseprite.Converter()
 	]
@@ -66,7 +69,7 @@ class Rom {
 
 			if (FileSystem.exists(paletteFile)) {
 				paletteConverter = cast converter;
-				paletteConverter.process(paletteFile);
+				paletteConverter.process(paletteFile, null);
 			}
 		}
 
@@ -123,7 +126,7 @@ class Rom {
 						final fileConverter = converters[fileExt];
 
 						if (fileConverter != null) {
-							final chunks = fileConverter.process(filePath).getChunks();
+							final chunks = fileConverter.process(filePath, palette).getChunks();
 
 							for (chunk in chunks)
 								chunk.write(byteOutput);
@@ -165,8 +168,10 @@ class Rom {
 									switch (fileExt) {
 										case 'aseprite':
 											TilesetChunk.fromAseprite(fileBytes, name).write(byteOutput);
-										case 'json':
-											TilesetChunk.fromJson(filePath, name, palette).write(byteOutput);
+											/*
+												case 'json':
+													TilesetChunk.fromJson(filePath, name, palette).write(byteOutput);
+											 */
 									}
 								case 'tilemaps':
 									switch (fileExt) {

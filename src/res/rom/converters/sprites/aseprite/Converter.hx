@@ -8,6 +8,8 @@ import res.rom.tools.AseTools;
 import res.tools.BytesTools;
 import sys.io.File;
 
+using haxe.io.Path;
+
 typedef SpriteDesc = {
 	name:String,
 	width:Int,
@@ -21,7 +23,7 @@ typedef SpriteDesc = {
 class Converter extends res.rom.converters.Converter {
 	var sprites:Array<SpriteDesc> = [];
 
-	override function process(fileName:String):res.rom.converters.Converter {
+	override function process(fileName:String, _):res.rom.converters.Converter {
 		final aseprite = Ase.fromBytes(File.getBytes(fileName));
 
 		if (aseprite.colorDepth != INDEXED)
@@ -52,7 +54,7 @@ class Converter extends res.rom.converters.Converter {
 			}
 		} else {
 			sprites.push({
-				name: getName(fileName),
+				name: fileName.withoutDirectory().withoutExtension(),
 				width: aseprite.width,
 				height: aseprite.height,
 				frames: [for (num in 0...aseprite.frames.length)

@@ -7,7 +7,7 @@ import sys.io.File;
 using format.png.Tools;
 
 class Converter extends PaletteConverter {
-	override function process(fileName:String) {
+	override function process(fileName:String, _) {
 		final pngData = new Reader(File.read(fileName)).read();
 		final header = pngData.getHeader();
 

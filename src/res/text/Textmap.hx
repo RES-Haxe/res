@@ -2,15 +2,45 @@ package res.text;
 
 import res.tiles.Tilemap;
 import res.tiles.Tileset;
+import res.tools.MathTools.wrapi;
 
 class Textmap extends Tilemap {
 	private final _charMap:Map<Int, Int> = [];
+
+	public final cursor:{x:Int, y:Int} = {x: 0, y: 0};
 
 	public function new(tileset:Tileset, hTiles:Int, vTiles:Int, characters:String, ?firstTileIndex:Int = 0, ?paletteIndecies:Array<Int>) {
 		super(tileset, hTiles, vTiles, paletteIndecies);
 
 		for (ci in 0...characters.length)
 			_charMap[characters.charCodeAt(ci)] = firstTileIndex + ci + 1;
+	}
+
+	public function moveTo(x:Int, y:Int) {
+		cursor.x = wrapi(x, hTiles);
+		cursor.y = wrapi(y, vTiles);
+	}
+
+	public function print(text:String, ?colorMap:Array<Int>) {
+		for (c in 0...text.length) {
+			final char = text.charAt(c);
+
+			if (char != '\n') {
+				setChar(cursor.x, cursor.y, char, colorMap);
+				cursor.x++;
+			} else {
+				cursor.x = 0;
+				cursor.y++;
+			}
+
+			if (cursor.x >= hTiles) {
+				cursor.y++;
+				cursor.x = 0;
+			}
+
+			if (cursor.y >= vTiles)
+				cursor.y = 0;
+		}
 	}
 
 	/**

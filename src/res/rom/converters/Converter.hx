@@ -6,11 +6,7 @@ import haxe.io.Bytes;
 class Converter {
 	public function new() {}
 
-	inline function getName(fileName:String) {
-		return Path.withoutExtension(fileName);
-	}
-
-	public function process(fileName:String):Converter {
+	public function process(fileName:String, palette:Palette):Converter {
 		return this;
 	}
 
