@@ -9,8 +9,8 @@ class Textmap extends Tilemap {
 
 	public final cursor:{x:Int, y:Int} = {x: 0, y: 0};
 
-	public function new(tileset:Tileset, hTiles:Int, vTiles:Int, characters:String, ?firstTileIndex:Int = 0, ?paletteIndecies:Array<Int>) {
-		super(tileset, hTiles, vTiles, paletteIndecies);
+	public function new(tileset:Tileset, hTiles:Int, vTiles:Int, characters:String, ?firstTileIndex:Int = 0, ?colorMap:ColorMap) {
+		super(tileset, hTiles, vTiles, colorMap);
 
 		for (ci in 0...characters.length)
 			_charMap[characters.charCodeAt(ci)] = firstTileIndex + ci + 1;

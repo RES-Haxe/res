@@ -7,7 +7,7 @@ using res.tools.ResolutionTools;
 class JavaPlatform extends Platform {
 	private final _frameBuffer:FrameBuffer;
 
-	override function get_frameBuffer():IFrameBuffer {
+	override function get_frameBuffer():FrameBuffer {
 		return _frameBuffer;
 	}
 

@@ -4,6 +4,7 @@ import haxe.Rest;
 import haxe.Timer;
 import res.audio.IAudioBuffer;
 import res.audio.IAudioStream;
+import res.display.FrameBuffer;
 import res.features.Feature;
 import res.graphics.Graphics;
 import res.input.Controller;
@@ -22,7 +23,7 @@ using Math;
 using Type;
 using res.tools.ResolutionTools;
 
-typedef RenderHookFunction = RES->IFrameBuffer->Void;
+typedef RenderHookFunction = RES->FrameBuffer->Void;
 
 typedef RenderHooks = {
 	before:Array<RenderHookFunction>,
@@ -62,7 +63,7 @@ class RES {
 
 	public var scene(get, never):Scene;
 
-	public final frameBuffer:IFrameBuffer;
+	public final frameBuffer:FrameBuffer;
 
 	/** Shorthand for `platform.frameBuffer.frameWidth` */
 	public var width(get, never):Int;
@@ -160,8 +161,7 @@ class RES {
 		@param colorMap
 	 */
 	public function createGraphics(?width:Int, ?height:Int, ?colorMap:Array<Int>):Graphics {
-		return new Graphics(width == null ? this.width : width, height == null ? this.height : height,
-			colorMap == null ? rom.palette.getIndecies() : colorMap);
+		return new Graphics(width == null ? this.width : width, height == null ? this.height : height, colorMap);
 	}
 
 	/**
@@ -170,9 +170,9 @@ class RES {
 		@param font
 		@param hTiles
 		@param vTiles
-		@param indecies
+		@param colorMap
 	 */
-	public function createTextmap(?font:Font, ?hTiles:Int, ?vTiles:Int, ?indecies:Array<Int>):Textmap {
+	public function createTextmap(?font:Font, ?hTiles:Int, ?vTiles:Int, ?colorMap:ColorMap):Textmap {
 		if (font == null)
 			if (defaultFont != null)
 				font = defaultFont;
@@ -185,10 +185,7 @@ class RES {
 		if (vTiles == null)
 			vTiles = Math.ceil(height / font.tileset.tileSize);
 
-		if (indecies == null)
-			indecies = rom.palette.getIndecies();
-
-		return new Textmap(font.tileset, hTiles, vTiles, font.characters, font.firstTileIndex, indecies);
+		return new Textmap(font.tileset, hTiles, vTiles, font.characters, font.firstTileIndex, colorMap);
 	}
 
 	/**
@@ -215,16 +212,16 @@ class RES {
 		@param tileset Tileset to use
 		@param hTiles Number of horizontal tiles (default - number of tiles per screen)
 		@param vTiles Number of vertical tiles (default - number of tiles per screen)
-		@param indecies If `paletteSample` isn't set these indecies will be used to create a new palette sample
+		@param colorMap
 	 */
-	public function createTilemap(?name:String, tileset:Tileset, ?hTiles:Int, ?vTiles:Int, ?indecies:Array<Int>):Tilemap {
+	public function createTilemap(?name:String, tileset:Tileset, ?hTiles:Int, ?vTiles:Int, ?colorMap:ColorMap):Tilemap {
 		if (hTiles == null)
 			hTiles = Math.ceil(width / tileset.tileSize);
 
 		if (vTiles == null)
 			vTiles = Math.ceil(height / tileset.tileSize);
 
-		var tilemap = new Tilemap(tileset, hTiles, vTiles, indecies);
+		var tilemap = new Tilemap(tileset, hTiles, vTiles, colorMap);
 
 		if (name != null)
 			rom.tilemaps[name] = tilemap;

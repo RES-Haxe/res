@@ -57,7 +57,7 @@ class Menu extends Renderable {
 		return menuItem;
 	}
 
-	override public function render(frameBuffer:IFrameBuffer) {
+	override public function render(frameBuffer:FrameBuffer) {
 		textmap.render(frameBuffer);
 	}
 }

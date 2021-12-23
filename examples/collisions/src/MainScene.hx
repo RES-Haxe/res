@@ -1,4 +1,4 @@
-import res.IFrameBuffer;
+import res.display.FrameBuffer;
 import res.Scene;
 import res.collisions.Collider;
 import res.geom.Vector2;
@@ -90,7 +90,7 @@ class MainScene extends Scene {
 		debugText.textAt(0, 1, 'Shape: $myShape');
 	}
 
-	override function render(frameBuffer:IFrameBuffer) {
+	override function render(frameBuffer:FrameBuffer) {
 		frameBuffer.clear(clearColorIndex);
 
 		for (item in shapes) {

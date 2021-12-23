@@ -1,4 +1,4 @@
-import res.IFrameBuffer;
+import res.display.FrameBuffer;
 import res.Scene;
 import res.audio.IAudioBuffer;
 import res.audio.Note;
@@ -274,14 +274,14 @@ class Game extends Scene {
 		});
 	}
 
-	function drawPlatform(fb:IFrameBuffer) {
+	function drawPlatform(fb:FrameBuffer) {
 		final mStart:Int = (platformX - platformWidth / 2).int();
 		fb.drawSprite(res.rom.sprites['platform_side'], mStart - 8, platformY - 4);
 		fb.drawSprite(res.rom.sprites['platform_middle'], mStart, platformY - 4, platformWidth);
 		fb.drawSprite(res.rom.sprites['platform_side'], mStart + platformWidth, platformY - 4, true);
 	}
 
-	function drawBall(fb:IFrameBuffer, ball:Ball) {
+	function drawBall(fb:FrameBuffer, ball:Ball) {
 		fb.drawSprite(res.rom.sprites['ball'], (ball.position.x - BALL_RADIUS).int(), (ball.position.y - BALL_RADIUS).int(), false, false, false);
 	}
 
@@ -431,7 +431,7 @@ class Game extends Scene {
 		}
 	}
 
-	override function render(fb:IFrameBuffer) {
+	override function render(fb:FrameBuffer) {
 		fb.clear(clearColorIndex);
 
 		fb.drawTilemap(bg);

@@ -2,7 +2,7 @@ package res.platforms.java;
 
 import java.awt.image.BufferedImage;
 
-class FrameBuffer implements IFrameBuffer {
+class FrameBuffer implements FrameBuffer {
 	final _frameWidth:Int;
 	final _frameHeight:Int;
 

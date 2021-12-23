@@ -12,7 +12,7 @@ class TVTestCard extends Scene {
 		indecies.reverse();
 	}
 
-	override function render(frameBuffer:IFrameBuffer) {
+	override function render(frameBuffer:FrameBuffer) {
 		frameBuffer.clear(0);
 
 		final barw = Math.floor(frameBuffer.frameWidth / 8);

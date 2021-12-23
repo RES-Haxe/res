@@ -1,6 +1,7 @@
 package res;
 
 import res.audio.IAudioMixer;
+import res.display.FrameBuffer;
 import res.display.Renderable;
 import res.input.ControllerButton;
 import res.input.ControllerEvent;
@@ -16,7 +17,7 @@ class Scene extends Renderable implements Updateable {
 	final renderList:Array<Renderable> = [];
 	final updateList:Array<Updateable> = [];
 
-	var clearColorIndex:Null<Int>;
+	public var clearColorIndex:Null<Int> = null;
 
 	final audioMixer:IAudioMixer;
 
@@ -93,7 +94,7 @@ class Scene extends Renderable implements Updateable {
 			item.update(dt);
 	}
 
-	override public function render(frameBuffer:IFrameBuffer) {
+	override public function render(frameBuffer:FrameBuffer) {
 		if (clearColorIndex != null)
 			frameBuffer.clear(clearColorIndex);
 

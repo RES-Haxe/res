@@ -2,6 +2,7 @@ package res.graphics;
 
 import Math.abs;
 import haxe.io.Bytes;
+import res.display.FrameBuffer;
 import res.display.Renderable;
 import res.geom.Rect;
 import res.tools.MathTools.maxi;
@@ -101,7 +102,7 @@ class Graphics extends Renderable {
 			buffer.setxy(width, x, y, index);
 	}
 
-	override public function render(frameBuffer:IFrameBuffer) {
+	override public function render(frameBuffer:FrameBuffer) {
 		draw(this);
 
 		for (py in 0...height) {

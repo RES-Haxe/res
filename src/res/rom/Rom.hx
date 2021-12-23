@@ -29,6 +29,9 @@ final CONVERTERS:Map<String, Map<String, Converter>> = [
 	],
 	'sprites' => [
 		'aseprite' => new res.rom.converters.sprites.aseprite.Converter()
+	],
+	'tilemaps' => [
+		'aseprite' => new res.rom.converters.tilemaps.aseprite.Converter()
 	]
 ];
 
@@ -102,7 +105,6 @@ class Rom {
 			'tilesets' => ['aseprite', 'json'],
 			'tilemaps' => ['aseprite'],
 			'sprites' => ['aseprite', 'png'],
-			'fonts' => ['txt'],
 			'data' => [],
 			'audio' => ['wav']
 		];
@@ -128,76 +130,75 @@ class Rom {
 						if (fileConverter != null) {
 							final chunks = fileConverter.process(filePath, palette).getChunks();
 
-							for (chunk in chunks)
+							for (chunk in chunks) {
 								chunk.write(byteOutput);
-						}
-					}
-				}
-			}
-		}
-
-		for (resourceType in resTypes) {
-			final path = Path.join([src, resourceType]);
-
-			if (FileSystem.isDirectory(path)) {
-				for (file in FileSystem.readDirectory(path)) {
-					var filePath = Path.join([path, file]);
-					if (!FileSystem.isDirectory(filePath)) {
-						var fileExt = Path.extension(file).toLowerCase();
-
-						if (supportedTypes[resourceType].length == 0 || supportedTypes[resourceType].indexOf(fileExt) != -1) {
-							var name = Path.withoutExtension(file);
-							var fileBytes = File.getBytes(Path.join([path, file]));
-
-							switch (resourceType) {
-								case 'audio':
-									switch (fileExt) {
-										case 'wav':
-											AudioSampleChunk.fromWav(fileBytes, name).write(byteOutput);
-									}
-								case 'sprites':
-									switch (fileExt) {
-										/*
-											case 'aseprite':
-												SpriteChunk.fromAseprite(fileBytes, name).write(byteOutput);
-										 */
-										case 'png':
-											SpriteChunk.fromPNG(fileBytes, palette, name).write(byteOutput);
-									}
-								case 'tilesets':
-									switch (fileExt) {
-										case 'aseprite':
-											TilesetChunk.fromAseprite(fileBytes, name).write(byteOutput);
-											/*
-												case 'json':
-													TilesetChunk.fromJson(filePath, name, palette).write(byteOutput);
-											 */
-									}
-								case 'tilemaps':
-									switch (fileExt) {
-										case 'aseprite':
-											var result = TilemapChunk.fromAseprite(fileBytes, name);
-											result.tilesetChunk.write(byteOutput);
-											result.tilemapChunk.write(byteOutput);
-									}
-								case 'fonts':
-									final aseFile = Path.join([path, '$name.aseprite']);
-									if (FileSystem.exists(aseFile)) {
-										final tileset = TilesetChunk.fromAseprite(File.getBytes(aseFile), 'font:$name', false);
-										tileset.write(byteOutput);
-										final font = FontChunk.fromBytes(fileBytes, name);
-										font.write(byteOutput);
-									} else {
-										trace('No Aseprite file for the font');
-									}
-								case 'data':
-									DataChunk.fromBytes(fileBytes, file).write(byteOutput);
 							}
 						}
 					}
 				}
 			}
 		}
+
+		/*
+			for (resourceType in resTypes) {
+				final path = Path.join([src, resourceType]);
+
+				if (FileSystem.isDirectory(path)) {
+					for (file in FileSystem.readDirectory(path)) {
+						var filePath = Path.join([path, file]);
+						if (!FileSystem.isDirectory(filePath)) {
+							var fileExt = Path.extension(file).toLowerCase();
+
+							if (supportedTypes[resourceType].length == 0 || supportedTypes[resourceType].indexOf(fileExt) != -1) {
+								var name = Path.withoutExtension(file);
+								var fileBytes = File.getBytes(Path.join([path, file]));
+
+								switch (resourceType) {
+									case 'audio':
+										switch (fileExt) {
+											case 'wav':
+												AudioSampleChunk.fromWav(fileBytes, name).write(byteOutput);
+										}
+									case 'sprites':
+										switch (fileExt) {
+												case 'aseprite':
+													SpriteChunk.fromAseprite(fileBytes, name).write(byteOutput);
+											case 'png':
+												SpriteChunk.fromPNG(fileBytes, palette, name).write(byteOutput);
+										}
+									case 'tilesets':
+										switch (fileExt) {
+											case 'aseprite':
+												TilesetChunk.fromAseprite(fileBytes, name).write(byteOutput);
+													case 'json':
+														TilesetChunk.fromJson(filePath, name, palette).write(byteOutput);
+										}
+										case 'tilemaps':
+											switch (fileExt) {
+												case 'aseprite':
+													var result = TilemapChunk.fromAseprite(fileBytes, name);
+													result.tilesetChunk.write(byteOutput);
+													result.tilemapChunk.write(byteOutput);
+											}
+									case 'fonts':
+										final aseFile = Path.join([path, '$name.aseprite']);
+										if (FileSystem.exists(aseFile)) {
+											final tileset = TilesetChunk.fromAseprite(File.getBytes(aseFile), 'font:$name', false);
+											tileset.write(byteOutput);
+											final font = FontChunk.fromBytes(fileBytes, name);
+											font.write(byteOutput);
+										} else {
+											trace('No Aseprite file for the font');
+										}
+									case 'data':
+										DataChunk.fromBytes(fileBytes, file).write(byteOutput);
+								}
+							}
+						}
+					}
+				}
+			}
+		 */
 
 		return byteOutput.getBytes();
 	}

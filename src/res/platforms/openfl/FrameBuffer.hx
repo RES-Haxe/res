@@ -3,7 +3,7 @@ package res.platforms.openfl;
 import openfl.display.BitmapData;
 import openfl.geom.Rectangle;
 
-class FrameBuffer implements IFrameBuffer {
+class FrameBuffer implements FrameBuffer {
 	var _width:Int;
 	var _height:Int;
 	var _palette:Palette;

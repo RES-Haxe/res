@@ -4,7 +4,7 @@ import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
 import js.html.ImageData;
 
-class FrameBuffer implements IFrameBuffer {
+class FrameBuffer implements FrameBuffer {
 	var _width:Int;
 	var _height:Int;
 	var _palette:Palette;

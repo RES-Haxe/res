@@ -1,5 +1,6 @@
 package res.tiles;
 
+import res.display.FrameBuffer;
 import res.display.Renderable;
 import res.tools.MathTools.wrapf;
 
@@ -18,7 +19,7 @@ class Tilemap extends Renderable {
 
 	public var scanlineFunc:ScanlineFunc;
 
-	public var colorMap:Array<Int> = null;
+	public var colorMap:ColorMap;
 
 	public var indexMap:Array<Int> = null;
 
@@ -35,9 +36,9 @@ class Tilemap extends Renderable {
 	public var scrollX:Float = 0;
 	public var scrollY:Float = 0;
 
-	public function new(tileset:Tileset, hTiles:Int, vTiles:Int, ?colorMap:Array<Int>) {
+	public function new(tileset:Tileset, hTiles:Int, vTiles:Int, ?colorMap:ColorMap) {
 		this.tileset = tileset;
-		this.colorMap = colorMap;
+		this.colorMap = colorMap == null ? new ColorMap([]) : colorMap;
 
 		resize(hTiles, vTiles);
 	}
@@ -94,7 +95,7 @@ class Tilemap extends Renderable {
 			throw 'Out of tile map bounds (col: $x, line: $y, size: $hTiles x $vTiles)';
 	}
 
-	public function set(tileCol:Int, tileLine:Int, tileIndex:Int, flipX:Bool = false, flipY:Bool = false, rot90cw:Bool = false, ?colorMap:Array<Int>,
+	public function set(tileCol:Int, tileLine:Int, tileIndex:Int, flipX:Bool = false, flipY:Bool = false, rot90cw:Bool = false, ?colorMap:ColorMap,
 			?data:Dynamic) {
 		place(tileCol, tileLine, {
 			index: tileIndex,
@@ -153,7 +154,7 @@ class Tilemap extends Renderable {
 		@param wrapping
 		@param scanlineFunc
 	 */
-	public static function drawTilemap(frameBuffer:IFrameBuffer, tilemap:Tilemap, ?x:Int = 0, ?y:Int = 0, ?width:Int, ?height:Int, ?scrollX:Float = 0,
+	public static function drawTilemap(frameBuffer:FrameBuffer, tilemap:Tilemap, ?x:Int = 0, ?y:Int = 0, ?width:Int, ?height:Int, ?scrollX:Float = 0,
 			?scrollY:Float = 0, ?wrapping:Bool = true, ?scanlineFunc:ScanlineFunc) {
 		if (width == null)
 			width = frameBuffer.frameWidth;
@@ -197,7 +198,7 @@ class Tilemap extends Renderable {
 
 						if (tilePlace != null && tilePlace.index > 0 && tilePlace.index - 1 < tilemap.tileset.numTiles) {
 							final tileColorIndex:Int = tilemap.readTilePixel(tileColIndex, tileLineIndex, inTileCol, inTileScanline);
-							final paletteColorIndex:Int = tilePlace.colorMap != null ? tilePlace.colorMap[tileColorIndex] : tilemap.colorMap == null ? tileColorIndex : tilemap.colorMap[tileColorIndex];
+							final paletteColorIndex:Int = tilePlace.colorMap != null ? tilePlace.colorMap.get(tileColorIndex) : tilemap.colorMap == null ? tileColorIndex : tilemap.colorMap.get(tileColorIndex);
 
 							if (paletteColorIndex != 0)
 								frameBuffer.setIndex(screenCol, screenScanline, paletteColorIndex);
@@ -213,6 +214,6 @@ class Tilemap extends Renderable {
 
 		@param frameBuffer Frame buffer to render at
 	 */
-	override public function render(frameBuffer:IFrameBuffer)
+	override public function render(frameBuffer:FrameBuffer)
 		drawTilemap(frameBuffer, this, 0, 0, frameBuffer.frameWidth, frameBuffer.frameHeight, scrollX, scrollY, true, scanlineFunc);
 }

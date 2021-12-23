@@ -98,7 +98,7 @@ class OpenFLPlatform implements IPlatform {
 		return new AudioMixer();
 	}
 
-	public function createFrameBuffer(width:Int, height:Int, palette:Palette):IFrameBuffer {
+	public function createFrameBuffer(width:Int, height:Int, palette:Palette):FrameBuffer {
 		frameBuffer = new FrameBuffer(width, height, palette);
 
 		container.addChild(bitmap = new Bitmap(frameBuffer.bitmapData));

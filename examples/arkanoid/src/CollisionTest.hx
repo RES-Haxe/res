@@ -1,4 +1,4 @@
-import res.IFrameBuffer;
+import res.display.FrameBuffer;
 import res.Scene;
 import res.collisions.Collider;
 import res.collisions.CollisionResult;
@@ -28,7 +28,7 @@ class CollisionTest extends Scene {
 		text = res.createTextmap();
 	}
 
-	override function render(frameBuffer:IFrameBuffer) {
+	override function render(frameBuffer:FrameBuffer) {
 		frameBuffer.clear(clearColorIndex);
 
 		var rx:Int = 0;

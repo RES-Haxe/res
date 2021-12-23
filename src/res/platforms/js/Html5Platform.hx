@@ -151,7 +151,7 @@ class Html5Platform implements IPlatform {
 		return new Html5AudioMixer(audioContext);
 	}
 
-	public function createFrameBuffer(width:Int, height:Int, palette:Palette):IFrameBuffer {
+	public function createFrameBuffer(width:Int, height:Int, palette:Palette):FrameBuffer {
 		return new FrameBuffer(width, height, palette, canvas);
 	}
 

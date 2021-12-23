@@ -1,6 +1,7 @@
 package res.graphics;
 
 import Math.*;
+import res.display.FrameBuffer;
 import res.geom.Rect;
 import res.tools.MathTools.*;
 import res.types.Shape;
@@ -8,7 +9,7 @@ import res.types.Shape;
 using Std;
 
 /**
-	Can be used as a static extension for IFrameBuffer
+	Can be used as a static extension for FrameBuffer
 
 	e.g.:
 
@@ -17,7 +18,7 @@ using Std;
 
 	// ...
 
-	function render(frameBuffer:IFrameBuffer) {
+	function render(frameBuffer:FrameBuffer) {
 		frameBuffer.line(0, 0, 100, 100, 5);
 	}
 
@@ -34,7 +35,7 @@ class Painter {
 		@param strokeIndex Stroke color index
 		@param fillIndex Fill color index
 	 */
-	public static function circle(frameBuffer:IFrameBuffer, cx:Int, cy:Int, r:Int, strokeIndex:Int, ?fillIndex:Int) {
+	public static function circle(frameBuffer:FrameBuffer, cx:Int, cy:Int, r:Int, strokeIndex:Int, ?fillIndex:Int) {
 		ellipse(frameBuffer, cx, cy, r, r, strokeIndex, fillIndex);
 	}
 
@@ -51,7 +52,7 @@ class Painter {
 
 		@see https://www.geeksforgeeks.org/midpoint-ellipse-drawing-algorithm/
 	 */
-	public static function ellipse(frameBuffer:IFrameBuffer, cx:Int, cy:Int, rx:Int, ry:Int, strokeIndex:Int, ?fillIndex:Int) {
+	public static function ellipse(frameBuffer:FrameBuffer, cx:Int, cy:Int, rx:Int, ry:Int, strokeIndex:Int, ?fillIndex:Int) {
 		var dx:Float;
 		var dy:Float;
 		var d1:Float;
@@ -130,7 +131,7 @@ class Painter {
 		@param y1 Destination Y
 		@param colorIndex
 	 */
-	public static function line(frameBuffer:IFrameBuffer, x0:Int, y0:Int, x1:Int, y1:Int, colorIndex:Int) {
+	public static function line(frameBuffer:FrameBuffer, x0:Int, y0:Int, x1:Int, y1:Int, colorIndex:Int) {
 		final dx:Int = abs(x1 - x0).int();
 		final dy:Int = abs(y1 - y0).int();
 
@@ -179,7 +180,7 @@ class Painter {
 		@param strokeIndex Stroke color index 
 		@param fillIndex Fill color index
 	 */
-	public static function rect(frameBuffer:IFrameBuffer, x:Int, y:Int, w:Int, h:Int, strokeIndex:Int, ?fillIndex:Int) {
+	public static function rect(frameBuffer:FrameBuffer, x:Int, y:Int, w:Int, h:Int, strokeIndex:Int, ?fillIndex:Int) {
 		if (Rect.intersect(0, 0, frameBuffer.frameWidth, frameBuffer.frameHeight, x, y, w, h)) {
 			final fx = mini(x, x + w);
 			final fy = mini(y, y + h);
@@ -208,7 +209,7 @@ class Painter {
 		@param colorIndex
 		@param fillIndex
 	 */
-	public static function shape(frameBuffer:IFrameBuffer, shape:Shape, strokeIndex:Int, ?fillIndex:Int) {
+	public static function shape(frameBuffer:FrameBuffer, shape:Shape, strokeIndex:Int, ?fillIndex:Int) {
 		switch (shape) {
 			case CIRCLE(cx, cy, r):
 				circle(frameBuffer, cx.int(), cy.int(), r.int(), strokeIndex, fillIndex);

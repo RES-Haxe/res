@@ -5,41 +5,27 @@ import h2d.Scene;
 import h2d.Tile;
 import haxe.io.Bytes;
 import hxd.Pixels;
-import res.IFrameBuffer;
 
-class FrameBuffer implements IFrameBuffer {
-	final _width:Int;
-	final _height:Int;
-	final _indexBuffer:Array<Array<Int>>;
-	final _palette:Palette;
+class FrameBuffer extends res.display.FrameBuffer {
 	final _pixels:Pixels;
-
-	public final bitmap:Bitmap;
+	final _bitmap:Bitmap;
 
 	public function new(s2d:Scene, width:Int, height:Int, palette:Palette) {
-		_width = width;
-		_height = height;
-		bitmap = new Bitmap(s2d);
+		super(width, height, palette);
 
 		_pixels = new Pixels(width, height, Bytes.alloc(width * height * 4), ARGB);
+		_pixels.makeSquare(false);
 
-		_indexBuffer = [for (_ in 0...height) [for (_ in 0...width) 0]];
-		_palette = palette;
+		_bitmap = new Bitmap(Tile.fromPixels(_pixels), s2d);
 	}
 
-	public var frameWidth(get, never):Int;
+	override function setPixel(x:Int, y:Int, color:Color) {
+		_pixels.setPixel(x, y, color.format(ARGB));
+	}
 
-	public function get_frameWidth():Int
-		return _width;
+	override public function clear(index:Int) {
+		super.clear(index);
 
-	public var frameHeight(get, never):Int;
-
-	public function get_frameHeight():Int
-		return _height;
-
-	public function beginFrame() {}
-
-	public function clear(index:Int) {
 		final c = _palette.get(index).format(ARGB);
 
 		for (line in 0...frameHeight)
@@ -47,21 +33,7 @@ class FrameBuffer implements IFrameBuffer {
 				_pixels.setPixel(col, line, c);
 	}
 
-	public function endFrame() {
-		bitmap.tile = Tile.fromPixels(_pixels);
-	}
-
-	public function getIndex(x:Int, y:Int):Int {
-		return _indexBuffer[y][x];
-	}
-
-	public function setIndex(x:Int, y:Int, index:Int) {
-		if (x >= 0 && y >= 0 && x < frameWidth && y < frameHeight) {
-			_indexBuffer[y][x] = index;
-
-			final c = _palette.get(index).format(ARGB);
-
-			_pixels.setPixel(x, y, c);
-		}
+	override public function endFrame() {
+		_bitmap.tile.getTexture().uploadPixels(_pixels);
 	}
 }

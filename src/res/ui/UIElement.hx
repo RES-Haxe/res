@@ -8,9 +8,9 @@ class UIElement extends Renderable {
 
 	var children:Array<UIElement> = [];
 
-	function renderElement(frameBuffer:IFrameBuffer, atx:Float, aty:Float) {
+	function renderElement(frameBuffer:FrameBuffer, atx:Float, aty:Float) {
 		for (child in children) {}
 	}
 
-	override function render(frameBuffer:IFrameBuffer) {}
+	override function render(frameBuffer:FrameBuffer) {}
 }

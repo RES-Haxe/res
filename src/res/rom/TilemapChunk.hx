@@ -35,7 +35,6 @@ class TilemapChunk extends RomChunk {
 		return tilemap;
 	}
 
-	#if macro
 	public static function fromAseprite(bytes:Bytes, name:String):{tilesetChunk:TilesetChunk, tilemapChunk:TilemapChunk} {
 		final tilesetChunk = TilesetChunk.fromAseprite(bytes, name);
 		final tileset = tilesetChunk.getTileset();
@@ -93,5 +92,4 @@ class TilemapChunk extends RomChunk {
 			tilemapChunk: new TilemapChunk(name, bytesOutput.getBytes())
 		};
 	}
-	#end
 }
