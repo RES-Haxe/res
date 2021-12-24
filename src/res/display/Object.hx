@@ -12,7 +12,7 @@ class Object extends Renderable implements Updateable {
 	public var scrollX:Float = 0;
 	public var scrollY:Float = 0;
 
-	public var colorMap:Array<Int> = null;
+	public var colorMap:ColorMap = null;
 
 	var parent:Object;
 

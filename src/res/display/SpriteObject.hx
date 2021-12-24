@@ -33,7 +33,7 @@ class SpriteObject extends Object {
 
 	public var currentFrameIndex:Int = 0;
 
-	public function new(sprite:Sprite, ?colorMap:Array<Int>) {
+	public function new(sprite:Sprite, ?colorMap:ColorMap) {
 		this.sprite = sprite;
 		this.colorMap = colorMap;
 

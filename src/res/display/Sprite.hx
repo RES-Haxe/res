@@ -28,7 +28,7 @@ class Sprite {
 		frames.push(new SpriteFrame(data, duration));
 	}
 
-	public function createObject(?x:Float = 0, ?y:Float = 0, ?colorMap:Array<Int>):SpriteObject {
+	public function createObject(?x:Float = 0, ?y:Float = 0, ?colorMap:ColorMap):SpriteObject {
 		var obj = new SpriteObject(this, colorMap);
 		obj.x = x;
 		obj.y = y;
@@ -36,7 +36,7 @@ class Sprite {
 	}
 
 	public static function drawSprite(frameBuffer:FrameBuffer, sprite:Sprite, ?x:Int = 0, ?y:Int = 0, ?width:Int, ?height:Int, ?frameIndex:Int = 0,
-			?flipX:Bool = false, ?flipY:Bool = false, ?wrapping:Bool = true, ?colorMap:Array<Int>) {
+			?flipX:Bool = false, ?flipY:Bool = false, ?wrapping:Bool = true, ?colorMap:ColorMap) {
 		final frame = sprite.frames[frameIndex];
 
 		final lines:Int = height == null ? sprite.height : height;
@@ -59,7 +59,7 @@ class Sprite {
 
 						if (wrapping
 							|| (screenX >= 0 && screenY >= 0 && screenX < frameBuffer.frameWidth && screenY < frameBuffer.frameHeight)) {
-							final colorIndex = colorMap == null ? sampleIndex : colorMap[sampleIndex];
+							final colorIndex = colorMap == null ? sampleIndex : colorMap.get(sampleIndex);
 							if (colorIndex != 0)
 								frameBuffer.setIndex(screenX, screenY, colorIndex);
 						}
