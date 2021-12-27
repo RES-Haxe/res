@@ -1,15 +1,17 @@
 package res.platforms.openfl;
 
+import openfl.geom.Point;
+import openfl.events.MouseEvent;
 import openfl.Lib;
 import openfl.display.Bitmap;
 import openfl.display.DisplayObjectContainer;
 import openfl.events.Event;
 import openfl.events.KeyboardEvent;
-import openfl.events.MouseEvent;
 import openfl.ui.GameInput;
 import res.audio.IAudioBuffer;
 import res.audio.IAudioMixer;
 import res.audio.IAudioStream;
+import res.storage.IStorage;
 
 class OpenFLPlatform implements IPlatform {
 	public var bitmap:Bitmap;
@@ -64,15 +66,24 @@ class OpenFLPlatform implements IPlatform {
 		});
 
 		container.stage.addEventListener(MouseEvent.MOUSE_MOVE, (event) -> {
-			res.mouse.moveTo(Std.int(event.localX), Std.int(event.localY));
+			if (bitmap != null) {
+				final p = bitmap.globalToLocal(new Point(event.localX, event.localY));
+				res.mouse.moveTo(Std.int(p.x), Std.int(p.y));
+			}
 		});
 
 		container.stage.addEventListener(MouseEvent.MOUSE_DOWN, (event) -> {
-			res.mouse.push(LEFT, Std.int(event.localX), Std.int(event.localY));
+			if (bitmap != null) {
+				final p = bitmap.globalToLocal(new Point(event.localX, event.localY));
+				res.mouse.push(LEFT, Std.int(p.x), Std.int(p.y));
+			}
 		});
 
 		container.stage.addEventListener(MouseEvent.MOUSE_UP, (event) -> {
-			res.mouse.release(LEFT, Std.int(event.localX), Std.int(event.localY));
+			if (bitmap != null) {
+				final p = bitmap.globalToLocal(new Point(event.localX, event.localY));
+				res.mouse.release(LEFT, Std.int(p.x), Std.int(p.y));
+			}
 		});
 
 		if (GameInput.isSupported) {}
@@ -110,4 +121,8 @@ class OpenFLPlatform implements IPlatform {
 	}
 
 	var frameBuffer:FrameBuffer;
+
+	public function createStorage():IStorage {
+		return null;
+	}
 }

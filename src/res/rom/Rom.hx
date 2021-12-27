@@ -20,6 +20,9 @@ import sys.io.File;
 #end
 
 final CONVERTERS:Map<String, Map<String, Converter>> = [
+	'audio' => [
+		'wav' => new res.rom.converters.audio.wav.Converter()
+	],
 	'palette' => [
 		'' => new res.rom.converters.palette.text.Converter(),
 		'png' => new res.rom.converters.palette.png.Converter()
@@ -128,6 +131,7 @@ class Rom {
 						final fileConverter = converters[fileExt];
 
 						if (fileConverter != null) {
+							trace('Converting $filePath');
 							final chunks = fileConverter.process(filePath, palette).getChunks();
 
 							for (chunk in chunks) {

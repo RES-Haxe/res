@@ -16,30 +16,52 @@ class Textmap extends Tilemap {
 			_charMap[characters.charCodeAt(ci)] = firstTileIndex + ci + 1;
 	}
 
+	override function clear() {
+		super.clear();
+
+		moveTo(0, 0);
+	}
+
 	public function moveTo(x:Int, y:Int) {
 		cursor.x = wrapi(x, hTiles);
 		cursor.y = wrapi(y, vTiles);
 	}
 
-	public function print(text:String, ?colorMap:Array<Int>) {
-		for (c in 0...text.length) {
-			final char = text.charAt(c);
+	public function print(?cx:Int, ?cy:Int, text:String, ?colorMap:Array<Int>) {
+		final words = text.split(' ');
 
-			if (char != '\n') {
-				setChar(cursor.x, cursor.y, char, colorMap);
+		if (cx != null && cy != null)
+			moveTo(cx, cy);
+
+		for (word in words) {
+			if (cursor.x + word.length > hTiles) {
+				cursor.y++;
+				cursor.x = 0;
+			}
+
+			for (c in 0...word.length) {
+				final char = word.charAt(c);
+
+				if (char != '\n') {
+					setChar(cursor.x, cursor.y, char, colorMap);
+					cursor.x++;
+				} else {
+					cursor.x = 0;
+					cursor.y++;
+				}
+
+				if (cursor.x >= hTiles) {
+					cursor.y++;
+					cursor.x = 0;
+				}
+
+				if (cursor.y >= vTiles)
+					cursor.y = 0;
+			}
+
+			if (cursor.x < hTiles && cursor.x > 0) {
 				cursor.x++;
-			} else {
-				cursor.x = 0;
-				cursor.y++;
 			}
-
-			if (cursor.x >= hTiles) {
-				cursor.y++;
-				cursor.x = 0;
-			}
-
-			if (cursor.y >= vTiles)
-				cursor.y = 0;
 		}
 	}
 
