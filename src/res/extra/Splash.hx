@@ -6,12 +6,18 @@ import res.timeline.Timeline;
 import res.tools.MathTools.wrapi;
 
 class Splash extends Scene {
-	final paletteTest:Graphics;
-	final logo:Graphics;
+	final scene:Scene;
 
-	public function new(res:RES) {
-		super(res);
+	var paletteTest:Graphics;
+	var logo:Graphics;
 
+	public function new(scene:Scene) {
+		super();
+
+		this.scene = scene;
+	}
+
+	override public function init() {
 		final indexes = res.rom.palette.byLuminance.slice(0);
 
 		paletteTest = new Graphics(res.frameBuffer.frameWidth, res.frameBuffer.frameHeight, indexes);
@@ -44,7 +50,7 @@ class Splash extends Scene {
 		});
 
 		timeline.after(1, (_) -> {
-			res.setScene(res.mainScene);
+			res.setScene(scene, true);
 		});
 
 		add(timeline);

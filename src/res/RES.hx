@@ -38,7 +38,6 @@ class RES {
 	public final mouse:Mouse;
 	public final resolution:Resolution;
 	public final fonts:Map<String, Font> = [];
-	public final mainScene:Class<Scene>;
 	public final platform:IPlatform;
 	public final storage:IStorage;
 	public final renderHooks:RenderHooks = {
@@ -53,8 +52,6 @@ class RES {
 
 	private var features:Map<String, Feature> = [];
 	private var prevFrameTime:Null<Float> = null;
-
-	private final _scenes:Map<String, Scene> = [];
 
 	private final _sceneHistory:Array<Scene> = [];
 
@@ -84,7 +81,6 @@ class RES {
 		this.config = config;
 
 		this.resolution = config.resolution;
-		this.mainScene = config.mainScene;
 
 		for (controller in controllers)
 			controller.listen((ev) -> if (scene != null) scene.controllerEvent(ev));
@@ -118,10 +114,9 @@ class RES {
 			this.enable(...config.features);
 
 		#if !skipSplash
-		setScene(res.extra.Splash);
+		setScene(new res.extra.Splash(config.scene));
 		#else
-		if (mainScene != null)
-			setScene(mainScene);
+		setScene(config.scene);
 		#end
 	}
 
@@ -279,55 +274,45 @@ class RES {
 	/**
 		Set current scene
 
-		@param sceneClass Class of the scene to create
-		@param sceneInstance Scene instance to set. sceneClass will be ignored is set
-		@param forceCreate Force create a new instance, instead of using a cached one
+		@param newScene Scene to set
 		@param historyReplace Replace the current scene in history, instead of adding a new entry
+		@param onResult 
 	 */
-	public function setScene(?sceneClass:Class<Scene>, ?sceneInstance:Scene = null, ?forceCreate:Bool = false, ?historyReplace:Bool = false):Scene {
+	public function setScene(newScene:Scene = null, ?historyReplace:Bool = false, ?onResult:Dynamic->Void):Scene {
 		if (_scene != null) {
 			_scene.leave();
+			_scene.audioMixer.pause();
 			if (historyReplace == false)
 				_sceneHistory.push(_scene);
 		}
 
-		var scene:Scene = sceneInstance;
+		_scene = newScene;
 
-		if (sceneInstance != null)
-			sceneClass = scene.getClass();
-
-		var sceneClassName:String = sceneClass.getClassName();
-
-		if (!forceCreate && sceneInstance == null) {
-			if (_scenes.exists(sceneClassName))
-				scene = _scenes[sceneClassName];
+		if (_scene.res == null) {
+			_scene.res = this;
+			_scene.init();
 		}
 
-		if (scene == null) {
-			scene = sceneClass.createInstance([this]);
-			scene.init();
-		}
+		_scene.enter();
+		_scene.audioMixer.resume();
 
-		scene.enter();
-
-		_scenes[sceneClassName] = scene;
-
-		return _scene = scene;
-	}
-
-	public function pushScene(?sceneClass:Class<Scene>, ?sceneInstance:Scene = null, ?forceCreate:Bool = false, ?historyReplace:Bool = false,
-			onResult:Dynamic->Void):Scene {
-		var scene = setScene(sceneClass, sceneInstance, forceCreate, historyReplace);
 		_sceneResultCb.push(onResult);
-		return scene;
+
+		return _scene;
 	}
 
+	/**
+		Get pack to the previous scene
+
+		@param result optional payload that will be passed to a callback (if any) given in the `setScene` method
+	 */
 	public function popScene(?result:Dynamic) {
 		var scene = _sceneHistory.pop();
 
 		if (scene != null) {
 			_scene = scene;
 			_scene.enter();
+			_scene.audioMixer.resume();
 
 			var cb = _sceneResultCb.pop();
 

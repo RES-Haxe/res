@@ -12,22 +12,25 @@ using Std;
 
 class Scene extends Renderable implements Updateable {
 	@:allow(res)
-	final res:RES;
+	var res(default, set):RES;
 
-	final renderList:Array<Renderable> = [];
-	final updateList:Array<Updateable> = [];
-
-	public var clearColorIndex:Null<Int> = null;
-
-	final audioMixer:IAudioMixer;
-
-	public function new(res:RES) {
-		this.res = res;
+	function set_res(_res:RES) {
+		res = _res;
 
 		audioMixer = res.platform.createAudioMixer();
 
 		clearColorIndex = res.rom.palette.darkestIndex;
+
+		return res;
 	}
+
+	final renderList:Array<Renderable> = [];
+	final updateList:Array<Updateable> = [];
+
+	@:allow(res)
+	var audioMixer:IAudioMixer;
+
+	public var clearColorIndex:Null<Int> = null;
 
 	public function enter() {
 		audioMixer.resume();
@@ -38,6 +41,8 @@ class Scene extends Renderable implements Updateable {
 	public function leave() {
 		audioMixer.pause();
 	}
+
+	public function new() {}
 
 	/**
 		Get controller direction of the default player

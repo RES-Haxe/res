@@ -7,6 +7,6 @@ import res.rom.Rom;
 typedef RESConfig = {
 	resolution:Resolution,
 	rom:Rom,
-	mainScene:Class<Scene>,
+	?scene:Scene,
 	?features:Array<Class<Feature>>
 };
