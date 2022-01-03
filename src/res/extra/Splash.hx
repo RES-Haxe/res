@@ -50,7 +50,8 @@ class Splash extends Scene {
 		});
 
 		timeline.after(1, (_) -> {
-			res.setScene(scene, true);
+			if (scene != null)
+				res.setScene(scene, true);
 		});
 
 		add(timeline);

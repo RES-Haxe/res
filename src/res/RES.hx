@@ -116,7 +116,8 @@ class RES {
 		#if !skipSplash
 		setScene(new res.extra.Splash(config.scene));
 		#else
-		setScene(config.scene);
+		if (config.scene != null)
+			setScene(config.scene);
 		#end
 	}
 
