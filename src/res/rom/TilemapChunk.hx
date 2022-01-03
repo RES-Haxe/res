@@ -1,5 +1,6 @@
 package res.rom;
 
+import res.rom.converters.tilemaps.aseprite.Converter;
 import haxe.io.Bytes;
 import haxe.io.BytesInput;
 import haxe.io.BytesOutput;
@@ -36,7 +37,7 @@ class TilemapChunk extends RomChunk {
 	}
 
 	public static function fromAseprite(bytes:Bytes, name:String):{tilesetChunk:TilesetChunk, tilemapChunk:TilemapChunk} {
-		final tilesetChunk = TilesetChunk.fromAseprite(bytes, name);
+		final tilesetChunk = res.rom.converters.tilesets.aseprite.Converter.createChunk(name, bytes);
 		final tileset = tilesetChunk.getTileset();
 
 		final ase = ase.Ase.fromBytes(bytes);

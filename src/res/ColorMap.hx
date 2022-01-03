@@ -12,6 +12,6 @@ abstract ColorMap(Map<Int, Int>) from Map<Int, Int> to Map<Int, Int> {
 
 	@:arrayAccess
 	public inline function arrayWrite(key:Int, val:Int) {
-		this[key] = val;
+		this.set(key, val);
 	}
 }

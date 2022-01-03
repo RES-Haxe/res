@@ -12,7 +12,7 @@ class Splash extends Scene {
 	public function new(res:RES) {
 		super(res);
 
-		final indexes = res.rom.palette.byLuminance.slice(1);
+		final indexes = res.rom.palette.byLuminance.slice(0);
 
 		paletteTest = new Graphics(res.frameBuffer.frameWidth, res.frameBuffer.frameHeight, indexes);
 

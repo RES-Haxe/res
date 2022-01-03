@@ -16,12 +16,13 @@ import res.tiles.Tileset;
 import haxe.io.BytesOutput;
 import haxe.io.Path;
 import sys.FileSystem;
-import sys.io.File;
-#end
 
 final CONVERTERS:Map<String, Map<String, Converter>> = [
 	'audio' => [
 		'wav' => new res.rom.converters.audio.wav.Converter()
+	],
+	'data' => [
+		'' => new res.rom.converters.data.Converter()
 	],
 	'palette' => [
 		'' => new res.rom.converters.palette.text.Converter(),
@@ -31,12 +32,17 @@ final CONVERTERS:Map<String, Map<String, Converter>> = [
 		'json' => new res.rom.converters.fonts.json.Converter()
 	],
 	'sprites' => [
-		'aseprite' => new res.rom.converters.sprites.aseprite.Converter()
+		'aseprite' => new res.rom.converters.sprites.aseprite.Converter(),
+		'png' => new res.rom.converters.sprites.png.Converter()
+	],
+	'tilesets' => [
+		'aseprite' => new res.rom.converters.tilesets.aseprite.Converter()
 	],
 	'tilemaps' => [
 		'aseprite' => new res.rom.converters.tilemaps.aseprite.Converter()
 	]
 ];
+#end
 
 class Rom {
 	static inline var MAGIC_NUMBER:Int32 = 0x52524f4d; // RROM
@@ -103,15 +109,6 @@ class Rom {
 
 		final palette = new res.Palette(paletteConverter.colors);
 
-		final resTypes:Array<String> = ['audio', 'tilesets', 'tilemaps', 'sprites', 'fonts', 'data'];
-		final supportedTypes:Map<String, Array<String>> = [
-			'tilesets' => ['aseprite', 'json'],
-			'tilemaps' => ['aseprite'],
-			'sprites' => ['aseprite', 'png'],
-			'data' => [],
-			'audio' => ['wav']
-		];
-
 		final byteOutput = new BytesOutput();
 
 		// Write magic number
@@ -131,7 +128,6 @@ class Rom {
 						final fileConverter = converters[fileExt];
 
 						if (fileConverter != null) {
-							trace('Converting $filePath');
 							final chunks = fileConverter.process(filePath, palette).getChunks();
 
 							for (chunk in chunks) {
@@ -142,67 +138,6 @@ class Rom {
 				}
 			}
 		}
-
-		/*
-			for (resourceType in resTypes) {
-				final path = Path.join([src, resourceType]);
-
-				if (FileSystem.isDirectory(path)) {
-					for (file in FileSystem.readDirectory(path)) {
-						var filePath = Path.join([path, file]);
-						if (!FileSystem.isDirectory(filePath)) {
-							var fileExt = Path.extension(file).toLowerCase();
-
-							if (supportedTypes[resourceType].length == 0 || supportedTypes[resourceType].indexOf(fileExt) != -1) {
-								var name = Path.withoutExtension(file);
-								var fileBytes = File.getBytes(Path.join([path, file]));
-
-								switch (resourceType) {
-									case 'audio':
-										switch (fileExt) {
-											case 'wav':
-												AudioSampleChunk.fromWav(fileBytes, name).write(byteOutput);
-										}
-									case 'sprites':
-										switch (fileExt) {
-												case 'aseprite':
-													SpriteChunk.fromAseprite(fileBytes, name).write(byteOutput);
-											case 'png':
-												SpriteChunk.fromPNG(fileBytes, palette, name).write(byteOutput);
-										}
-									case 'tilesets':
-										switch (fileExt) {
-											case 'aseprite':
-												TilesetChunk.fromAseprite(fileBytes, name).write(byteOutput);
-													case 'json':
-														TilesetChunk.fromJson(filePath, name, palette).write(byteOutput);
-										}
-										case 'tilemaps':
-											switch (fileExt) {
-												case 'aseprite':
-													var result = TilemapChunk.fromAseprite(fileBytes, name);
-													result.tilesetChunk.write(byteOutput);
-													result.tilemapChunk.write(byteOutput);
-											}
-									case 'fonts':
-										final aseFile = Path.join([path, '$name.aseprite']);
-										if (FileSystem.exists(aseFile)) {
-											final tileset = TilesetChunk.fromAseprite(File.getBytes(aseFile), 'font:$name', false);
-											tileset.write(byteOutput);
-											final font = FontChunk.fromBytes(fileBytes, name);
-											font.write(byteOutput);
-										} else {
-											trace('No Aseprite file for the font');
-										}
-									case 'data':
-										DataChunk.fromBytes(fileBytes, file).write(byteOutput);
-								}
-							}
-						}
-					}
-				}
-			}
-		 */
 
 		return byteOutput.getBytes();
 	}

@@ -10,8 +10,4 @@ class DataChunk extends RomChunk {
 	public function getBytes():Bytes {
 		return data;
 	}
-
-	public static function fromBytes(bytes:Bytes, name:String) {
-		return new DataChunk(name, bytes);
-	}
 }

@@ -1,10 +1,13 @@
 package res.rom.converters;
 
-import haxe.io.Path;
-import haxe.io.Bytes;
+using haxe.io.Path;
 
 class Converter {
 	public function new() {}
+
+	function makeName(fileName:String) {
+		return fileName.withoutDirectory().withoutExtension();
+	}
 
 	public function process(fileName:String, palette:Palette):Converter {
 		return this;
