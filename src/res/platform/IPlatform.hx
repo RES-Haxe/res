@@ -1,4 +1,4 @@
-package res.platforms;
+package res.platform;
 
 import res.audio.IAudioBuffer;
 import res.audio.IAudioMixer;

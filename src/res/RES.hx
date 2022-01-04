@@ -9,7 +9,7 @@ import res.features.Feature;
 import res.input.Controller;
 import res.input.Keyboard;
 import res.input.Mouse;
-import res.platforms.IPlatform;
+import res.platform.IPlatform;
 import res.rom.Rom;
 import res.storage.IStorage;
 import res.text.Font;

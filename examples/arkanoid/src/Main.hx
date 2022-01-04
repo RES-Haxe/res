@@ -1,6 +1,6 @@
 import res.RES;
 import res.features.fonts.KernalFont;
-import res.platforms.js.Html5Platform;
+import res.platform.js.Html5Platform;
 import res.rom.Rom;
 
 function main() {

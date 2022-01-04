@@ -1,4 +1,4 @@
-package res.platforms.common;
+package res.platform.common;
 
 import haxe.Json;
 import res.storage.IStorage;

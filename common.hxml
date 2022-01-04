@@ -1,4 +1,4 @@
 -cp src
 -lib ase
 -lib format
--main res.RES
+res.RES
