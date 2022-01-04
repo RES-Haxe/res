@@ -1,4 +1,0 @@
-common.hxml
--D js-es=6
--D dce=full
---js bin/res.js

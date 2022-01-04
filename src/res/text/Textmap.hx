@@ -27,7 +27,7 @@ class Textmap extends Tilemap {
 		cursor.y = wrapi(y, vTiles);
 	}
 
-	public function print(?cx:Int, ?cy:Int, text:String, ?colorMap:Array<Int>) {
+	public function print(?cx:Int, ?cy:Int, text:String, ?colorMap:ColorMap) {
 		final words = text.split(' ');
 
 		if (cx != null && cy != null)
@@ -71,9 +71,9 @@ class Textmap extends Tilemap {
 		@param atx Tile x coordinate
 		@param aty Tile y coordinate
 		@param char String containing the character to place. Only the first character will be used if the string is longer
-		@param colorMap Array of color indecies to use
+		@param colorMap Color map
 	 */
-	public function setChar(atx:Int, aty:Int, char:String, ?colorMap:Array<Int>) {
+	public function setChar(atx:Int, aty:Int, char:String, ?colorMap:ColorMap) {
 		if (char.length == 0)
 			throw '`char` must contain a character to set';
 		set(atx, aty, _charMap[char.charCodeAt(0)], colorMap);
@@ -88,7 +88,7 @@ class Textmap extends Tilemap {
 		@param colorMap Array of color indecies to use
 		@param clearEnd Clear any tiles to the end of the line
 	 */
-	public function textAt(atx:Int, aty:Int, text:String, ?colorMap:Array<Int>, ?clearEnd:Bool = true) {
+	public function textAt(atx:Int, aty:Int, text:String, ?colorMap:ColorMap, ?clearEnd:Bool = true) {
 		if (aty >= 0 && aty < map.length) {
 			for (tx in atx...hTiles) {
 				var ci = tx - atx;
@@ -108,11 +108,11 @@ class Textmap extends Tilemap {
 
 		@param aty Line at which the text should be displayed
 		@param text Text to display
-		@param colorMap Array of color indecies to use
+		@param colorMap Color map
 		@param clearStart Remove any tiles from the left side to the first character of the string
 		@param clearEnd Clear any tiles to the end of the line
 	 */
-	public function textCentered(aty:Int, text:String, ?colorMap:Array<Int>, ?clearStart:Bool = true, ?clearEnd:Bool = true) {
+	public function textCentered(aty:Int, text:String, ?colorMap:ColorMap, ?clearStart:Bool = true, ?clearEnd:Bool = true) {
 		final pos:Int = Std.int((hTiles - text.length) / 2);
 
 		if (clearStart)

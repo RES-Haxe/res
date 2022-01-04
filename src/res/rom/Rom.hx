@@ -1,8 +1,10 @@
 package res.rom;
 
 import haxe.Int32;
+import haxe.PosInfos;
 import haxe.io.Bytes;
 import haxe.io.BytesInput;
+import haxe.zip.Compress;
 import haxe.zip.InflateImpl;
 import res.audio.AudioData;
 import res.audio.IAudioBuffer;
@@ -12,6 +14,7 @@ import res.rom.converters.palette.PaletteConverter;
 import res.text.Font;
 import res.tiles.Tilemap;
 import res.tiles.Tileset;
+import sys.io.File;
 #if macro
 import haxe.io.BytesOutput;
 import haxe.io.Path;
@@ -68,9 +71,7 @@ class Rom {
 	}
 
 	#if macro
-	public static function create(src:String):Bytes {
-		trace('Generating ROM Data');
-
+	static function create(src:String, ?posInfos:PosInfos):Bytes {
 		if (!FileSystem.exists(src))
 			FileSystem.createDirectory(src);
 
@@ -117,21 +118,25 @@ class Rom {
 		final paletteBytes = paletteConverter.getBytes();
 		byteOutput.writeBytes(paletteBytes, 0, paletteBytes.length);
 
-		for (resourceType => converters in CONVERTERS) {
-			final path = Path.join([src, resourceType]);
+		final firmware = Path.normalize('${Path.join([Path.directory(posInfos.fileName), '..', 'firmware'])}');
 
-			if (FileSystem.isDirectory(path)) {
-				for (file in FileSystem.readDirectory(path)) {
-					final filePath = Path.join([path, file]);
-					if (!FileSystem.isDirectory(filePath)) {
-						final fileExt = Path.extension(file).toLowerCase();
-						final fileConverter = converters[fileExt];
+		for (dir in [src, firmware]) {
+			for (resourceType => converters in CONVERTERS) {
+				final path = Path.join([dir, resourceType]);
 
-						if (fileConverter != null) {
-							final chunks = fileConverter.process(filePath, palette).getChunks();
+				if (FileSystem.isDirectory(path)) {
+					for (file in FileSystem.readDirectory(path)) {
+						final filePath = Path.join([path, file]);
+						if (!FileSystem.isDirectory(filePath)) {
+							final fileExt = Path.extension(file).toLowerCase();
+							final fileConverter = converters[fileExt];
 
-							for (chunk in chunks) {
-								chunk.write(byteOutput);
+							if (fileConverter != null) {
+								final chunks = fileConverter.process(filePath, palette).getChunks();
+
+								for (chunk in chunks) {
+									chunk.write(byteOutput);
+								}
 							}
 						}
 					}
@@ -139,7 +144,11 @@ class Rom {
 			}
 		}
 
-		return byteOutput.getBytes();
+		final resultBytes = byteOutput.getBytes();
+
+		trace('ROM has been generated. Size: ${resultBytes.length} bytes (uncompressed)');
+
+		return resultBytes;
 	}
 	#end
 
@@ -181,7 +190,22 @@ class Rom {
 		return new Rom(palette, audioData, tilesets, tilemaps, sprites, fonts, data);
 	}
 
-	public static macro function embed(src:String, ?compressed:Bool = true) {
+	/**
+		Create a file containing ROM data
+
+		@param src Directory containing source rom data
+		@param filePath File to store rom data to
+		@param compress Whether the data should be compressed
+	 */
+	public static macro function file(src:String = 'rom', filePath:String = 'rom.bin', ?compressed:Bool = true) {
+		final romBytes = compressed ? Compress.run(create(src), 9) : create(src);
+
+		File.saveBytes(filePath, romBytes);
+
+		return macro final ROM_FILE = $v{filePath};
+	}
+
+	public static macro function embed(src:String = 'rom', ?compressed:Bool = true) {
 		final romBytes = create(src);
 		final romHex = compressed ? haxe.zip.Compress.run(romBytes, 9).toHex() : romBytes.toHex();
 

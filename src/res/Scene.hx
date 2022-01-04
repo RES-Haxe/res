@@ -32,17 +32,13 @@ class Scene extends Renderable implements Updateable {
 
 	public var clearColorIndex:Null<Int> = null;
 
-	public function enter() {
-		audioMixer.resume();
-	}
+	public function new() {}
+
+	public function enter() {}
 
 	public function init() {}
 
-	public function leave() {
-		audioMixer.pause();
-	}
-
-	public function new() {}
+	public function leave() {}
 
 	/**
 		Get controller direction of the default player

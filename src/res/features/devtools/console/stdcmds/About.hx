@@ -16,6 +16,6 @@ class About extends ConsoleCommand {
 		console.println(' ${res.frameBuffer.frameWidth}x${res.frameBuffer.frameHeight}');
 
 		console.println('Palette:');
-		console.println(' ${res.rom.palette.colors.length} colors');
+		console.println(' ${res.rom.palette.colors.length - 1} colors');
 	}
 }

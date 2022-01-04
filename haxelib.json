@@ -11,6 +11,5 @@
   "dependencies": {
     "ase": "",
     "format": ""
-  },
-  "main": "tools.Main"
+  }
 }

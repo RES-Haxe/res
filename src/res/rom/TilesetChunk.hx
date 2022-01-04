@@ -37,7 +37,7 @@ class TilesetChunk extends RomChunk {
 		return tileset;
 	}
 
-	public static function fromPNG(pngFileName:String, name:String, tileSize:Int, palette:Palette):TilesetChunk {
+	public static function fromPNG(pngFileName:String, name:String, tileSize:Int, palette:Palette, ?keepEmpty:Bool = false):TilesetChunk {
 		final pngData = new Reader(File.read(pngFileName)).read();
 		final pngHeader = Tools.getHeader(pngData);
 
@@ -73,7 +73,7 @@ class TilesetChunk extends RomChunk {
 					}
 				}
 
-				if (tileBytes.compare(empty) != 0) {
+				if (keepEmpty || tileBytes.compare(empty) != 0) {
 					tiles.push(tileBytes);
 				}
 			}

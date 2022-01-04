@@ -1,13 +1,13 @@
 package res.extra;
 
-using res.graphics.Painter;
+import res.display.FrameBuffer;
+
+using res.display.Painter;
 
 class TVTestCard extends Scene {
-	final indecies:Array<Int>;
+	var indecies:Array<Int>;
 
-	public function new(res:RES) {
-		super(res);
-
+	override public function init() {
 		indecies = res.rom.palette.byLuminance.copy();
 		indecies.reverse();
 	}
@@ -18,7 +18,7 @@ class TVTestCard extends Scene {
 		final barw = Math.floor(frameBuffer.frameWidth / 8);
 
 		for (bar in 0...8) {
-			frameBuffer.rect(bar * barw, 0, barw, frameBuffer.frameHeight, indecies[bar]);
+			frameBuffer.rect(bar * barw, 0, barw, frameBuffer.frameHeight, indecies[bar], indecies[bar]);
 		}
 	}
 }

@@ -31,7 +31,7 @@ class Converter extends res.rom.converters.Converter {
 
 		switch (ext) {
 			case 'png':
-				tilesetChunk = TilesetChunk.fromPNG(bitmapFile, 'font:$name', json.tileSize, palette);
+				tilesetChunk = TilesetChunk.fromPNG(bitmapFile, 'font:$name', json.tileSize, palette, true);
 			case _:
 				throw 'Unsupported tileset bitmap format: $ext';
 		}

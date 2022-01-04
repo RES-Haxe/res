@@ -25,12 +25,14 @@ class ConsoleScene extends Scene {
 
 	final console:Console;
 
-	public function new(res:RES, console:Console) {
-		super(res);
+	public function new(console:Console) {
+		super();
 
 		this.console = console;
 		this.console.println = println;
+	}
 
+	override function init() {
 		consoleText = res.createTextmap();
 		consoleText.scrollY = consoleText.pixelHeight - res.frameBuffer.frameHeight;
 

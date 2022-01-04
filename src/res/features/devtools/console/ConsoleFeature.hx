@@ -31,7 +31,7 @@ class ConsoleFeature implements Feature {
 		this.res = res;
 
 		console = new Console(res);
-		consoleScene = new ConsoleScene(res, console);
+		consoleScene = new ConsoleScene(console);
 
 		console.addCommand(new About());
 		console.addCommand(new Clear(consoleScene));

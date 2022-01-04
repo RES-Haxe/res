@@ -1,4 +1,4 @@
-package res.graphics;
+package res.display;
 
 import Math.*;
 import res.display.FrameBuffer;
@@ -14,7 +14,7 @@ using Std;
 	e.g.:
 
 	```haxe
-	using res.graphics.Painter;
+	using res.display.Painter;
 
 	// ...
 

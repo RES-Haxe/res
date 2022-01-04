@@ -6,7 +6,6 @@ import res.audio.IAudioBuffer;
 import res.audio.IAudioStream;
 import res.display.FrameBuffer;
 import res.features.Feature;
-import res.graphics.Graphics;
 import res.input.Controller;
 import res.input.Keyboard;
 import res.input.Mouse;
@@ -30,8 +29,9 @@ typedef RenderHooks = {
 	after:Array<RenderHookFunction>
 };
 
-@:build(res.Macros.ver())
 class RES {
+	public static final VERSION:String = '0.1.0';
+
 	public final config:RESConfig;
 	public final controllers:Map<Int, Controller> = [for (playerNum in 1...5) playerNum => new Controller(playerNum)];
 	public final keyboard:Keyboard;
@@ -110,11 +110,24 @@ class RES {
 			createAudioBuffer(id, audioData.iterator());
 		}
 
+		if (rom.fonts.exists('kernal')) {
+			defaultFont = rom.fonts['kernal'];
+		} else {
+			if (rom.fonts.iterator().hasNext()) {
+				defaultFont = rom.fonts.iterator().next();
+			}
+		}
+
 		if (config.features != null)
 			this.enable(...config.features);
 
 		#if !skipSplash
-		setScene(new res.extra.Splash(config.scene));
+		if (rom.sprites.exists('res_logo')) {
+			setScene(new res.extra.Splash(config.scene));
+		} else {
+			if (config.scene != null)
+				setScene(config.scene);
+		}
 		#else
 		if (config.scene != null)
 			setScene(config.scene);
@@ -138,26 +151,14 @@ class RES {
 		@param tileset Tileset to use
 		@param characters Supported characters
 		@param firstTileIndex Index of the first tile in the tileset
-		@param numColors Number of colors requred for the font
 	 */
-	public function createFont(?name:String, tileset:Tileset, characters:String, ?firstTileIndex:Int = 0, ?numColors:Int = 1):Font {
-		final font = new Font(name, tileset, characters, firstTileIndex, numColors);
+	public function createFont(?name:String, tileset:Tileset, characters:String, ?firstTileIndex:Int = 0):Font {
+		final font = new Font(name, tileset, characters, firstTileIndex);
 
 		if (name != null)
 			fonts[name] = font;
 
 		return font;
-	}
-
-	/**
-		Create graphics
-
-		@param width
-		@param height
-		@param colorMap
-	 */
-	public function createGraphics(?width:Int, ?height:Int, ?colorMap:Array<Int>):Graphics {
-		return new Graphics(width == null ? this.width : width, height == null ? this.height : height, colorMap);
 	}
 
 	/**
