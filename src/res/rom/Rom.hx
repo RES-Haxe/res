@@ -1,24 +1,24 @@
 package res.rom;
 
 import haxe.Int32;
-import haxe.PosInfos;
 import haxe.io.Bytes;
 import haxe.io.BytesInput;
-import haxe.zip.Compress;
 import haxe.zip.InflateImpl;
 import res.audio.AudioData;
 import res.audio.IAudioBuffer;
 import res.display.Sprite;
-import res.rom.converters.Converter;
-import res.rom.converters.palette.PaletteConverter;
 import res.text.Font;
 import res.tiles.Tilemap;
 import res.tiles.Tileset;
-import sys.io.File;
 #if macro
+import res.rom.converters.Converter;
+import res.rom.converters.palette.PaletteConverter;
+import haxe.PosInfos;
 import haxe.io.BytesOutput;
 import haxe.io.Path;
+import haxe.zip.Compress;
 import sys.FileSystem;
+import sys.io.File;
 
 final CONVERTERS:Map<String, Map<String, Converter>> = [
 	'audio' => [
