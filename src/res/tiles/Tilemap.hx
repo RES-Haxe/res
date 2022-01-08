@@ -135,7 +135,7 @@ class Tilemap extends Renderable {
 		final ffx = tile.flipX ? tileset.tileSize - 1 - rfx : rfx;
 		final ffy = tile.flipY ? tileset.tileSize - 1 - rfy : rfy;
 
-		final tileIndex = indexMap == null ? tile.index - 1 : indexMap[tile.index - 1] - 1;
+		final tileIndex = indexMap == null ? tile.index : indexMap[tile.index];
 
 		return tileset.get(tileIndex).indecies.get(ffy * tileset.tileSize + ffx);
 	}

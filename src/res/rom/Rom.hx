@@ -135,7 +135,8 @@ class Rom {
 								final chunks = fileConverter.process(filePath, palette).getChunks();
 
 								for (chunk in chunks) {
-									chunk.write(byteOutput);
+									if (chunk != null)
+										chunk.write(byteOutput);
 								}
 							}
 						}

@@ -7,23 +7,18 @@ class Tileset {
 	public final tiles:Array<Tile> = [];
 	public final hTiles:Int;
 	public final vTiles:Int;
+	public final baseIndex:Int;
 
 	public var numTiles(get, never):Int;
 
 	function get_numTiles():Int
 		return tiles.length;
 
-	public function new(tileSize:Int, hTiles:Int, vTiles:Int) {
+	public function new(tileSize:Int, hTiles:Int, vTiles:Int, baseIndex:Int = 1) {
 		this.tileSize = tileSize;
 		this.hTiles = hTiles;
 		this.vTiles = vTiles;
-	}
-
-	/**
-		Create an array of indecies for the tiles
-	 */
-	public function getIndecies():Array<Int> {
-		return [for (index in 1...tiles.length + 1) index];
+		this.baseIndex = baseIndex;
 	}
 
 	/**

@@ -13,7 +13,7 @@ class Textmap extends Tilemap {
 		super(tileset, hTiles, vTiles, colorMap);
 
 		for (ci in 0...characters.length)
-			_charMap[characters.charCodeAt(ci)] = firstTileIndex + ci + 1;
+			_charMap[characters.charCodeAt(ci)] = firstTileIndex + ci;
 	}
 
 	override function clear() {
