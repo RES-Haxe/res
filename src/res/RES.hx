@@ -121,12 +121,16 @@ class RES {
 		if (config.features != null)
 			this.enable(...config.features);
 
+		reset();
+	}
+
+	public function reset() {
 		#if !skipSplash
 		if (rom.sprites.exists('res_logo')) {
-			setScene(new res.extra.Splash(config.scene));
+			setScene(new res.extra.Splash(config.main()));
 		} else {
-			if (config.scene != null)
-				setScene(config.scene);
+			if (config.main != null)
+				setScene(config.main());
 		}
 		#else
 		if (config.scene != null)

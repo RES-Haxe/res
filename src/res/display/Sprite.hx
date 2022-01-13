@@ -5,20 +5,51 @@ import res.tools.MathTools.wrapi;
 
 using res.tools.BytesTools;
 
+typedef SpriteAnimation = {
+	var name:String;
+	var from:Int;
+	var to:Int;
+	var direction:Int;
+}
+
+class SpriteFrame {
+	public final data:Bytes;
+	public final duration:Int;
+
+	public function new(data:Bytes, duration:Int) {
+		this.data = data;
+		this.duration = duration;
+	}
+}
+
 class Sprite {
+	public final name:String;
+
 	public final frames:Array<SpriteFrame>;
+	public final animations:Map<String, SpriteAnimation>;
 
 	public final width:Int;
 	public final height:Int;
 
-	public function new(width:Int, height:Int, ?frames:Array<SpriteFrame>) {
+	public function new(?name:String = null, width:Int, height:Int, ?frames:Array<SpriteFrame>, ?animations:Map<String, SpriteAnimation>) {
+		this.name = name;
 		this.width = width;
 		this.height = height;
 		this.frames = frames != null ? frames : [];
+		this.animations = animations != null ? animations : [];
 
 		for (frame in frames)
 			if (frame.data.length != width * height)
 				throw 'Invalid frame size';
+	}
+
+	public function addAnimation(name:String, from:Int, to:Int, direction:Int) {
+		animations[name] = {
+			name: name,
+			from: from,
+			to: to,
+			direction: direction
+		};
 	}
 
 	public function addFrame(data:Bytes, duration:Int) {

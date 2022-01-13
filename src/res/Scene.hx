@@ -95,12 +95,12 @@ class Scene extends Renderable implements Updateable {
 			item.update(dt);
 	}
 
-	override public function render(frameBuffer:FrameBuffer) {
+	override public function render(fb:FrameBuffer) {
 		if (clearColorIndex != null)
-			frameBuffer.clear(clearColorIndex);
+			fb.clear(clearColorIndex);
 
 		for (renderable in renderList)
 			if (renderable.visible)
-				renderable.render(frameBuffer);
+				renderable.render(fb);
 	}
 }

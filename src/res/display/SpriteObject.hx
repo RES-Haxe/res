@@ -1,20 +1,30 @@
 package res.display;
 
+import res.display.Sprite.SpriteAnimation;
+import res.display.Sprite.SpriteFrame;
+
 using Math;
 using res.tools.BytesTools;
 
 @:enum abstract ObjectAnimDirection(Int) from Int to Int {
-	var Forward = 1;
-	var Backwards = -1;
+	var Forward = 0;
+	var Backwards = 1;
+	var PingPong = 2;
 }
 
+enum PingPongCycle {
+	F;
+	B;
+}
+
+/**
+	Stateful Sprite Object
+ */
 class SpriteObject extends Object {
 	public var flipX:Bool = false;
 	public var flipY:Bool = false;
 
 	public var playing:Bool = false;
-
-	public var animDirection:ObjectAnimDirection = Forward;
 
 	public var loop:Bool = true;
 
@@ -33,15 +43,92 @@ class SpriteObject extends Object {
 
 	public var currentFrameIndex:Int = 0;
 
+	var _pingPongCycle:PingPongCycle = F;
+
+	var _animation:SpriteAnimation;
+
 	public function new(sprite:Sprite, ?colorMap:ColorMap) {
 		this.sprite = sprite;
 		this.colorMap = colorMap;
 
 		width = sprite.width;
 		height = sprite.height;
+
+		_animation = {
+			name: '_all',
+			direction: Forward,
+			from: 0,
+			to: sprite.frames.length - 1
+		};
+	}
+
+	public function setAnimation(name:String, restart:Bool = false) {
+		final anim = sprite.animations[name];
+
+		if (anim != null) {
+			if (_animation.name != anim.name || _animation.name == anim.name && restart) {
+				frameTime = 0;
+				currentFrameIndex = anim.from;
+
+				if (anim.direction == PingPong)
+					_pingPongCycle = F;
+			}
+
+			_animation = anim;
+
+			trace(_animation);
+		} else
+			trace('No animation named <$name>');
 	}
 
 	public dynamic function stopped() {};
+
+	function nextFrame() {
+		final inc = switch (_animation.direction) {
+			case Forward:
+				1;
+			case Backwards:
+				-1;
+			case PingPong:
+				switch (_pingPongCycle) {
+					case F: 1;
+					case B: -1;
+				};
+			case _:
+				1;
+		};
+
+		currentFrameIndex += inc;
+
+		var hitEnd = false;
+
+		if (currentFrameIndex > _animation.to) {
+			currentFrameIndex = _animation.to;
+			hitEnd = true;
+		}
+
+		if (currentFrameIndex < _animation.from) {
+			currentFrameIndex = _animation.from;
+			hitEnd = true;
+		}
+
+		if (hitEnd) {
+			if (_animation.direction == PingPong && _pingPongCycle == F)
+				_pingPongCycle = B;
+			else {
+				if (loop) {
+					if (_animation.direction == PingPong) {
+						_pingPongCycle = F;
+					} else {
+						currentFrameIndex = _animation.from;
+					}
+				} else {
+					playing = false;
+					stopped();
+				}
+			}
+		}
+	}
 
 	override public function update(dt:Float) {
 		super.update(dt);
@@ -51,27 +138,8 @@ class SpriteObject extends Object {
 
 			while (frameTime > currentFrameDuration) {
 				frameTime -= currentFrameDuration;
-				currentFrameIndex += animDirection;
 
-				if (animDirection == Forward && currentFrameIndex >= sprite.frames.length) {
-					if (loop) {
-						currentFrameIndex = 0;
-					} else {
-						currentFrameIndex = sprite.frames.length - 1;
-						playing = false;
-						stopped();
-					}
-				}
-
-				if (animDirection == Backwards && currentFrameIndex < 0) {
-					if (loop) {
-						currentFrameIndex = sprite.frames.length - 1;
-					} else {
-						currentFrameIndex = 0;
-						playing = false;
-						stopped();
-					}
-				}
+				nextFrame();
 			}
 
 			frameTime += dt;
@@ -79,5 +147,11 @@ class SpriteObject extends Object {
 	}
 
 	override function selfRender(frameBuffer:FrameBuffer, atx:Float, aty:Float)
-		Sprite.drawSprite(frameBuffer, sprite, atx.floor(), aty.floor(), width.floor(), height.floor(), currentFrameIndex, flipX, flipY, wrap, colorMap);
+		drawSpriteObject(frameBuffer, this, atx, aty);
+
+	public static function drawSpriteObject(frameBuffer:FrameBuffer, spriteObject:SpriteObject, ?x:Float, ?y:Float) {
+		Sprite.drawSprite(frameBuffer, spriteObject.sprite, x != null ? x.floor() : spriteObject.x.floor(), y != null ? y.floor() : spriteObject.y.floor(),
+			spriteObject.width.floor(), spriteObject.height.floor(), spriteObject.currentFrameIndex, spriteObject.flipX, spriteObject.flipY,
+			spriteObject.wrap, spriteObject.colorMap);
+	}
 }

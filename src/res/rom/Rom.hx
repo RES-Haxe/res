@@ -11,12 +11,12 @@ import res.text.Font;
 import res.tiles.Tilemap;
 import res.tiles.Tileset;
 #if macro
-import res.rom.converters.Converter;
-import res.rom.converters.palette.PaletteConverter;
 import haxe.PosInfos;
 import haxe.io.BytesOutput;
 import haxe.io.Path;
 import haxe.zip.Compress;
+import res.rom.converters.Converter;
+import res.rom.converters.palette.PaletteConverter;
 import sys.FileSystem;
 import sys.io.File;
 
@@ -147,13 +147,19 @@ class Rom {
 
 		final resultBytes = byteOutput.getBytes();
 
-		trace('ROM has been generated. Size: ${resultBytes.length} bytes (uncompressed)');
+		Sys.println('ROM has been generated. Size: ${resultBytes.length} bytes (uncompressed)');
 
 		return resultBytes;
 	}
 	#end
 
-	public static function fromBytes(bytes:Bytes, ?compressed:Bool):Rom {
+	/**
+		Load rom from bytes
+
+		@param bytes
+		@param compressed Whether the data is gzip compressed or not
+	 */
+	public static function fromBytes(bytes:Bytes, ?compressed:Bool = false):Rom {
 		final bytesInput = new BytesInput(compressed ? InflateImpl.run(new BytesInput(bytes)) : bytes);
 
 		if (bytesInput.readInt32() != MAGIC_NUMBER)
@@ -203,7 +209,7 @@ class Rom {
 
 		File.saveBytes(filePath, romBytes);
 
-		return macro final ROM_FILE = $v{filePath};
+		return macro final ROM_FILE = true;
 	}
 
 	public static macro function embed(src:String = 'rom', ?compressed:Bool = true) {

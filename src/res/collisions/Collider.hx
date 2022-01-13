@@ -67,4 +67,6 @@ class Collider {
 		}
 		return NONE;
 	}
+
+	public function contain(shape:Shape, inside:Shape) {}
 }

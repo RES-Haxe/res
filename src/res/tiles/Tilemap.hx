@@ -14,7 +14,10 @@ class Tilemap extends Renderable {
 
 	public final tileset:Tileset;
 
+	/** Number of Horizontal tiles **/
 	public var hTiles:Int;
+
+	/** Number of Vertical tiles **/
 	public var vTiles:Int;
 
 	public var scanlineFunc:ScanlineFunc;
@@ -73,7 +76,7 @@ class Tilemap extends Renderable {
 				line[index].index = tileIndex;
 	}
 
-	inline function inBounds(tileCol:Int, tileLine:Int):Bool {
+	inline public function inBounds(tileCol:Int, tileLine:Int):Bool {
 		return (tileLine >= 0 && tileLine < vTiles && tileCol >= 0 && tileCol < hTiles);
 	}
 

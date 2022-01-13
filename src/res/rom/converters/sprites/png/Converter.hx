@@ -64,6 +64,8 @@ class Converter extends res.rom.converters.Converter {
 
 		bytesOutput.writeBytes(frameData, 0, frameData.length);
 
+		bytesOutput.writeUInt16(0); // 0 animations
+
 		return new SpriteChunk(name, bytesOutput.getBytes());
 	}
 

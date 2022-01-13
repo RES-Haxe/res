@@ -1,11 +1,8 @@
 package res.rom;
 
-import format.png.Reader;
-import format.png.Tools;
 import haxe.io.Bytes;
 import haxe.io.BytesInput;
 import res.display.Sprite;
-import res.display.SpriteFrame;
 
 class SpriteChunk extends RomChunk {
 	public function new(name:String, data:Bytes) {
@@ -21,7 +18,7 @@ class SpriteChunk extends RomChunk {
 
 		final frames:Array<SpriteFrame> = [];
 
-		for (n in 0...framesNum) {
+		for (_ in 0...framesNum) {
 			final duration = bi.readInt32();
 			final frameData = Bytes.alloc(width * height);
 			bi.readBytes(frameData, 0, frameData.length);
@@ -29,6 +26,21 @@ class SpriteChunk extends RomChunk {
 			frames.push(new SpriteFrame(frameData, duration));
 		}
 
-		return new Sprite(width, height, frames);
+		final numAnims = bi.readUInt16();
+
+		final animations:Map<String, SpriteAnimation> = [];
+
+		for (_ in 0...numAnims) {
+			final name = bi.readString(bi.readUInt16());
+
+			animations[name] = {
+				name: name,
+				from: bi.readUInt24(),
+				to: bi.readUInt24(),
+				direction: bi.readInt8(),
+			};
+		}
+
+		return new Sprite(name, width, height, frames, animations);
 	}
 }
