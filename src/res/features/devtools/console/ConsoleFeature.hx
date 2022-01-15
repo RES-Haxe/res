@@ -41,7 +41,7 @@ class ConsoleFeature implements Feature {
 
 		res.keyboard.listen((ev) -> {
 			switch (ev) {
-				case KEY_PRESS(charCode):
+				case INPUT(charCode):
 					if (String.fromCharCode(charCode) == '`') toggle();
 				case _:
 			}

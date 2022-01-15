@@ -6,7 +6,7 @@ class LSRom extends ConsoleCommand {
 	}
 
 	override function run(args:Array<String>, res:RES, console:Console) {
-		for (field in ['audioData', 'audioBuffers', 'sprites', 'tilesets', 'tilemaps', 'fonts', 'data']) {
+		for (field in ['audio', 'sprites', 'tilesets', 'tilemaps', 'fonts', 'data']) {
 			final map:Map<String, Any> = cast Reflect.getProperty(res.rom, field);
 
 			if (map != null) {

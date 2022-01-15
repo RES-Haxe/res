@@ -19,6 +19,6 @@ class AudioSampleChunk extends RomChunk {
 		final data = Bytes.alloc(dataLen);
 		input.readBytes(data, 0, dataLen);
 
-		return new AudioData(channels, rate, bps, data);
+		return new AudioData(name, channels, rate, bps, data);
 	}
 }

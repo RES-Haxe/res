@@ -2,8 +2,7 @@ package res;
 
 import haxe.Rest;
 import haxe.Timer;
-import res.audio.IAudioBuffer;
-import res.audio.IAudioStream;
+import res.audio.AudioBufferCache;
 import res.display.FrameBuffer;
 import res.features.Feature;
 import res.input.Controller;
@@ -37,7 +36,6 @@ class RES {
 	public final keyboard:Keyboard;
 	public final mouse:Mouse;
 	public final resolution:Resolution;
-	public final fonts:Map<String, Font> = [];
 	public final platform:IPlatform;
 	public final storage:IStorage;
 	public final renderHooks:RenderHooks = {
@@ -49,6 +47,9 @@ class RES {
 	public final rom:Rom;
 
 	public var defaultFont:Font;
+
+	@:allow(res)
+	private var audioBufferCache:AudioBufferCache;
 
 	private var features:Map<String, Feature> = [];
 	private var prevFrameTime:Null<Float> = null;
@@ -106,9 +107,7 @@ class RES {
 		this.frameBuffer = platform.createFrameBuffer(frameSize.width, frameSize.height, rom.palette);
 		this.storage = platform.createStorage();
 
-		for (id => audioData in rom.audioData) {
-			createAudioBuffer(id, audioData.iterator());
-		}
+		audioBufferCache = new AudioBufferCache(this);
 
 		if (rom.fonts.exists('kernal')) {
 			defaultFont = rom.fonts['kernal'];
@@ -138,16 +137,6 @@ class RES {
 		#end
 	}
 
-	public function createAudioBuffer(?name:String, audioStream:IAudioStream):IAudioBuffer {
-		final buffer = platform.createAudioBuffer(audioStream);
-
-		if (name != null) {
-			rom.audioBuffers[name] = buffer;
-		}
-
-		return buffer;
-	}
-
 	/**
 		Create a font
 
@@ -160,7 +149,7 @@ class RES {
 		final font = new Font(name, tileset, characters, firstTileIndex);
 
 		if (name != null)
-			fonts[name] = font;
+			rom.fonts[name] = font;
 
 		return font;
 	}

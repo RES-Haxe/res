@@ -60,7 +60,7 @@ class ConsoleScene extends Scene {
 							updateInput('');
 						}
 				}
-			case KEY_PRESS(charCode):
+			case INPUT(charCode):
 				if (charCode != '`'.code)
 					updateInput(commandInput += charCode.fromCharCode());
 			case _:

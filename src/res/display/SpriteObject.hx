@@ -75,8 +75,6 @@ class SpriteObject extends Object {
 			}
 
 			_animation = anim;
-
-			trace(_animation);
 		} else
 			trace('No animation named <$name>');
 	}

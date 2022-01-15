@@ -22,6 +22,14 @@ class Vector2 {
 		return new Vector2(x, y);
 	}
 
+	public static function from(xy:{x:Float, y:Float}):Vector2 {
+		return new Vector2(xy.x, xy.y);
+	}
+
+	public static function fromi(xy:{x:Int, y:Int}):Vector2 {
+		return new Vector2(xy.x, xy.y);
+	}
+
 	public static function xy(?x:Float = 0, ?y:Float) {
 		return new Vector2(x, y);
 	}
@@ -65,7 +73,11 @@ class Vector2 {
 	 */
 	public function normalize(len:Float = 1):Vector2 {
 		final l = length();
-		set(x / l * len, y / l * len);
+		if (l != 0)
+			set(x / l * len, y / l * len);
+		else
+			set(0);
+
 		return this;
 	}
 

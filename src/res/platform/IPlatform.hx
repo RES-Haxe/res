@@ -1,7 +1,7 @@
 package res.platform;
 
+import res.audio.AudioMixer;
 import res.audio.IAudioBuffer;
-import res.audio.IAudioMixer;
 import res.audio.IAudioStream;
 import res.display.FrameBuffer;
 import res.storage.IStorage;
@@ -13,7 +13,7 @@ interface IPlatform {
 
 	public function createAudioBuffer(audioStream:IAudioStream):IAudioBuffer;
 
-	public function createAudioMixer():IAudioMixer;
+	public function createAudioMixer():AudioMixer;
 
 	public function createFrameBuffer(width:Int, height:Int, palette:Palette):FrameBuffer;
 

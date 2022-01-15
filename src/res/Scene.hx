@@ -1,6 +1,6 @@
 package res;
 
-import res.audio.IAudioMixer;
+import res.audio.AudioMixer;
 import res.display.FrameBuffer;
 import res.display.Renderable;
 import res.input.ControllerButton;
@@ -18,6 +18,7 @@ class Scene extends Renderable implements Updateable {
 		res = _res;
 
 		audioMixer = res.platform.createAudioMixer();
+		audioMixer.audioBufferCache = res.audioBufferCache;
 
 		clearColorIndex = res.rom.palette.darkestIndex;
 
@@ -28,7 +29,7 @@ class Scene extends Renderable implements Updateable {
 	final updateList:Array<Updateable> = [];
 
 	@:allow(res)
-	var audioMixer:IAudioMixer;
+	var audioMixer:AudioMixer;
 
 	public var clearColorIndex:Null<Int> = null;
 

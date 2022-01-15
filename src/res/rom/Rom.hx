@@ -51,18 +51,17 @@ class Rom {
 	static inline var MAGIC_NUMBER:Int32 = 0x52524f4d; // RROM
 
 	public final palette:Palette;
-	public final audioData:Map<String, AudioData>;
-	public final audioBuffers:Map<String, IAudioBuffer> = [];
+	public final audio:Map<String, AudioData>;
 	public final data:Map<String, Bytes>;
 	public final fonts:Map<String, Font>;
 	public final sprites:Map<String, Sprite>;
 	public final tilemaps:Map<String, Tilemap>;
 	public final tilesets:Map<String, Tileset>;
 
-	private function new(palette:Palette, audioData:Map<String, AudioData>, tilesets:Map<String, Tileset>, tilemaps:Map<String, Tilemap>,
+	private function new(palette:Palette, audio:Map<String, AudioData>, tilesets:Map<String, Tileset>, tilemaps:Map<String, Tilemap>,
 			sprites:Map<String, Sprite>, fonts:Map<String, Font>, data:Map<String, Bytes>) {
 		this.palette = palette;
-		this.audioData = audioData;
+		this.audio = audio;
 		this.tilesets = tilesets;
 		this.tilemaps = tilemaps;
 		this.sprites = sprites;
@@ -168,7 +167,7 @@ class Rom {
 		// Read number of colors
 		final numColors = bytesInput.readByte();
 		final palette:Palette = new Palette([for (_ in 0...numColors) bytesInput.readUInt24()]);
-		final audioData:Map<String, AudioData> = [];
+		final audio:Map<String, AudioData> = [];
 		final sprites:Map<String, Sprite> = [];
 		final tilesets:Map<String, Tileset> = [];
 		final tilemaps:Map<String, Tilemap> = [];
@@ -180,7 +179,7 @@ class Rom {
 
 			switch (chunk.chunkType) {
 				case AUDIO_SAMPLE:
-					audioData[chunk.name] = cast(chunk, AudioSampleChunk).getAudio();
+					audio[chunk.name] = cast(chunk, AudioSampleChunk).getAudio();
 				case SPRITE:
 					sprites[chunk.name] = cast(chunk, SpriteChunk).getSprite();
 				case TILESET:
@@ -194,7 +193,7 @@ class Rom {
 			}
 		}
 
-		return new Rom(palette, audioData, tilesets, tilemaps, sprites, fonts, data);
+		return new Rom(palette, audio, tilesets, tilemaps, sprites, fonts, data);
 	}
 
 	/**

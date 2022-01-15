@@ -1,6 +1,9 @@
 package res.tiles;
 
 import haxe.io.Bytes;
+import res.display.FrameBuffer;
+
+using res.tools.BytesTools;
 
 class Tile {
 	public final size:Int;
@@ -27,6 +30,16 @@ class Tile {
 			final srcPos:Int = (srcY * srcWidth) + (scanline * srcWidth) + srcX;
 
 			indecies.blit(pos, from, srcPos, size);
+		}
+	}
+
+	public static function drawTile(frameBuffer:FrameBuffer, tile:Tile, x:Int, y:Int, ?colorMap:ColorMap) {
+		for (line in 0...tile.size) {
+			for (col in 0...tile.size) {
+				final index = tile.indecies.getxy(tile.size, col, line);
+				if (index != 0)
+					frameBuffer.setIndex(x + col, y + line, colorMap != null ? colorMap[index] : index);
+			}
 		}
 	}
 }
