@@ -25,8 +25,8 @@ class RomChunk {
 		input.readBytes(data, 0, dataLen);
 
 		switch (chunkType) {
-			case AUDIO_SAMPLE:
-				return new AudioSampleChunk(name, data);
+			case AUDIO:
+				return new AudioChunk(name, data);
 			case SPRITE:
 				return new SpriteChunk(name, data);
 			case TILESET:

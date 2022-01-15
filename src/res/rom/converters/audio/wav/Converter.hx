@@ -8,7 +8,7 @@ import sys.io.File;
 using haxe.io.Path;
 
 class Converter extends res.rom.converters.Converter {
-	var audioChunk:AudioSampleChunk;
+	var audioChunk:AudioChunk;
 
 	override function process(fileName:String, palette:Palette):res.rom.converters.Converter {
 		final fileBytes = File.getBytes(fileName);
@@ -63,7 +63,7 @@ class Converter extends res.rom.converters.Converter {
 		// Data
 		output.writeBytes(convertedData, 0, convertedData.length);
 
-		audioChunk = new AudioSampleChunk(name, output.getBytes());
+		audioChunk = new AudioChunk(name, output.getBytes());
 
 		return super.process(fileName, palette);
 	}

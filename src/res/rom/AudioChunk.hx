@@ -4,9 +4,9 @@ import haxe.io.Bytes;
 import haxe.io.BytesInput;
 import res.audio.AudioData;
 
-class AudioSampleChunk extends RomChunk {
+class AudioChunk extends RomChunk {
 	public function new(name, data) {
-		super(AUDIO_SAMPLE, name, data);
+		super(AUDIO, name, data);
 	}
 
 	public function getAudio():AudioData {

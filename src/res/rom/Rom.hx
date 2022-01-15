@@ -178,8 +178,8 @@ class Rom {
 			final chunk = RomChunk.read(bytesInput);
 
 			switch (chunk.chunkType) {
-				case AUDIO_SAMPLE:
-					audio[chunk.name] = cast(chunk, AudioSampleChunk).getAudio();
+				case AUDIO:
+					audio[chunk.name] = cast(chunk, AudioChunk).getAudio();
 				case SPRITE:
 					sprites[chunk.name] = cast(chunk, SpriteChunk).getSprite();
 				case TILESET:
