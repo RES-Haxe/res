@@ -18,7 +18,7 @@ class Converter extends PaletteConverter {
 			if (colStr.substr(0, 2) == '0x')
 				colStr = colStr.substr(2);
 
-			colors.push(Std.parseInt('0x$colStr'));
+			colors.push(Color32.ofRGB8(Std.parseInt('0x$colStr')));
 		}
 
 		return this;

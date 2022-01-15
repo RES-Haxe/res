@@ -4,12 +4,12 @@ import haxe.io.Bytes;
 import haxe.io.BytesOutput;
 
 class PaletteConverter extends Converter {
-	public final colors:Array<Color>;
+	public final colors:Array<Color32>;
 
-	public function new(?colors:Array<Color>) {
+	public function new(?colors:Array<Color32>) {
 		super();
 
-		this.colors = colors == null ? [0x0] : colors;
+		this.colors = colors == null ? [new Color32(0x00000000)] : colors;
 	}
 
 	public function getBytes():Bytes {
@@ -18,7 +18,7 @@ class PaletteConverter extends Converter {
 		bo.writeByte(colors.length);
 
 		for (color in colors)
-			bo.writeUInt24(color);
+			bo.writeUInt24(color.output);
 
 		return bo.getBytes();
 	}

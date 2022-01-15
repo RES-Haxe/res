@@ -36,7 +36,7 @@ class FrameBuffer {
 		return x >= 0 && y >= 0 && x < _width && y < _height;
 	}
 
-	private function setPixel(x:Int, y:Int, color:Color) {}
+	private function setPixel(x:Int, y:Int, color:Color32) {}
 
 	public function beginFrame() {}
 

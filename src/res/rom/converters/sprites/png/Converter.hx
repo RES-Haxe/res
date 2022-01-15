@@ -39,22 +39,20 @@ class Converter extends res.rom.converters.Converter {
 
 		var frameData = Bytes.alloc(width * height);
 
-		var colorMap:Map<Color, Int> = [];
+		var colorMap:Map<Int, Int> = [];
 
 		for (line in 0...height) {
 			for (col in 0...width) {
-				final origColor:Color = pixelData.getInt32((line * width + col) * 4);
-
-				final color = Color.fromRGBA(origColor.g, origColor.b, origColor.a, origColor.r);
+				final color:Color32 = new Color32(pixelData.getInt32((line * width + col) * 4), [B, G, R, A]);
 
 				var index:Int = 0;
 
 				if (color.a != 0) {
-					if (colorMap[color] != null) {
-						index = colorMap[color];
+					if (colorMap[color.input] != null) {
+						index = colorMap[color.input];
 					} else {
 						index = palette.closest(color);
-						colorMap[color] = index;
+						colorMap[color.input] = index;
 					}
 				}
 

@@ -9,7 +9,6 @@ using format.png.Tools;
 class Converter extends PaletteConverter {
 	override function process(fileName:String, _) {
 		final pngData = new Reader(File.read(fileName)).read();
-		final header = pngData.getHeader();
 
 		final palette = pngData.getPalette();
 
@@ -17,25 +16,11 @@ class Converter extends PaletteConverter {
 			final bi = new BytesInput(palette);
 
 			while (bi.position < bi.length) {
-				final color:Color = bi.readUInt24();
-				colors.push(color.arrange([B, G, R]));
+				final bgr24 = bi.readUInt24();
+				colors.push(new Color32(bgr24, [A, B, G, R]));
 			}
 		} else {
-			final pixels = pngData.extract32();
-			for (line in 0...header.height) {
-				for (col in 0...header.width) {
-					if (colors.length < 256) {
-						final pixel:Color = pixels.getInt32((line * header.width + col) * 4);
-
-						final rgb = pixel.arrange([B, G, R]);
-
-						if (colors.indexOf(rgb) == -1) {
-							colors.push(rgb);
-						}
-					} else
-						return this;
-				}
-			}
+			throw 'Only indexed PNGs are supported';
 		}
 		return this;
 	}

@@ -34,11 +34,10 @@ class Converter extends res.rom.converters.Converter {
 					for (col in 0...tileSize) {
 						final srcx = xTile * tileSize + col;
 						final srcy = yTile * tileSize + line;
-						final pixel:Color = pixels.getInt32((srcy * pngHeader.width + srcx) * 4);
+						final pixel:Color32 = new Color32(pixels.getInt32((srcy * pngHeader.width + srcx) * 4), [B, G, R, A]);
 
-						if (pixel != 0x0) {
-							final color = Color.fromRGBA(pixel.g, pixel.b, pixel.a, pixel.r);
-							final index = palette.closest(color);
+						if (pixel.input != 0x0) {
+							final index = palette.closest(pixel);
 
 							tileBytes.set(line * tileSize + col, index);
 						}

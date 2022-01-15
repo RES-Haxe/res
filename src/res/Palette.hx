@@ -1,16 +1,9 @@
 package res;
 
+import res.types.ColorComponent;
+
 class Palette {
-	var _colors:Array<Color>;
-
-	/**
-		Array of colors
-	 */
-	public var colors(get, never):Array<Color>;
-
-	function get_colors():Array<Color> {
-		return _colors;
-	}
+	public final colors:Array<Color32>;
 
 	var _byLuminance:Array<Int>;
 
@@ -42,7 +35,11 @@ class Palette {
 	public var size(get, never):Int;
 
 	inline function get_size():Int
-		return _colors.length;
+		return colors.length;
+
+	public function copyWithFormat(outFormat:Array<ColorComponent>):Palette {
+		return new Palette(colors.map(c -> new Color32(c.input, c.inFormat, outFormat)));
+	}
 
 	/**
 		Returns the index of the closest color to the given
@@ -52,7 +49,7 @@ class Palette {
 		@param color Color to find the closes color to
 		@returns the index of the closes color in the palette
 	 */
-	public function closest(color:Color):Int {
+	public function closest(color:Color32):Int {
 		var distances:Array<{index:Int, distance:Float}> = [for (i in 0...size)
 			({
 				index:i, distance:get(i).distance(color)
@@ -69,30 +66,21 @@ class Palette {
 		Suitable for creating index maps
 	 */
 	public function getIndecies():Array<Int> {
-		return [for (n in 0..._colors.length) n];
+		return [for (n in 0...colors.length) n];
 	};
 
 	/**
 		Get random color index
 	 */
 	public inline function rnd():Int {
-		return Math.floor(Math.random() * _colors.length);
-	}
-
-	/**
-		Takes an array of colors
-
-		@returns Array of indecies of the given colors
-	 */
-	public function sub(colors:Array<Int>):Array<Int> {
-		return colors.map(col -> _colors.indexOf(col));
+		return Math.floor(Math.random() * colors.length);
 	}
 
 	/**
 		Get color by its index 
 	 */
-	public function get(index:Int):Color {
-		return _colors[index];
+	public function get(index:Int):Color32 {
+		return colors[index];
 	}
 
 	/**
@@ -122,8 +110,8 @@ class Palette {
 	}
 
 	@:allow(res)
-	private function new(rgbColors:Array<Int>) {
-		this._colors = rgbColors.map(col -> Color.fromInt24(col));
+	private function new(colors:Array<Color32>) {
+		this.colors = colors;
 
 		_byLuminance = getIndecies();
 		_byLuminance.sort((idxa, idxb) -> {

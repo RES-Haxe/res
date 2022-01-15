@@ -5,7 +5,6 @@ import haxe.io.Bytes;
 import haxe.io.BytesInput;
 import haxe.zip.InflateImpl;
 import res.audio.AudioData;
-import res.audio.IAudioBuffer;
 import res.display.Sprite;
 import res.text.Font;
 import res.tiles.Tilemap;
@@ -105,7 +104,7 @@ class Rom {
 				0x94b0c2,
 				0x566c86,
 				0x333c57
-			]);
+			].map(c -> Color32.ofRGB8(c)));
 
 		final palette = new res.Palette(paletteConverter.colors);
 
@@ -166,7 +165,7 @@ class Rom {
 
 		// Read number of colors
 		final numColors = bytesInput.readByte();
-		final palette:Palette = new Palette([for (_ in 0...numColors) bytesInput.readUInt24()]);
+		final palette:Palette = new Palette([for (_ in 0...numColors) Color32.ofRGB8(bytesInput.readUInt24())]);
 		final audio:Map<String, AudioData> = [];
 		final sprites:Map<String, Sprite> = [];
 		final tilesets:Map<String, Tileset> = [];
