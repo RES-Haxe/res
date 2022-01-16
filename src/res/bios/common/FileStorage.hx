@@ -1,4 +1,4 @@
-package res.platform.common;
+package res.bios.common;
 
 import haxe.Json;
 import res.storage.IStorage;

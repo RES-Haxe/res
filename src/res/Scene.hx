@@ -17,7 +17,7 @@ class Scene extends Renderable implements Updateable {
 	function set_res(_res:RES) {
 		res = _res;
 
-		audioMixer = res.platform.createAudioMixer();
+		audioMixer = res.bios.createAudioMixer();
 		audioMixer.audioBufferCache = res.audioBufferCache;
 
 		clearColorIndex = res.rom.palette.darkestIndex;

@@ -9,7 +9,7 @@ class AudioBufferCache {
 		this.res = res;
 
 		for (name => audioData in res.rom.audio)
-			put(name, res.platform.createAudioBuffer(audioData.iterator()));
+			put(name, res.bios.createAudioBuffer(audioData.iterator()));
 	}
 
 	public function get(name:String):IAudioBuffer {

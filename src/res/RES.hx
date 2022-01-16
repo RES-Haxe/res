@@ -8,7 +8,7 @@ import res.features.Feature;
 import res.input.Controller;
 import res.input.Keyboard;
 import res.input.Mouse;
-import res.platform.IPlatform;
+import res.bios.BIOS;
 import res.rom.Rom;
 import res.storage.IStorage;
 import res.text.Font;
@@ -36,7 +36,7 @@ class RES {
 	public final keyboard:Keyboard;
 	public final mouse:Mouse;
 	public final resolution:Resolution;
-	public final platform:IPlatform;
+	public final bios:BIOS;
 	public final storage:IStorage;
 	public final renderHooks:RenderHooks = {
 		before: [],
@@ -78,7 +78,7 @@ class RES {
 	function get_scene():Scene
 		return _scene;
 
-	private function new(platform:IPlatform, config:RESConfig) {
+	private function new(bios:BIOS, config:RESConfig) {
 		this.config = config;
 
 		this.resolution = config.resolution;
@@ -102,10 +102,10 @@ class RES {
 
 		final frameSize = config.resolution.pixelSize();
 
-		this.platform = platform;
-		this.platform.connect(this);
-		this.frameBuffer = platform.createFrameBuffer(frameSize.width, frameSize.height, rom.palette);
-		this.storage = platform.createStorage();
+		this.bios = bios;
+		this.bios.connect(this);
+		this.frameBuffer = bios.createFrameBuffer(frameSize.width, frameSize.height, rom.palette);
+		this.storage = bios.createStorage();
 
 		audioBufferCache = new AudioBufferCache(this);
 
@@ -357,8 +357,8 @@ class RES {
 		@param platform Platform
 		@param config RES Config
 	 */
-	public static function boot(platform:IPlatform, config:RESConfig):RES {
-		return new RES(platform, config);
+	public static function boot(bios:BIOS, config:RESConfig):RES {
+		return new RES(bios, config);
 	}
 }
 
