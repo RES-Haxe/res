@@ -2,7 +2,7 @@ package res.display;
 
 using Math;
 
-class Object extends Renderable implements Updateable {
+class Object {
 	public var x:Float = 0;
 	public var y:Float = 0;
 
@@ -51,7 +51,7 @@ class Object extends Renderable implements Updateable {
 			child.renderObject(frameBuffer, atx + child.x, aty + child.y);
 	}
 
-	override function render(frameBuffer:FrameBuffer) {
+	public function render(frameBuffer:FrameBuffer) {
 		renderObject(frameBuffer, x, y);
 	}
 

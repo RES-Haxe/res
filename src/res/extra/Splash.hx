@@ -22,7 +22,7 @@ class Splash extends Scene {
 				res.setScene(scene, true);
 		});
 
-		add(timeline);
+		updateList.push(timeline);
 	}
 
 	override function render(frameBuffer:FrameBuffer) {

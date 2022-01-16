@@ -1,7 +1,6 @@
 package res.tiles;
 
 import res.display.FrameBuffer;
-import res.display.Renderable;
 import res.tools.MathTools.wrapf;
 
 using Math;
@@ -9,7 +8,7 @@ using Math;
 typedef ScanlineFuncCallback = ?Float->?Float->Void;
 typedef ScanlineFunc = Int->ScanlineFuncCallback->Void;
 
-class Tilemap extends Renderable {
+class Tilemap {
 	var map:Array<Array<TilePlace>> = [[]];
 
 	public final tileset:Tileset;
@@ -217,6 +216,6 @@ class Tilemap extends Renderable {
 
 		@param frameBuffer Frame buffer to render at
 	 */
-	override public function render(frameBuffer:FrameBuffer)
+	public function render(frameBuffer:FrameBuffer)
 		drawTilemap(frameBuffer, this, 0, 0, frameBuffer.frameWidth, frameBuffer.frameHeight, scrollX, scrollY, true, scanlineFunc);
 }

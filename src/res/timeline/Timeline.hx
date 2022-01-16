@@ -2,7 +2,7 @@ package res.timeline;
 
 using Lambda;
 
-class Timeline implements Updateable {
+class Timeline {
 	var totalTime:Float = 0;
 
 	var events:Array<TimelineEvent> = [];

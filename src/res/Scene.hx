@@ -2,15 +2,13 @@ package res;
 
 import res.audio.AudioMixer;
 import res.display.FrameBuffer;
-import res.display.Renderable;
-import res.input.ControllerButton;
 import res.input.ControllerEvent;
 import res.input.KeyboardEvent;
 import res.input.MouseEvent;
 
 using Std;
 
-class Scene extends Renderable implements Updateable {
+class Scene {
 	@:allow(res)
 	var res(default, set):RES;
 
@@ -25,12 +23,15 @@ class Scene extends Renderable implements Updateable {
 		return res;
 	}
 
-	final renderList:Array<Renderable> = [];
-	final updateList:Array<Updateable> = [];
+	final renderList:Array<{function render(fb:FrameBuffer):Void;}> = [];
+	final updateList:Array<{function update(dt:Float):Void;}> = [];
 
 	@:allow(res)
 	var audioMixer:AudioMixer;
 
+	/**
+		Color index to use to clear the screen (brightest color index by default)
+	 */
 	public var clearColorIndex:Null<Int> = null;
 
 	public function new() {}
@@ -40,50 +41,6 @@ class Scene extends Renderable implements Updateable {
 	public function init() {}
 
 	public function leave() {}
-
-	/**
-		Get controller direction of the default player
-	 */
-	public inline function dir(?playerNum:Int = 1) {
-		return res.controllers[playerNum].direction;
-	}
-
-	/**
-		Get controller button state of the default player
-	 */
-	public inline function btn(?playerNum:Int = 1, controllerButton:ControllerButton):Bool {
-		return res.controllers[playerNum].isPressed(controllerButton);
-	}
-
-	/**
-		Add renderable to scene
-	 */
-	public function add(?renderable:Renderable, ?updatable:Updateable) {
-		if (renderable != null) {
-			renderList.push(renderable);
-			if (renderable.isOfType(Updateable))
-				updateList.push(cast renderable);
-		}
-
-		if (updatable != null)
-			updateList.push(updatable);
-	}
-
-	/**
-		Remove renderable from scene
-	 */
-	public function remove(?renderable:Renderable, ?updatable:Updateable) {
-		if (renderable != null) {
-			renderList.remove(renderable);
-
-			if (renderable.isOfType(Updateable)) {
-				updateList.remove(cast renderable);
-			}
-		}
-
-		if (updatable != null)
-			updateList.remove(updatable);
-	}
 
 	public dynamic function controllerEvent(event:ControllerEvent) {}
 
@@ -96,12 +53,11 @@ class Scene extends Renderable implements Updateable {
 			item.update(dt);
 	}
 
-	override public function render(fb:FrameBuffer) {
+	public function render(fb:FrameBuffer) {
 		if (clearColorIndex != null)
 			fb.clear(clearColorIndex);
 
 		for (renderable in renderList)
-			if (renderable.visible)
-				renderable.render(fb);
+			renderable.render(fb);
 	}
 }
