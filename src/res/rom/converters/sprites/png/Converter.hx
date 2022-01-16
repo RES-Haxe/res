@@ -43,18 +43,22 @@ class Converter extends res.rom.converters.Converter {
 
 		for (line in 0...height) {
 			for (col in 0...width) {
-				final color:Color32 = new Color32(pixelData.getInt32((line * width + col) * 4), [B, G, R, A]);
-
+				final pixel = pixelData.getInt32((line * width + col) * 4);
 				var index:Int = 0;
 
-				if (color.a != 0) {
-					if (colorMap[color.input] != null) {
-						index = colorMap[color.input];
-					} else {
-						index = palette.closest(color);
-						colorMap[color.input] = index;
+				if (pixel != 0x0) {
+					final color:Color32 = new Color32(pixel, [A, B, G, R], [A, R, G, B]);
+
+					if (color.a != 0) {
+						if (colorMap[color.input] != null) {
+							index = colorMap[color.input];
+						} else {
+							index = palette.closest(color);
+							colorMap[color.input] = index;
+						}
 					}
-				}
+				} else
+					index = 0;
 
 				frameData.set(line * width + col, index);
 			}

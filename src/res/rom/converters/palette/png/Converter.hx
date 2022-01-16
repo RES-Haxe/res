@@ -15,10 +15,8 @@ class Converter extends PaletteConverter {
 		if (palette != null) {
 			final bi = new BytesInput(palette);
 
-			while (bi.position < bi.length) {
-				final bgr24 = bi.readUInt24();
-				colors.push(new Color32(bgr24, [A, B, G, R]));
-			}
+			while (bi.position < bi.length)
+				colors.push(new Color32(bi.readUInt24(), [A, B, G, R], [A, R, G, B]));
 		} else {
 			throw 'Only indexed PNGs are supported';
 		}
