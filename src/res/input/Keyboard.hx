@@ -29,8 +29,8 @@ class Keyboard extends Emitter<KeyboardEvent> {
 		emit(KEY_DOWN(keyCode));
 	}
 
-	public function input(charCode:Int) {
-		emit(INPUT(charCode));
+	public function input(text:String) {
+		emit(INPUT(text));
 	}
 
 	public function keyUp(keyCode:Int) {

@@ -38,7 +38,7 @@ class Color32 {
 		return new Color32(rgb24, [A, R, G, B], outFormat);
 	}
 
-	public function component(cmp:ColorComponent) {
+	inline function component(cmp:ColorComponent) {
 		switch (cmp) {
 			case R:
 				return r;

@@ -60,9 +60,9 @@ class ConsoleScene extends Scene {
 							updateInput('');
 						}
 				}
-			case INPUT(charCode):
-				if (charCode != '`'.code)
-					updateInput(commandInput += charCode.fromCharCode());
+			case INPUT(text):
+				if (text != '`')
+					updateInput(commandInput += text);
 			case _:
 		}
 	}

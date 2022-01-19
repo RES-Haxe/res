@@ -23,15 +23,16 @@ class Scene {
 		return res;
 	}
 
+	/** A list of things to render. A "thing" must have a `render` method that accepts `FrameBuffer` as the only argument **/
 	final renderList:Array<{function render(fb:FrameBuffer):Void;}> = [];
+
+	/** A list of things to update. A "thing" must have a `update` method that accepts a `Float` as the only argument (for time delta) **/
 	final updateList:Array<{function update(dt:Float):Void;}> = [];
 
 	@:allow(res)
 	var audioMixer:AudioMixer;
 
-	/**
-		Color index to use to clear the screen (brightest color index by default)
-	 */
+	/** Color index to use to clear the screen (brightest color index by default) **/
 	public var clearColorIndex:Null<Int> = null;
 
 	public function new() {}
