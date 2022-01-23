@@ -127,7 +127,7 @@ class Rom {
 						final filePath = Path.join([path, file]);
 						if (!FileSystem.isDirectory(filePath)) {
 							final fileExt = Path.extension(file).toLowerCase();
-							final fileConverter = converters[fileExt];
+							final fileConverter = (converters[''] != null) ? converters[''] : converters[fileExt];
 
 							if (fileConverter != null) {
 								final chunks = fileConverter.process(filePath, palette).getChunks();

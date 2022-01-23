@@ -35,11 +35,21 @@ class Tilemap {
 	function get_pixelHeight():Int
 		return vTiles * tileset.tileSize;
 
+	public var x:Float = 0;
+	public var y:Float = 0;
+
+	public var width:Float;
+	public var height:Float;
+
 	public var scrollX:Float = 0;
 	public var scrollY:Float = 0;
 
-	public function new(tileset:Tileset, hTiles:Int, vTiles:Int, ?colorMap:ColorMap) {
+	public var wrap:Bool = true;
+
+	public function new(tileset:Tileset, hTiles:Int, vTiles:Int, ?width:Float, ?height:Float, ?colorMap:ColorMap) {
 		this.tileset = tileset;
+		this.width = width == null ? tileset.tileSize * hTiles : width;
+		this.height = height == null ? tileset.tileSize * vTiles : height;
 		this.colorMap = colorMap == null ? new ColorMap([]) : colorMap;
 
 		resize(hTiles, vTiles);
@@ -153,15 +163,19 @@ class Tilemap {
 		@param height height of the window to render (framHeight by default)
 		@param scrollX
 		@param scrollY
-		@param wrapping
+		@param wrap
 		@param scanlineFunc
 	 */
-	public static function drawTilemap(frameBuffer:FrameBuffer, tilemap:Tilemap, ?x:Int = 0, ?y:Int = 0, ?width:Int, ?height:Int, ?scrollX:Float = 0,
-			?scrollY:Float = 0, ?wrapping:Bool = true, ?scanlineFunc:ScanlineFunc) {
+	public static function drawTilemap(frameBuffer:FrameBuffer, tilemap:Tilemap, ?x:Int = 0, ?y:Int = 0, ?width:Int, ?height:Int, ?scrollX:Float,
+			?scrollY:Float, ?wrap:Bool = true, ?scanlineFunc:ScanlineFunc) {
 		if (width == null)
 			width = frameBuffer.frameWidth;
 		if (height == null)
 			height = frameBuffer.frameHeight;
+		if (scrollX == null)
+			scrollX = tilemap.scrollX;
+		if (scrollY == null)
+			scrollY = tilemap.scrollY;
 
 		for (line in 0...height) {
 			final screenScanline = y + line;
@@ -176,7 +190,11 @@ class Tilemap {
 					});
 				}
 
-				final tileScanline:Int = (line + wrapf(scrollY, tilemap.pixelHeight)).floor();
+				final tileScanline:Int = wrap ? (wrapf(line + scrollY, tilemap.pixelHeight)).floor() : (line + scrollY).floor();
+
+				if (tileScanline < 0 || tileScanline >= tilemap.pixelHeight)
+					continue;
+
 				var tileLineIndex:Int = (tileScanline / tilemap.tileset.tileSize).floor();
 
 				if (tileLineIndex >= tilemap.vTiles)
@@ -188,7 +206,11 @@ class Tilemap {
 					final screenCol = x + col;
 
 					if (screenCol >= 0 && screenCol < frameBuffer.frameWidth) {
-						final tileCol:Int = (col + wrapf(scrollX, tilemap.pixelWidth)).floor();
+						final tileCol:Int = wrap ? (wrapf(col + scrollX, tilemap.pixelWidth)).floor() : (col + scrollX).floor();
+
+						if (tileCol < 0 || tileCol >= tilemap.pixelWidth)
+							continue;
+
 						var tileColIndex:Int = (tileCol / tilemap.tileset.tileSize).floor();
 
 						if (tileColIndex >= tilemap.hTiles)
@@ -217,5 +239,5 @@ class Tilemap {
 		@param frameBuffer Frame buffer to render at
 	 */
 	public function render(frameBuffer:FrameBuffer)
-		drawTilemap(frameBuffer, this, 0, 0, frameBuffer.frameWidth, frameBuffer.frameHeight, scrollX, scrollY, true, scanlineFunc);
+		drawTilemap(frameBuffer, this, x.floor(), y.floor(), width.floor(), height.floor(), scrollX, scrollY, wrap, scanlineFunc);
 }

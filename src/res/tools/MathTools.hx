@@ -7,6 +7,16 @@ class MathTools {
 	public static inline function clampf(x:Float, low:Float, high:Float):Float
 		return x <= low ? low : x >= high ? high : x;
 
+	/**
+		Linear interpolation function
+
+		@param a
+		@param b
+		@param t
+	 */
+	public static inline function lerp(a:Float, b:Float, t:Float):Float
+		return a + (b - a) * t;
+
 	public static inline function maxi(a:Int, b:Int):Int
 		return a > b ? a : b;
 

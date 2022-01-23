@@ -3,7 +3,7 @@ package res.display;
 import haxe.io.Bytes;
 import res.tools.MathTools.wrapi;
 
-class FrameBuffer {
+abstract class FrameBuffer {
 	final _width:Int;
 	final _height:Int;
 	final _palette:Palette;
@@ -36,7 +36,7 @@ class FrameBuffer {
 		return x >= 0 && y >= 0 && x < _width && y < _height;
 	}
 
-	private function setPixel(x:Int, y:Int, color:Color32) {}
+	abstract private function setPixel(x:Int, y:Int, color:Color32):Void;
 
 	public function beginFrame() {}
 

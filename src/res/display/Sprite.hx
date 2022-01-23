@@ -66,8 +66,23 @@ class Sprite {
 		return obj;
 	}
 
+	/**
+		Draw a sprite
+
+		@param frameBuffer
+		@param sprite
+		@param x
+		@param y
+		@param width
+		@param height
+		@param frameIndex
+		@param flipX
+		@param flipY
+		@param wrapping
+		@param colorMap
+	 */
 	public static function drawSprite(frameBuffer:FrameBuffer, sprite:Sprite, ?x:Int = 0, ?y:Int = 0, ?width:Int, ?height:Int, ?frameIndex:Int = 0,
-			?flipX:Bool = false, ?flipY:Bool = false, ?wrapping:Bool = true, ?colorMap:ColorMap) {
+			?flipX:Bool = false, ?flipY:Bool = false, ?wrap:Bool = true, ?colorMap:ColorMap) {
 		final frame = sprite.frames[frameIndex];
 
 		final lines:Int = height == null ? sprite.height : height;
@@ -77,7 +92,7 @@ class Sprite {
 		final fromY:Int = y;
 
 		for (scanline in 0...lines) {
-			if (!((!wrapping && (scanline < 0 || scanline >= frameBuffer.frameHeight)))) {
+			if (!((!wrap && (scanline < 0 || scanline >= frameBuffer.frameHeight)))) {
 				for (col in 0...cols) {
 					final spriteCol = wrapi(flipX ? sprite.width - 1 - col : col, sprite.width);
 					final spriteLine = wrapi(flipY ? sprite.height - 1 - scanline : scanline, sprite.height);
@@ -85,10 +100,10 @@ class Sprite {
 					final sampleIndex:Int = frame.data.getxy(sprite.width, spriteCol, spriteLine);
 
 					if (sampleIndex != 0) {
-						final screenX:Int = wrapping ? wrapi(fromX + col, frameBuffer.frameWidth) : fromX + col;
-						final screenY:Int = wrapping ? wrapi(fromY + scanline, frameBuffer.frameHeight) : fromY + scanline;
+						final screenX:Int = wrap ? wrapi(fromX + col, frameBuffer.frameWidth) : fromX + col;
+						final screenY:Int = wrap ? wrapi(fromY + scanline, frameBuffer.frameHeight) : fromY + scanline;
 
-						if (wrapping
+						if (wrap
 							|| (screenX >= 0 && screenY >= 0 && screenX < frameBuffer.frameWidth && screenY < frameBuffer.frameHeight)) {
 							final colorIndex = colorMap == null ? sampleIndex : colorMap.get(sampleIndex);
 							if (colorIndex != 0)
@@ -98,5 +113,44 @@ class Sprite {
 				}
 			}
 		}
+	}
+
+	/**
+		Draw a sprite using a pivot.
+
+		Pivot is a point in the sprite's space to use as the origing.
+
+		Pivot is defined by `px` and `py` arguments
+
+		For example is the pivot is `px=0.0, py=0.0` the the sprite will be drawn as usual as the origin will be at the left top of the sprite.
+		If both `px` and `py` equal to `0.5` (default values) the the origin will be in the center of the sprite
+
+
+		```
+		0,0 +--------+ 1,0
+			|        |
+			| Sprite |
+			|        |
+		0,1 +--------+ 1,1
+		```
+
+		@param frameBuffer FrameBuffer to draw the sprite on
+		@param sprite Sprite to draw
+		@param x Origin X position
+		@param y Origin Y position
+		@param px Relative X position of the pivot in the sprite's space
+		@param py Relative Y position of the pivot in the sprite's space
+		@param width
+		@param height
+		@param frameIndex
+		@param flipX
+		@param flipY
+		@param wrap
+		@param colorMap
+	 */
+	public static function drawSpritePivot(frameBuffer:FrameBuffer, sprite:Sprite, x:Int, y:Int, ?px:Float = 0.5, ?py:Float = 0.5, ?width, ?height,
+			?frameIndex, ?flipX, ?flipY, ?wrap, ?colorMap) {
+		drawSprite(frameBuffer, sprite, Math.floor(x - sprite.width * px), Math.floor(y - sprite.height * py), width, height, frameIndex, flipX, flipY, wrap,
+			colorMap);
 	}
 }

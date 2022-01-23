@@ -8,17 +8,23 @@ import res.input.MouseEvent;
 
 using Std;
 
-class Scene {
-	@:allow(res)
-	var res(default, set):RES;
+abstract class Scene {
+	public var audioMixer:AudioMixer;
+
+	/** Color index to use to clear the screen (brightest color index by default) **/
+	public var clearColorIndex:Null<Int> = null;
+
+	public var res(default, set):RES;
 
 	function set_res(_res:RES) {
-		res = _res;
+		if (res == null) {
+			res = _res;
 
-		audioMixer = res.bios.createAudioMixer();
-		audioMixer.audioBufferCache = res.audioBufferCache;
+			audioMixer = res.bios.createAudioMixer();
+			audioMixer.audioBufferCache = res.audioBufferCache;
 
-		clearColorIndex = res.rom.palette.darkestIndex;
+			clearColorIndex = res.rom.palette.darkestIndex;
+		}
 
 		return res;
 	}
@@ -29,19 +35,38 @@ class Scene {
 	/** A list of things to update. A "thing" must have a `update` method that accepts a `Float` as the only argument (for time delta) **/
 	final updateList:Array<{function update(dt:Float):Void;}> = [];
 
-	@:allow(res)
-	var audioMixer:AudioMixer;
-
-	/** Color index to use to clear the screen (brightest color index by default) **/
-	public var clearColorIndex:Null<Int> = null;
-
 	public function new() {}
 
-	public function enter() {}
+	/**
+		Add to updateList or renderList or both depending on the type of the parameter
+	 */
+	public function add(?both:{function update(dt:Float):Void; function render(fb:FrameBuffer):Void;}, ?update:{function update(dt:Float):Void;},
+			?render:{function render(fb:FrameBuffer):Void;}) {
+		if (both != null) {
+			updateList.push(both);
+			renderList.push(both);
+		} else if (update != null)
+			updateList.push(update);
+		else if (render != null)
+			renderList.push(render);
+	}
 
-	public function init() {}
+	public function remove(?both:{function update(dt:Float):Void; function render(fb:FrameBuffer):Void;}, ?update:{function update(dt:Float):Void;},
+			?render:{function render(fb:FrameBuffer):Void;}) {
+		if (both != null) {
+			updateList.remove(both);
+			renderList.remove(both);
+		} else if (update != null)
+			updateList.remove(update);
+		else if (render != null)
+			renderList.remove(render);
+	}
 
-	public function leave() {}
+	public dynamic function enter() {}
+
+	public dynamic function init() {}
+
+	public dynamic function leave() {}
 
 	public dynamic function controllerEvent(event:ControllerEvent) {}
 

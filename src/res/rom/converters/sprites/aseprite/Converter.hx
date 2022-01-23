@@ -68,11 +68,13 @@ class Converter extends res.rom.converters.Converter {
 
 		final slices = aseprite.firstFrame.chunkTypes[ChunkType.SLICE];
 
+		final spriteName = makeName(fileName);
+
 		if (slices != null && slices.length > 0) {
 			for (sliceChunk in slices.map(s -> cast(s, SliceChunk))) {
 				for (key in sliceChunk.sliceKeys) {
 					sprites.push({
-						name: sliceChunk.name,
+						name: '${spriteName}_${sliceChunk.name}',
 						width: key.width,
 						height: key.height,
 						frames: [
