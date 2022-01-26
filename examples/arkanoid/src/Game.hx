@@ -263,7 +263,7 @@ class Game extends Scene {
 		text.textAt(11, 25, 'READY');
 
 		platformX = (FIELD_COL + FIELD_WIDTH_TILES / 2) * 8 / 2;
-		platformY = res.frameBuffer.frameHeight - 36;
+		platformY = res.frameBuffer.height - 36;
 
 		spawnBall(platformX, platformY - 4 - 2, new Vector2()).stuck = true;
 

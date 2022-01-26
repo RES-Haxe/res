@@ -25,7 +25,7 @@ class Mouse extends Emitter<MouseEvent> {
 	}
 
 	public inline function moveTo(x:Int, y:Int) {
-		this.x = wrapi(x, res.frameBuffer.frameWidth);
-		this.y = wrapi(y, res.frameBuffer.frameHeight);
+		this.x = wrapi(x, res.frameBuffer.width);
+		this.y = wrapi(y, res.frameBuffer.height);
 	}
 }

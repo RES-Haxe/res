@@ -34,7 +34,7 @@ class ConsoleScene extends Scene {
 
 	override function init() {
 		consoleText = res.createTextmap();
-		consoleText.scrollY = consoleText.pixelHeight - res.frameBuffer.frameHeight;
+		consoleText.scrollY = consoleText.pixelHeight - res.frameBuffer.height;
 
 		renderList.push(consoleText);
 

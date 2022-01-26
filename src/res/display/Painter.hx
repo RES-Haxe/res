@@ -181,7 +181,7 @@ class Painter {
 		@param fillIndex Fill color index
 	 */
 	public static function rect(frameBuffer:FrameBuffer, x:Int, y:Int, w:Int, h:Int, strokeIndex:Int, ?fillIndex:Int) {
-		if (Rect.intersect(0, 0, frameBuffer.frameWidth, frameBuffer.frameHeight, x, y, w, h)) {
+		if (Rect.intersect(0, 0, frameBuffer.width, frameBuffer.height, x, y, w, h)) {
 			final fx = mini(x, x + w);
 			final fy = mini(y, y + h);
 

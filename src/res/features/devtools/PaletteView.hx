@@ -14,11 +14,11 @@ class PaletteRender extends Renderable {
 	}
 
 	override public function render(frameBuffer:FrameBuffer) {
-		final colSize:Int = Std.int(frameBuffer.frameWidth / palette.colors.length);
+		final colSize:Int = Std.int(frameBuffer.width / palette.colors.length);
 
-		for (scanline in 0...frameBuffer.frameHeight) {
-			for (col in 0...frameBuffer.frameWidth) {
-				final colIndex:Int = scanline < Std.int(frameBuffer.frameHeight / 2) ? Std.int(col / colSize)
+		for (scanline in 0...frameBuffer.height) {
+			for (col in 0...frameBuffer.width) {
+				final colIndex:Int = scanline < Std.int(frameBuffer.height / 2) ? Std.int(col / colSize)
 					+ 1 : palette.byLuminance[Std.int(col / colSize)];
 
 				frameBuffer.setIndex(col, scanline, colIndex);

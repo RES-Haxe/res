@@ -83,7 +83,7 @@ abstract class Scene {
 		if (clearColorIndex != null)
 			fb.clear(clearColorIndex);
 
-		for (renderable in renderList)
-			renderable.render(fb);
+		for (item in renderList)
+			item.render(fb);
 	}
 }

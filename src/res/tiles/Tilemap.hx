@@ -169,9 +169,9 @@ class Tilemap {
 	public static function drawTilemap(frameBuffer:FrameBuffer, tilemap:Tilemap, ?x:Int = 0, ?y:Int = 0, ?width:Int, ?height:Int, ?scrollX:Float,
 			?scrollY:Float, ?wrap:Bool = true, ?scanlineFunc:ScanlineFunc) {
 		if (width == null)
-			width = frameBuffer.frameWidth;
+			width = frameBuffer.width;
 		if (height == null)
-			height = frameBuffer.frameHeight;
+			height = frameBuffer.height;
 		if (scrollX == null)
 			scrollX = tilemap.scrollX;
 		if (scrollY == null)
@@ -180,7 +180,7 @@ class Tilemap {
 		for (line in 0...height) {
 			final screenScanline = y + line;
 
-			if (screenScanline >= 0 && screenScanline < frameBuffer.frameHeight) {
+			if (screenScanline >= 0 && screenScanline < frameBuffer.height) {
 				if (scanlineFunc != null) {
 					scanlineFunc(line, (?sx:Float, ?sy:Float) -> {
 						if (sx != null)
@@ -205,7 +205,7 @@ class Tilemap {
 				for (col in 0...width) {
 					final screenCol = x + col;
 
-					if (screenCol >= 0 && screenCol < frameBuffer.frameWidth) {
+					if (screenCol >= 0 && screenCol < frameBuffer.width) {
 						final tileCol:Int = wrap ? (wrapf(col + scrollX, tilemap.pixelWidth)).floor() : (col + scrollX).floor();
 
 						if (tileCol < 0 || tileCol >= tilemap.pixelWidth)

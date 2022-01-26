@@ -30,6 +30,6 @@ class Splash extends Scene {
 
 		final sp = res.rom.sprites['res_logo'];
 
-		frameBuffer.drawSprite(sp, Std.int((frameBuffer.frameWidth - sp.width) / 2), Std.int((frameBuffer.frameHeight - sp.height) / 2));
+		frameBuffer.drawSprite(sp, Std.int((frameBuffer.width - sp.width) / 2), Std.int((frameBuffer.height - sp.height) / 2));
 	}
 }

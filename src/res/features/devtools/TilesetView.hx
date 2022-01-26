@@ -14,8 +14,8 @@ class TilesetView extends Scene {
 
 		var indecies = res.palette.getIndecies();
 
-		var screenHTiles:Int = (res.frameBuffer.frameWidth / tileset.tileSize).int();
-		var screenVTiles:Int = (res.frameBuffer.frameHeight / tileset.tileSize).int();
+		var screenHTiles:Int = (res.frameBuffer.width / tileset.tileSize).int();
+		var screenVTiles:Int = (res.frameBuffer.height / tileset.tileSize).int();
 
 		tilemap = res.createTilemap(tileset, Math.max(screenHTiles, tileset.hTiles).int(), Math.max(screenVTiles, tileset.vTiles).int(), indecies);
 

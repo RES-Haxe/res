@@ -63,17 +63,17 @@ class RES {
 
 	public final frameBuffer:FrameBuffer;
 
-	/** Shorthand for `platform.frameBuffer.frameWidth` */
+	/** Shorthand for `platform.frameBuffer.width` */
 	public var width(get, never):Int;
 
 	function get_width():Int
-		return frameBuffer.frameWidth;
+		return frameBuffer.width;
 
-	/** Shorthand for `platform.frameBuffer.frameHeight` */
+	/** Shorthand for `platform.frameBuffer.height` */
 	public var height(get, never):Int;
 
 	function get_height():Int
-		return frameBuffer.frameHeight;
+		return frameBuffer.height;
 
 	function get_scene():Scene
 		return _scene;

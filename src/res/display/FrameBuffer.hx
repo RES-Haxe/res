@@ -4,8 +4,9 @@ import haxe.io.Bytes;
 import res.tools.MathTools.wrapi;
 
 abstract class FrameBuffer {
-	final _width:Int;
-	final _height:Int;
+	public final width:Int;
+	public final height:Int;
+
 	final _palette:Palette;
 	final _indecies:Bytes;
 
@@ -13,27 +14,15 @@ abstract class FrameBuffer {
 	public var scrollY:Int = 0;
 	public var wrap:Bool = false;
 
-	public var frameWidth(get, never):Int;
-
-	public function get_frameWidth():Int {
-		return _width;
-	}
-
-	public var frameHeight(get, never):Int;
-
-	public function get_frameHeight():Int {
-		return _height;
-	}
-
 	public function new(width:Int, height:Int, palette:Palette) {
-		_width = width;
-		_height = height;
+		this.width = width;
+		this.height = height;
 		_palette = palette;
 		_indecies = Bytes.alloc(width * height);
 	}
 
 	inline function checkBounds(x:Int, y:Int):Bool {
-		return x >= 0 && y >= 0 && x < _width && y < _height;
+		return x >= 0 && y >= 0 && x < width && y < height;
 	}
 
 	abstract private function setPixel(x:Int, y:Int, color:Color32):Void;
@@ -47,7 +36,7 @@ abstract class FrameBuffer {
 	public function endFrame() {}
 
 	public function getIndex(x:Int, y:Int):Int {
-		return _indecies.get(y * _width + x);
+		return _indecies.get(y * width + x);
 	}
 
 	public function setIndex(x:Int, y:Int, index:Int) {
@@ -55,12 +44,12 @@ abstract class FrameBuffer {
 		y += scrollY;
 
 		if (wrap) {
-			x = wrapi(x, _width);
-			y = wrapi(y, _height);
+			x = wrapi(x, width);
+			y = wrapi(y, height);
 		}
 
 		if (checkBounds(x, y)) {
-			_indecies.set(y * _width + x, index);
+			_indecies.set(y * width + x, index);
 			setPixel(x, y, _palette.get(index));
 		}
 	}

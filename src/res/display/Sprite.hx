@@ -92,7 +92,7 @@ class Sprite {
 		final fromY:Int = y;
 
 		for (scanline in 0...lines) {
-			if (!((!wrap && (scanline < 0 || scanline >= frameBuffer.frameHeight)))) {
+			if (!((!wrap && (scanline < 0 || scanline >= frameBuffer.height)))) {
 				for (col in 0...cols) {
 					final spriteCol = wrapi(flipX ? sprite.width - 1 - col : col, sprite.width);
 					final spriteLine = wrapi(flipY ? sprite.height - 1 - scanline : scanline, sprite.height);
@@ -100,11 +100,11 @@ class Sprite {
 					final sampleIndex:Int = frame.data.getxy(sprite.width, spriteCol, spriteLine);
 
 					if (sampleIndex != 0) {
-						final screenX:Int = wrap ? wrapi(fromX + col, frameBuffer.frameWidth) : fromX + col;
-						final screenY:Int = wrap ? wrapi(fromY + scanline, frameBuffer.frameHeight) : fromY + scanline;
+						final screenX:Int = wrap ? wrapi(fromX + col, frameBuffer.width) : fromX + col;
+						final screenY:Int = wrap ? wrapi(fromY + scanline, frameBuffer.height) : fromY + scanline;
 
 						if (wrap
-							|| (screenX >= 0 && screenY >= 0 && screenX < frameBuffer.frameWidth && screenY < frameBuffer.frameHeight)) {
+							|| (screenX >= 0 && screenY >= 0 && screenX < frameBuffer.width && screenY < frameBuffer.height)) {
 							final colorIndex = colorMap == null ? sampleIndex : colorMap.get(sampleIndex);
 							if (colorIndex != 0)
 								frameBuffer.setIndex(screenX, screenY, colorIndex);

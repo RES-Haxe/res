@@ -13,7 +13,7 @@ class About extends ConsoleCommand {
 		console.println(' ${res.bios.name}');
 
 		console.println('Resolution:');
-		console.println(' ${res.frameBuffer.frameWidth}x${res.frameBuffer.frameHeight}');
+		console.println(' ${res.frameBuffer.width}x${res.frameBuffer.height}');
 
 		console.println('Palette:');
 		console.println(' ${res.rom.palette.colors.length - 1} colors');

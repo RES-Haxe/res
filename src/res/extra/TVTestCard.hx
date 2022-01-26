@@ -15,10 +15,10 @@ class TVTestCard extends Scene {
 	override function render(frameBuffer:FrameBuffer) {
 		frameBuffer.clear(0);
 
-		final barw = Math.floor(frameBuffer.frameWidth / 8);
+		final barw = Math.floor(frameBuffer.width / 8);
 
 		for (bar in 0...8) {
-			frameBuffer.rect(bar * barw, 0, barw, frameBuffer.frameHeight, indecies[bar], indecies[bar]);
+			frameBuffer.rect(bar * barw, 0, barw, frameBuffer.height, indecies[bar], indecies[bar]);
 		}
 	}
 }
