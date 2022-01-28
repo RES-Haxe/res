@@ -34,6 +34,13 @@ class Vector2 {
 		return new Vector2(x, y);
 	}
 
+	/**
+		Create a Vector from a difference of two vectors (`b - a`)
+	 */
+	public static function diff(a:{x:Float, y:Float}, b:{x:Float, y:Float}) {
+		return xy(b.x - a.x, b.y - a.y);
+	}
+
 	public function add(v:Vector2):Vector2 {
 		return addxy(v.x, v.y);
 	}

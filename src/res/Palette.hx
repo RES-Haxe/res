@@ -37,8 +37,18 @@ class Palette {
 	inline function get_size():Int
 		return colors.length;
 
-	public function copyWithFormat(outFormat:Array<ColorComponent>):Palette {
-		return new Palette(colors.map(c -> new Color32(c.input, c.inFormat, outFormat)));
+	/**
+		Changes the output format for all the color in place
+
+		@param outFormat output format for all colors
+
+		@returns this palette
+	 */
+	public function format(outFormat:Array<ColorComponent>):Palette {
+		for (color in colors)
+			color.setOutFormat(outFormat);
+
+		return this;
 	}
 
 	/**
@@ -68,13 +78,6 @@ class Palette {
 	public function getIndecies():Array<Int> {
 		return [for (n in 0...colors.length) n];
 	};
-
-	/**
-		Get random color index
-	 */
-	public inline function rnd():Int {
-		return Math.floor(Math.random() * colors.length);
-	}
 
 	/**
 		Get color by its index 

@@ -46,6 +46,12 @@ class SpriteObject extends Object {
 	var _pingPongCycle:PingPongCycle = F;
 
 	var _animation:SpriteAnimation;
+	var _currentAnimationName:String;
+
+	public var currentAnimaionName(get, never):String;
+
+	function get_currentAnimaionName()
+		return _currentAnimationName;
 
 	public function new(sprite:Sprite, ?colorMap:ColorMap) {
 		this.sprite = sprite;
@@ -75,6 +81,7 @@ class SpriteObject extends Object {
 			}
 
 			_animation = anim;
+			_currentAnimationName = name;
 		} else
 			trace('No animation named <$name>');
 	}
