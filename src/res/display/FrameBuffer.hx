@@ -40,6 +40,9 @@ abstract class FrameBuffer {
 	}
 
 	public function setIndex(x:Int, y:Int, index:Int) {
+		if (index == 0)
+			return;
+
 		x += scrollX;
 		y += scrollY;
 
@@ -51,6 +54,41 @@ abstract class FrameBuffer {
 		if (checkBounds(x, y)) {
 			_indecies.set(y * width + x, index);
 			setPixel(x, y, _palette.get(index));
+		}
+	}
+
+	/**
+		Draw a raster data line by line
+
+		@param x Screen x coordinate
+		@param y Screen y coordinate
+		@param data Bytes with raster indecies
+		@param srcPos Position of the first index in data
+		@param lineWidth The width of each line in raster
+		@param numLine Number of line to draw. If not specified - set all the indecies from the data
+		@param colorMap Optional color map
+	 */
+	public function raster(x:Int, y:Int, data:Bytes, srcPos:Int, lineWidth:Int, ?numLines:Int, ?colorMap:ColorMap) {
+		var pos = 0;
+		var col = 0;
+		var line = 0;
+
+		while (srcPos + pos < data.length && (numLines == null || line < numLines)) {
+			final idxPos = srcPos + pos;
+
+			final dataIndex = data.get(idxPos);
+			final index = colorMap == null ? dataIndex : colorMap[dataIndex];
+
+			setIndex(x + col, y + line, index);
+
+			col++;
+
+			if (col == lineWidth) {
+				col = 0;
+				line++;
+			}
+
+			pos++;
 		}
 	}
 }

@@ -28,12 +28,12 @@ class Tilemap {
 	public var pixelWidth(get, never):Int;
 
 	function get_pixelWidth():Int
-		return hTiles * tileset.tileSize;
+		return hTiles * tileset.tileWidth;
 
 	public var pixelHeight(get, never):Int;
 
 	function get_pixelHeight():Int
-		return vTiles * tileset.tileSize;
+		return vTiles * tileset.tileHeight;
 
 	public var x:Float = 0;
 	public var y:Float = 0;
@@ -48,8 +48,8 @@ class Tilemap {
 
 	public function new(tileset:Tileset, hTiles:Int, vTiles:Int, ?width:Float, ?height:Float, ?colorMap:ColorMap) {
 		this.tileset = tileset;
-		this.width = width == null ? tileset.tileSize * hTiles : width;
-		this.height = height == null ? tileset.tileSize * vTiles : height;
+		this.width = width == null ? tileset.tileWidth * hTiles : width;
+		this.height = height == null ? tileset.tileHeight * vTiles : height;
 		this.colorMap = colorMap == null ? new ColorMap([]) : colorMap;
 
 		resize(hTiles, vTiles);
@@ -142,14 +142,15 @@ class Tilemap {
 	function readTilePixel(tx:Int, ty:Int, fx:Int, fy:Int):Int {
 		final tile = map[ty][tx];
 		final rfx = tile.rot90cw ? fy : fx;
-		final rfy = tile.rot90cw ? tileset.tileSize - 1 - fx : fy;
+		final rfy = tile.rot90cw ? tileset.tileWidth - 1 - fx : fy;
 
-		final ffx = tile.flipX ? tileset.tileSize - 1 - rfx : rfx;
-		final ffy = tile.flipY ? tileset.tileSize - 1 - rfy : rfy;
+		final ffx = tile.flipX ? tileset.tileWidth - 1 - rfx : rfx;
+		final ffy = tile.flipY ? tileset.tileHeight - 1 - rfy : rfy;
 
 		final tileIndex = indexMap == null ? tile.index : indexMap[tile.index];
 
-		return tileset.get(tileIndex).indecies.get(ffy * tileset.tileSize + ffx);
+		return tileset.getIndex(tileIndex, ffx, ffy);
+		// tileset.get(tileIndex).indecies.get(ffy * tileset.tileSize + ffx);
 	}
 
 	/**
@@ -195,12 +196,12 @@ class Tilemap {
 				if (tileScanline < 0 || tileScanline >= tilemap.pixelHeight)
 					continue;
 
-				var tileLineIndex:Int = (tileScanline / tilemap.tileset.tileSize).floor();
+				var tileLineIndex:Int = (tileScanline / tilemap.tileset.tileHeight).floor();
 
 				if (tileLineIndex >= tilemap.vTiles)
 					tileLineIndex = tileLineIndex % tilemap.vTiles;
 
-				final inTileScanline:Int = tileScanline % tilemap.tileset.tileSize;
+				final inTileScanline:Int = tileScanline % tilemap.tileset.tileHeight;
 
 				for (col in 0...width) {
 					final screenCol = x + col;
@@ -211,12 +212,12 @@ class Tilemap {
 						if (tileCol < 0 || tileCol >= tilemap.pixelWidth)
 							continue;
 
-						var tileColIndex:Int = (tileCol / tilemap.tileset.tileSize).floor();
+						var tileColIndex:Int = (tileCol / tilemap.tileset.tileWidth).floor();
 
 						if (tileColIndex >= tilemap.hTiles)
 							tileColIndex = tileColIndex % tilemap.hTiles;
 
-						final inTileCol:Int = tileCol % tilemap.tileset.tileSize;
+						final inTileCol:Int = tileCol % tilemap.tileset.tileWidth;
 
 						final tilePlace = tilemap.get(tileColIndex, tileLineIndex);
 

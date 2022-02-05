@@ -126,7 +126,7 @@ class RES {
 	public function reset() {
 		#if !skipSplash
 		if (rom.sprites.exists('res_logo')) {
-			setScene(new res.extra.Splash(config.main()));
+			setScene(new res.extra.Splash(config.main));
 		} else {
 			if (config.main != null)
 				setScene(config.main());
@@ -170,10 +170,10 @@ class RES {
 				throw 'No default font';
 
 		if (hTiles == null)
-			hTiles = Math.ceil(width / font.tileset.tileSize);
+			hTiles = Math.ceil(width / font.tileset.tileWidth);
 
 		if (vTiles == null)
-			vTiles = Math.ceil(height / font.tileset.tileSize);
+			vTiles = Math.ceil(height / font.tileset.tileHeight);
 
 		return new Textmap(font.tileset, hTiles, vTiles, font.characters, font.firstTileIndex, colorMap);
 	}
@@ -186,8 +186,8 @@ class RES {
 		@param vTiles
 		@param overrideTileSize
 	 */
-	public function createTileset(?name:String, hTiles:Int, vTiles:Int, tileSize:Int):Tileset {
-		final tileset = new Tileset(tileSize, hTiles, vTiles);
+	public function createTileset(?name:String, tileWidth:Int, tileHeight:Int):Tileset {
+		final tileset = new Tileset(tileWidth, tileHeight);
 
 		if (name != null)
 			rom.tilesets[name] = tileset;
@@ -206,10 +206,10 @@ class RES {
 	 */
 	public function createTilemap(?name:String, tileset:Tileset, ?hTiles:Int, ?vTiles:Int, ?colorMap:ColorMap):Tilemap {
 		if (hTiles == null)
-			hTiles = Math.ceil(width / tileset.tileSize);
+			hTiles = Math.ceil(width / tileset.tileWidth);
 
 		if (vTiles == null)
-			vTiles = Math.ceil(height / tileset.tileSize);
+			vTiles = Math.ceil(height / tileset.tileHeight);
 
 		var tilemap = new Tilemap(tileset, hTiles, vTiles, colorMap);
 

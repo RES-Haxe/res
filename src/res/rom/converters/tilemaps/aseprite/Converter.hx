@@ -43,7 +43,7 @@ class Converter extends res.rom.converters.Converter {
 				var found:Null<Int> = null;
 
 				for (n in 0...tileset.numTiles) {
-					if (tileset.get(n).indecies.compare(tileData) == 0) {
+					if (tileset.getTileData(n).compare(tileData) == 0) {
 						found = n + 1;
 						break;
 					}

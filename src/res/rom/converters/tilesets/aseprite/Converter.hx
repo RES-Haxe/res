@@ -30,16 +30,14 @@ class Converter extends res.rom.converters.Converter {
 		if (tilesets != null) {
 			final aseTilesetChunk:ase.chunks.TilesetChunk = cast tilesets[0];
 
-			if (aseTilesetChunk.width != aseTilesetChunk.height)
-				throw 'Only square tiles are supported at the moment';
+			final tileWidth = aseTilesetChunk.width;
+			final tileHeight = aseTilesetChunk.height;
 
-			final tileSize = aseTilesetChunk.width;
-
-			if (tileSize > 256)
+			if (tileWidth > 256 || tileHeight > 256)
 				throw 'Tile size cannot exceed 256px';
 
-			bytesOutput.writeByte(tileSize);
-			bytesOutput.writeByte(tileSize);
+			bytesOutput.writeByte(tileWidth);
+			bytesOutput.writeByte(tileHeight);
 			bytesOutput.writeInt32(aseTilesetChunk.numTiles);
 
 			bytesOutput.writeBytes(aseTilesetChunk.uncompressedTilesetImage, 0, aseTilesetChunk.uncompressedTilesetImage.length);

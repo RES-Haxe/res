@@ -1,5 +1,6 @@
 {
   "bitmap": "pico8.png",
-  "tileSize": 5,
+  "tileWidth": 5,
+  "tileHeight": 5,
   "characters": " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
 }

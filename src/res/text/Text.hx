@@ -1,7 +1,6 @@
 package res.text;
 
 import res.display.FrameBuffer;
-import res.tiles.Tile;
 
 class Text {
 	public var font:Font;
@@ -30,14 +29,12 @@ class Text {
 
 			if (char == '\n'.charCodeAt(0)) {
 				tx = x;
-				ty += font.tileset.tileSize;
+				ty += font.tileset.tileHeight;
 			} else {
-				final tile = font.getTile(char);
-
-				if (tile != null)
-					Tile.drawTile(frameBuffer, tile, tx, ty, colorMap);
-
-				tx += font.tileset.tileSize;
+				final idx = font.getTileIndex(char);
+				if (idx != null)
+					font.tileset.drawTile(frameBuffer, font.getTileIndex(char), tx, ty, colorMap);
+				tx += font.tileset.tileWidth;
 			}
 		}
 	}

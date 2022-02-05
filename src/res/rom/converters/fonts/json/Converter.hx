@@ -9,7 +9,8 @@ using haxe.io.Path;
 
 typedef FontJson = {
 	bitmap:String,
-	tileSize:Int,
+	tileWidth:Int,
+	tileHeight:Int,
 	characters:String
 };
 
@@ -17,7 +18,7 @@ class Converter extends res.rom.converters.Converter {
 	var tilesetChunk:TilesetChunk;
 	var fontChunk:FontChunk;
 
-	override function process(fileName:String, palette):res.rom.converters.Converter {
+	override function process(fileName:String, palette:Palette):res.rom.converters.Converter {
 		final json:FontJson = cast Json.parse(File.getContent(fileName));
 
 		final bitmapFile = Path.join([fileName.directory(), json.bitmap]).normalize();
@@ -31,7 +32,7 @@ class Converter extends res.rom.converters.Converter {
 
 		switch (ext) {
 			case 'png':
-				tilesetChunk = res.rom.converters.tilesets.png.Converter.createChunk(bitmapFile, 'font:$name', json.tileSize, palette, true);
+				tilesetChunk = res.rom.converters.tilesets.png.Converter.createChunk(bitmapFile, 'font:$name', json.tileWidth, json.tileHeight, palette, true);
 			case _:
 				throw 'Unsupported tileset bitmap format: $ext';
 		}

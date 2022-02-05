@@ -9,31 +9,31 @@ import sys.io.File;
 class Converter extends res.rom.converters.Converter {
 	var tilesetChunk:TilesetChunk;
 
-	public static function createChunk(filename:String, name:String, tileSize:Int, palette:Palette, ?keepEmpty:Bool = false) {
+	public static function createChunk(filename:String, name:String, tileWidth:Int, tileHeight:Int, palette:Palette, ?keepEmpty:Bool = false) {
 		final pngData = new Reader(File.read(filename)).read();
 		final pngHeader = Tools.getHeader(pngData);
 
-		if (pngHeader.width % tileSize != 0 || pngHeader.height % tileSize != 0)
-			throw 'Invalid PNG size: width % ${tileSize} != 0 || height % ${tileSize} != 0';
+		if (pngHeader.width % tileWidth != 0 || pngHeader.height % tileHeight != 0)
+			throw 'Invalid PNG size: width % ${tileWidth} != 0 || height % ${tileHeight} != 0';
 
-		final hTiles:Int = Std.int(pngHeader.width / tileSize);
-		final vTiles:Int = Std.int(pngHeader.height / tileSize);
+		final hTiles:Int = Std.int(pngHeader.width / tileWidth);
+		final vTiles:Int = Std.int(pngHeader.height / tileHeight);
 
 		final pixels = Tools.extract32(pngData);
 
-		final empty = Bytes.alloc(tileSize * tileSize);
+		final empty = Bytes.alloc(tileWidth * tileHeight);
 		empty.fill(0, empty.length, 0);
 
 		final tiles:Array<Bytes> = [];
 
 		for (yTile in 0...vTiles) {
 			for (xTile in 0...hTiles) {
-				final tileBytes = Bytes.alloc(tileSize * tileSize);
+				final tileBytes = Bytes.alloc(tileWidth * tileHeight);
 
-				for (line in 0...tileSize) {
-					for (col in 0...tileSize) {
-						final srcx = xTile * tileSize + col;
-						final srcy = yTile * tileSize + line;
+				for (line in 0...tileHeight) {
+					for (col in 0...tileWidth) {
+						final srcx = xTile * tileWidth + col;
+						final srcy = yTile * tileHeight + line;
 
 						final color = pixels.getInt32((srcy * pngHeader.width + srcx) * 4);
 
@@ -42,9 +42,9 @@ class Converter extends res.rom.converters.Converter {
 
 							final index = palette.closest(pixel);
 
-							tileBytes.set(line * tileSize + col, index);
+							tileBytes.set(line * tileWidth + col, index);
 						} else {
-							tileBytes.set(line * tileSize + col, 0);
+							tileBytes.set(line * tileWidth + col, 0);
 						}
 					}
 				}
@@ -57,8 +57,8 @@ class Converter extends res.rom.converters.Converter {
 
 		final bytesOutput = new BytesOutput();
 
-		bytesOutput.writeByte(tileSize);
-		bytesOutput.writeByte(tileSize);
+		bytesOutput.writeByte(tileWidth);
+		bytesOutput.writeByte(tileHeight);
 		bytesOutput.writeInt32(tiles.length);
 
 		for (tile in tiles) {
@@ -69,7 +69,7 @@ class Converter extends res.rom.converters.Converter {
 	}
 
 	override function process(fileName:String, palette:Palette):res.rom.converters.Converter {
-		tilesetChunk = createChunk(fileName, makeName(fileName), 8, palette);
+		tilesetChunk = createChunk(fileName, makeName(fileName), 8, 8, palette);
 		return this;
 	}
 

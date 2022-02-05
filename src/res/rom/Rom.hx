@@ -76,7 +76,8 @@ class Rom {
 		var paletteConverter:PaletteConverter = null;
 
 		for (ext => converter in CONVERTERS['palette']) {
-			final paletteFile = Path.withExtension(Path.join([src, 'palette']), ext);
+			final fileName = Path.join([src, 'palette']);
+			final paletteFile = ext == '' ? fileName : Path.withExtension(fileName, ext);
 
 			if (FileSystem.exists(paletteFile)) {
 				paletteConverter = cast converter;

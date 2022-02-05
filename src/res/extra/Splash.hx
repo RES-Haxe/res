@@ -6,9 +6,9 @@ import res.timeline.Timeline;
 using res.display.Sprite;
 
 class Splash extends Scene {
-	final scene:Scene;
+	final scene:Void->Scene;
 
-	public function new(scene:Scene) {
+	public function new(scene:Void->Scene) {
 		super();
 
 		this.scene = scene;
@@ -19,7 +19,7 @@ class Splash extends Scene {
 
 		timeline.after(1, (_) -> {
 			if (scene != null)
-				res.setScene(scene, true);
+				res.setScene(scene(), true);
 		});
 
 		updateList.push(timeline);

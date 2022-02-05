@@ -11,8 +11,8 @@ class TilemapObject extends Object {
 	}
 
 	public function autosize() {
-		this.width = tilemap.hTiles * tilemap.tileset.tileSize;
-		this.height = tilemap.vTiles * tilemap.tileset.tileSize;
+		this.width = tilemap.pixelWidth;
+		this.height = tilemap.pixelHeight;
 	}
 
 	override function selfRender(frameBuffer:FrameBuffer, atx:Float, aty:Float) {

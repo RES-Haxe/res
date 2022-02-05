@@ -1,6 +1,5 @@
 package res.text;
 
-import res.tiles.Tile;
 import res.tiles.Tileset;
 
 class Font {
@@ -22,14 +21,5 @@ class Font {
 
 	public function getTileIndex(char:Int):Null<Int> {
 		return _charMap[char];
-	}
-
-	public function getTile(char:Int):Tile {
-		final index = getTileIndex(char);
-
-		if (index != null)
-			return tileset.get(index);
-
-		return null;
 	}
 }
