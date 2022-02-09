@@ -12,6 +12,17 @@ typedef SpriteAnimation = {
 	var direction:Int;
 }
 
+typedef DrawSpriteOptions = {
+	var ?width:Int;
+	var ?height:Int;
+	var ?scrollX:Int;
+	var ?scrollY:Int;
+	var ?frame:Int;
+	var ?flipX:Bool;
+	var ?flipY:Bool;
+	var ?wrap:Bool;
+};
+
 class SpriteFrame {
 	public final data:Bytes;
 	public final duration:Int;
@@ -73,20 +84,34 @@ class Sprite {
 		@param sprite
 		@param x
 		@param y
-		@param width
-		@param height
-		@param frameIndex
-		@param flipX
-		@param flipY
-		@param wrapping
+		@param opts Draw sprite options:
+		@param opts.width Width of the area to draw sprite to
+		@param opts.height Height of the area to draw sprite to 
+		@param opts.scrollX X Scrolling
+		@param opts.scrollY Y Scrolling
+		@param opts.frame Animation frame index
+		@param opts.flipX
+		@param opts.flipY
+		@param opts.wrap
 		@param colorMap
 	 */
-	public static function drawSprite(frameBuffer:FrameBuffer, sprite:Sprite, ?x:Int = 0, ?y:Int = 0, ?width:Int, ?height:Int, ?frameIndex:Int = 0,
-			?flipX:Bool = false, ?flipY:Bool = false, ?wrap:Bool = true, ?colorMap:ColorMap) {
+	public static function drawSprite(frameBuffer:FrameBuffer, sprite:Sprite, ?x:Int = 0, ?y:Int = 0, ?opts:DrawSpriteOptions, ?colorMap:ColorMap) {
+		opts = opts == null ? {} : opts;
+
+		final frameIndex = opts.frame == null ? 0 : opts.frame;
+
 		final frame = sprite.frames[frameIndex];
 
-		final lines:Int = height == null ? sprite.height : height;
-		final cols:Int = width == null ? sprite.width : width;
+		final lines:Int = opts.height == null ? sprite.height : opts.height;
+		final cols:Int = opts.width == null ? sprite.width : opts.width;
+
+		final flipX = opts.flipX == null ? false : opts.flipX;
+		final flipY = opts.flipY == null ? false : opts.flipY;
+
+		final wrap = opts.wrap == null ? false : opts.wrap;
+
+		final scrollX = opts.scrollX == null ? 0 : opts.scrollX;
+		final scrollY = opts.scrollY == null ? 0 : opts.scrollY;
 
 		final fromX:Int = x;
 		final fromY:Int = y;
@@ -94,8 +119,8 @@ class Sprite {
 		for (scanline in 0...lines) {
 			if (!((!wrap && (scanline < 0 || scanline >= frameBuffer.height)))) {
 				for (col in 0...cols) {
-					final spriteCol = wrapi(flipX ? sprite.width - 1 - col : col, sprite.width);
-					final spriteLine = wrapi(flipY ? sprite.height - 1 - scanline : scanline, sprite.height);
+					final spriteCol = wrapi((flipX ? sprite.width - 1 - col : col) + scrollX, sprite.width);
+					final spriteLine = wrapi((flipY ? sprite.height - 1 - scanline : scanline) + scrollY, sprite.height);
 
 					final sampleIndex:Int = frame.data.getxy(sprite.width, spriteCol, spriteLine);
 
@@ -103,11 +128,9 @@ class Sprite {
 						final screenX:Int = wrap ? wrapi(fromX + col, frameBuffer.width) : fromX + col;
 						final screenY:Int = wrap ? wrapi(fromY + scanline, frameBuffer.height) : fromY + scanline;
 
-						if (wrap
-							|| (screenX >= 0 && screenY >= 0 && screenX < frameBuffer.width && screenY < frameBuffer.height)) {
+						if (wrap || (screenX >= 0 && screenY >= 0 && screenX < frameBuffer.width && screenY < frameBuffer.height)) {
 							final colorIndex = colorMap == null ? sampleIndex : colorMap.get(sampleIndex);
-							if (colorIndex != 0)
-								frameBuffer.setIndex(screenX, screenY, colorIndex);
+							frameBuffer.setIndex(screenX, screenY, colorIndex);
 						}
 					}
 				}
@@ -140,17 +163,17 @@ class Sprite {
 		@param y Origin Y position
 		@param px Relative X position of the pivot in the sprite's space
 		@param py Relative Y position of the pivot in the sprite's space
-		@param width
-		@param height
-		@param frameIndex
-		@param flipX
-		@param flipY
-		@param wrap
+		@param opts Draw sprite options:
+		@param opts.width Width of the area to draw sprite to
+		@param opts.height Height of the area to draw sprite to 
+		@param opts.scrollX X Scrolling
+		@param opts.scrollY Y Scrolling
+		@param opts.frame Animation frame index
+		@param opts.flipX
+		@param opts.flipY
+		@param opts.wrap
 		@param colorMap
 	 */
-	public static function drawSpritePivot(frameBuffer:FrameBuffer, sprite:Sprite, x:Int, y:Int, ?px:Float = 0.5, ?py:Float = 0.5, ?width, ?height,
-			?frameIndex, ?flipX, ?flipY, ?wrap, ?colorMap) {
-		drawSprite(frameBuffer, sprite, Math.floor(x - sprite.width * px), Math.floor(y - sprite.height * py), width, height, frameIndex, flipX, flipY, wrap,
-			colorMap);
-	}
+	public static function drawSpritePivot(frameBuffer:FrameBuffer, sprite:Sprite, x:Int, y:Int, ?px:Float = 0.5, ?py:Float = 0.5, ?opts, ?colorMap)
+		drawSprite(frameBuffer, sprite, Math.floor(x - sprite.width * px), Math.floor(y - sprite.height * py), opts, colorMap);
 }

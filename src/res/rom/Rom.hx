@@ -158,7 +158,7 @@ class Rom {
 		@param bytes
 		@param compressed Whether the data is gzip compressed or not
 	 */
-	public static function fromBytes(bytes:Bytes, ?compressed:Bool = false):Rom {
+	public static function fromBytes(bytes:Bytes, ?compressed:Bool = true):Rom {
 		final bytesInput = new BytesInput(compressed ? InflateImpl.run(new BytesInput(bytes)) : bytes);
 
 		if (bytesInput.readInt32() != MAGIC_NUMBER)

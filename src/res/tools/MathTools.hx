@@ -17,6 +17,9 @@ class MathTools {
 	public static inline function lerp(a:Float, b:Float, t:Float):Float
 		return a + (b - a) * t;
 
+	public static inline function param(a:Float, b:Float, v:Float):Float
+		return (v - a) / (b - a);
+
 	public static inline function maxi(a:Int, b:Int):Int
 		return a > b ? a : b;
 

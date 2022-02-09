@@ -155,8 +155,13 @@ class SpriteObject extends Object {
 		drawSpriteObject(frameBuffer, this, atx, aty);
 
 	public static function drawSpriteObject(frameBuffer:FrameBuffer, spriteObject:SpriteObject, ?x:Float, ?y:Float) {
-		Sprite.drawSprite(frameBuffer, spriteObject.sprite, x != null ? x.floor() : spriteObject.x.floor(), y != null ? y.floor() : spriteObject.y.floor(),
-			spriteObject.width.floor(), spriteObject.height.floor(), spriteObject.currentFrameIndex, spriteObject.flipX, spriteObject.flipY,
-			spriteObject.wrap, spriteObject.colorMap);
+		Sprite.drawSprite(frameBuffer, spriteObject.sprite, x != null ? x.floor() : spriteObject.x.floor(), y != null ? y.floor() : spriteObject.y.floor(), {
+			width: spriteObject.width.floor(),
+			height: spriteObject.height.floor(),
+			frame: spriteObject.currentFrameIndex,
+			flipX: spriteObject.flipX,
+			flipY: spriteObject.flipY,
+			wrap: spriteObject.wrap
+		});
 	}
 }
