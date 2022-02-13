@@ -53,6 +53,18 @@ class SpriteObject extends Object {
 	function get_currentAnimaionName()
 		return _currentAnimationName;
 
+	/** Total current animation time in seconds **/
+	public var totalAnimationTime(get, never):Float;
+
+	function get_totalAnimationTime() {
+		var result:Float = 0;
+
+		for (f in _animation.from..._animation.to + 1)
+			result += (sprite.frames[f].duration / 1000);
+
+		return result;
+	}
+
 	public function new(sprite:Sprite, ?colorMap:ColorMap) {
 		this.sprite = sprite;
 		this.colorMap = colorMap;
