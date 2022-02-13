@@ -8,7 +8,9 @@ class Emitter<T> {
 			listener(e);
 	}
 
-	public function listen(cb:T->Void) {
+	public function listen(cb:T->Void)
 		listeners.push(cb);
-	}
+
+	public function disregard(cb:T->Void)
+		listeners.remove(cb);
 }

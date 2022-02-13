@@ -7,8 +7,7 @@ typedef KeyboardListener = KeyboardEvent->Void;
 
 class Keyboard extends Emitter<KeyboardEvent> {
 	private final _down:Map<Int, Bool> = [];
-
-	private var controllerMappings:Map<Int, KeyboardControllerMapping> = [];
+	private final _bindings:Map<Int, Array<{controller:Controller, button:ControllerButton}>> = [];
 
 	final res:RES;
 
@@ -21,10 +20,11 @@ class Keyboard extends Emitter<KeyboardEvent> {
 
 	public function keyDown(keyCode:Int) {
 		_down[keyCode] = true;
-		final controllerMapping = controllerMappings[keyCode];
 
-		if (controllerMapping != null)
-			res.controllers[controllerMapping.playerNumber].push(controllerMapping.controllerButton);
+		if (_bindings[keyCode] != null)
+			for (binding in _bindings[keyCode]) {
+				binding.controller.push(binding.button);
+			}
 
 		emit(KEY_DOWN(keyCode));
 	}
@@ -36,10 +36,10 @@ class Keyboard extends Emitter<KeyboardEvent> {
 	public function keyUp(keyCode:Int) {
 		_down[keyCode] = false;
 
-		final controllerMapping = controllerMappings[keyCode];
-
-		if (controllerMapping != null)
-			res.controllers[controllerMapping.playerNumber].release(controllerMapping.controllerButton);
+		if (_bindings[keyCode] != null)
+			for (binding in _bindings[keyCode]) {
+				binding.controller.release(binding.button);
+			}
 
 		emit(KEY_UP(keyCode));
 	}
@@ -48,31 +48,37 @@ class Keyboard extends Emitter<KeyboardEvent> {
 		return _down.exists(keyCode) && _down[keyCode];
 	}
 
-	public function defaultControllerMapping() {
-		mapControllers([
-			[
-				LEFT => Key.LEFT,
-				RIGTH => Key.RIGHT,
-				UP => Key.UP,
-				DOWN => Key.DOWN,
-				A => Key.Z,
-				B => Key.X,
-				X => Key.A,
-				Y => Key.S,
-				START => Key.ENTER,
-				SELECT => Key.SHIFT
-			]
-		]);
+	/**
+		Bind keyboard keys to controller's button
+
+		@param keys Keys to bind
+		@param button Button to bind
+		@param controller Controller to bind keys to 
+	 */
+	public function bind(keys:Array<Int>, button:ControllerButton, ?controller:Controller) {
+		for (key in keys) {
+			if (_bindings[key] == null)
+				_bindings[key] = [];
+
+			_bindings[key].push({
+				controller: controller == null ? res.controller : controller,
+				button: button
+			});
+		}
 	}
 
-	public function mapControllers(mappings:Array<Map<ControllerButton, Int>>) {
-		for (num in 0...mappings.length) {
-			for (button => key in mappings[num]) {
-				controllerMappings.set(key, {
-					playerNumber: num + 1,
-					controllerButton: button
-				});
-			}
-		}
+	public function defaultControllerMapping() {
+		_bindings.clear();
+
+		bind([Key.LEFT], LEFT);
+		bind([Key.RIGHT], RIGTH);
+		bind([Key.UP], UP);
+		bind([Key.DOWN], DOWN);
+		bind([Key.Z], A);
+		bind([Key.X], B);
+		bind([Key.A], X);
+		bind([Key.S], Y);
+		bind([Key.ENTER], START);
+		bind([Key.SHIFT], SELECT);
 	}
 }

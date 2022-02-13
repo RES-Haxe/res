@@ -4,8 +4,6 @@ import res.events.Emitter;
 import res.input.ControllerEvent;
 
 class Controller extends Emitter<ControllerEvent> {
-	public final playerNum:Int;
-
 	var pressed:Map<ControllerButton, Bool> = [
 		for (button in Type.allEnums(ControllerButton))
 			button => false
@@ -22,9 +20,11 @@ class Controller extends Emitter<ControllerEvent> {
 		};
 	}
 
+	public final name:String;
+
 	@:allow(res)
-	private function new(playerNum:Int) {
-		this.playerNum = playerNum;
+	private function new(?name:String) {
+		this.name = name;
 	}
 
 	public function connect() {

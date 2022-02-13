@@ -3,12 +3,13 @@ package res;
 import haxe.Rest;
 import haxe.Timer;
 import res.audio.AudioBufferCache;
+import res.bios.BIOS;
 import res.display.FrameBuffer;
 import res.features.Feature;
 import res.input.Controller;
+import res.input.ControllerEvent;
 import res.input.Keyboard;
 import res.input.Mouse;
-import res.bios.BIOS;
 import res.rom.Rom;
 import res.storage.IStorage;
 import res.text.Font;
@@ -32,7 +33,13 @@ class RES {
 	public static final VERSION:String = '0.1.0';
 
 	public final config:RESConfig;
-	public final controllers:Map<Int, Controller> = [for (playerNum in 1...5) playerNum => new Controller(playerNum)];
+
+	/** Default controller used by the Player 1 **/
+	public final controller:Controller;
+
+	/** All connected controllers */
+	public final controllers:Array<Controller> = [];
+
 	public final keyboard:Keyboard;
 	public final mouse:Mouse;
 	public final resolution:Resolution;
@@ -83,8 +90,8 @@ class RES {
 
 		this.resolution = config.resolution;
 
-		for (controller in controllers)
-			controller.listen((ev) -> if (scene != null) scene.controllerEvent(ev));
+		controller = new Controller("player1");
+		connectController(controller);
 
 		keyboard = new Keyboard(this);
 		keyboard.listen((event) -> {
@@ -121,6 +128,23 @@ class RES {
 			this.enable(...config.features);
 
 		reset();
+	}
+
+	public function connectController(ctrl:Controller) {
+		controllers.push(ctrl);
+		ctrl.listen(controllerEvent);
+		ctrl.connect();
+	}
+
+	public function disconnectController(ctrl:Controller) {
+		controllers.remove(ctrl);
+		ctrl.disconnect();
+		ctrl.disregard(controllerEvent);
+	}
+
+	private function controllerEvent(event:ControllerEvent) {
+		if (scene != null)
+			scene.controllerEvent(event);
 	}
 
 	public function reset() {
