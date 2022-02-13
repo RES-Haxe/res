@@ -28,7 +28,7 @@ class Splash extends Scene {
 	override function render(frameBuffer:FrameBuffer) {
 		frameBuffer.clear(clearColorIndex);
 
-		final sp = res.rom.sprites['res_logo'];
+		final sp = res.rom.sprites['splash'];
 
 		frameBuffer.drawSprite(sp, Std.int((frameBuffer.width - sp.width) / 2), Std.int((frameBuffer.height - sp.height) / 2));
 	}

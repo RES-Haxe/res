@@ -149,7 +149,7 @@ class RES {
 
 	public function reset() {
 		#if !skipSplash
-		if (rom.sprites.exists('res_logo')) {
+		if (rom.sprites.exists('splash')) {
 			setScene(new res.extra.Splash(config.main));
 		} else {
 			if (config.main != null)
