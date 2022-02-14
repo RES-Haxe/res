@@ -1,6 +1,6 @@
 package res.storage;
 
-class StorageBase implements IStorage {
+abstract class Storage {
 	var data:Map<String, Dynamic> = [];
 
 	public function new() {}
@@ -11,6 +11,11 @@ class StorageBase implements IStorage {
 
 	public function get(key:String):Dynamic {
 		return data[key];
+	}
+
+	public function getBool(key:String, ?defaultValue:Bool = false):Bool {
+		final val = get(key);
+		return val == null ? defaultValue : val;
 	}
 
 	public function getString(key:String, ?defaultValue:String):String {
@@ -27,4 +32,8 @@ class StorageBase implements IStorage {
 		final val = get(key);
 		return val == null ? defaultValue : cast data[key];
 	}
+
+	abstract public function save():Void;
+
+	abstract public function restore():Void;
 }

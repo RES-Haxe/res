@@ -4,7 +4,7 @@ import res.audio.AudioMixer;
 import res.audio.IAudioBuffer;
 import res.audio.IAudioStream;
 import res.display.FrameBuffer;
-import res.storage.IStorage;
+import res.storage.Storage;
 
 abstract class BIOS {
 	public final name:String;
@@ -17,7 +17,7 @@ abstract class BIOS {
 
 	abstract public function createFrameBuffer(width:Int, height:Int, palette:Palette):FrameBuffer;
 
-	abstract public function createStorage():IStorage;
+	abstract public function createStorage():Storage;
 
 	public function new(name:String) {
 		this.name = name;

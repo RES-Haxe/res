@@ -11,7 +11,7 @@ import res.input.ControllerEvent;
 import res.input.Keyboard;
 import res.input.Mouse;
 import res.rom.Rom;
-import res.storage.IStorage;
+import res.storage.Storage;
 import res.text.Font;
 import res.text.Textmap;
 import res.tiles.Tilemap;
@@ -44,7 +44,7 @@ class RES {
 	public final mouse:Mouse;
 	public final resolution:Resolution;
 	public final bios:BIOS;
-	public final storage:IStorage;
+	public final storage:Storage;
 	public final renderHooks:RenderHooks = {
 		before: [],
 		after: []
@@ -113,6 +113,7 @@ class RES {
 		this.bios.connect(this);
 		this.frameBuffer = bios.createFrameBuffer(frameSize.width, frameSize.height, rom.palette);
 		this.storage = bios.createStorage();
+		this.storage.restore();
 
 		audioBufferCache = new AudioBufferCache(this);
 
