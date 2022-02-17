@@ -13,7 +13,7 @@ abstract class Storage {
 		return data[key];
 	}
 
-	public function getBool(key:String, ?defaultValue:Bool = false):Bool {
+	public function getBool(key:String, ?defaultValue:Bool = false):Null<Bool> {
 		final val = get(key);
 		return val == null ? defaultValue : val;
 	}
