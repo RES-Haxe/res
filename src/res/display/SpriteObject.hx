@@ -20,31 +20,46 @@ enum PingPongCycle {
 /**
 	Stateful Sprite Object
  */
-class SpriteObject extends Object {
-	public var flipX:Bool = false;
-	public var flipY:Bool = false;
-
-	public var playing:Bool = false;
-
-	public var loop:Bool = true;
-
-	public var priority:Null<Int> = null;
-
+class SpriteObject {
 	public final sprite:Sprite;
 
+	/** Whether the animation should be playing */
+	public var playing:Bool = false;
+
+	/** Whether the animation should be looped or not (default `true`) */
+	public var loop:Bool = true;
+
+	public var colorMap:ColorMap;
+
+	/** The width of the rectangle in which the sprite should be rendered (initial value is the width of the sprite) */
+	public var width:Int;
+
+	/** The height of the rectangle in which the sprite should be rendered (initial value is the height of the sprite) */
+	public var height:Int;
+
 	public var wrap:Bool = false;
+
+	public var x:Float;
+	public var y:Float;
+
+	/** Whether the sprite should be flipped horizontally or not */
+	public var flipX:Bool = false;
+
+	/** Whether the sprite should be flipped vertically or not */
+	public var flipY:Bool = false;
+
+	public var scrollX:Int = 0;
+	public var scrollY:Int = 0;
 
 	public var currentFrame(get, never):SpriteFrame;
 
 	function get_currentFrame():SpriteFrame
 		return sprite.frames[currentFrameIndex];
 
-	var frameTime:Float = 0;
-
 	public var currentFrameIndex:Int = 0;
 
+	var _frameTime:Float = 0;
 	var _pingPongCycle:PingPongCycle = F;
-
 	var _animation:SpriteAnimation;
 	var _currentAnimationName:String;
 
@@ -65,12 +80,14 @@ class SpriteObject extends Object {
 		return result;
 	}
 
-	public function new(sprite:Sprite, ?colorMap:ColorMap) {
+	public function new(sprite:Sprite, ?play:Bool = false, ?colorMap:ColorMap) {
 		this.sprite = sprite;
 		this.colorMap = colorMap;
 
 		width = sprite.width;
 		height = sprite.height;
+
+		playing = play;
 
 		_animation = {
 			name: '_all',
@@ -85,7 +102,7 @@ class SpriteObject extends Object {
 
 		if (anim != null) {
 			if (_animation.name != anim.name || _animation.name == anim.name && restart) {
-				frameTime = 0;
+				_frameTime = 0;
 				currentFrameIndex = anim.from;
 
 				if (anim.direction == PingPong)
@@ -147,33 +164,30 @@ class SpriteObject extends Object {
 		}
 	}
 
-	override public function update(dt:Float) {
-		super.update(dt);
-
+	public function update(dt:Float) {
 		if (sprite != null && playing) {
 			final currentFrameDuration = (currentFrame.duration / 1000);
 
-			while (frameTime > currentFrameDuration) {
-				frameTime -= currentFrameDuration;
+			while (_frameTime > currentFrameDuration) {
+				_frameTime -= currentFrameDuration;
 
 				nextFrame();
 			}
 
-			frameTime += dt;
+			_frameTime += dt;
 		}
 	}
 
-	override function selfRender(frameBuffer:FrameBuffer, atx:Float, aty:Float)
-		drawSpriteObject(frameBuffer, this, atx, aty);
-
-	public static function drawSpriteObject(frameBuffer:FrameBuffer, spriteObject:SpriteObject, ?x:Float, ?y:Float) {
-		Sprite.drawSprite(frameBuffer, spriteObject.sprite, x != null ? x.floor() : spriteObject.x.floor(), y != null ? y.floor() : spriteObject.y.floor(), {
-			width: spriteObject.width.floor(),
-			height: spriteObject.height.floor(),
-			frame: spriteObject.currentFrameIndex,
-			flipX: spriteObject.flipX,
-			flipY: spriteObject.flipY,
-			wrap: spriteObject.wrap
+	public function render(fb:FrameBuffer) {
+		Sprite.drawSprite(fb, sprite, x != null ? x.floor() : x.floor(), y != null ? y.floor() : y.floor(), {
+			width: width.floor(),
+			height: height.floor(),
+			frame: currentFrameIndex,
+			flipX: flipX,
+			flipY: flipY,
+			scrollX: scrollX,
+			scrollY: scrollY,
+			wrap: wrap
 		});
 	}
 }
