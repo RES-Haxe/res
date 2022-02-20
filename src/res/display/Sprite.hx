@@ -130,7 +130,7 @@ class Sprite {
 
 						if (wrap || (screenX >= 0 && screenY >= 0 && screenX < frameBuffer.width && screenY < frameBuffer.height)) {
 							final colorIndex = colorMap == null ? sampleIndex : colorMap.get(sampleIndex);
-							frameBuffer.setIndex(screenX, screenY, colorIndex);
+							frameBuffer.set(screenX, screenY, colorIndex);
 						}
 					}
 				}

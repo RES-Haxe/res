@@ -75,14 +75,14 @@ class Painter {
 				for (px in fx...tx + 1) {
 					final index = px == fx || px == tx ? strokeIndex : fillIndex;
 
-					frameBuffer.setIndex(px, (y + cy).int(), index);
-					frameBuffer.setIndex(px, (-y + cy).int(), index);
+					frameBuffer.set(px, (y + cy).int(), index);
+					frameBuffer.set(px, (-y + cy).int(), index);
 				}
 			} else {
-				frameBuffer.setIndex((x + cx).int(), (y + cy).int(), strokeIndex);
-				frameBuffer.setIndex((-x + cx).int(), (y + cy).int(), strokeIndex);
-				frameBuffer.setIndex((x + cx).int(), (-y + cy).int(), strokeIndex);
-				frameBuffer.setIndex((-x + cx).int(), (-y + cy).int(), strokeIndex);
+				frameBuffer.set((x + cx).int(), (y + cy).int(), strokeIndex);
+				frameBuffer.set((-x + cx).int(), (y + cy).int(), strokeIndex);
+				frameBuffer.set((x + cx).int(), (-y + cy).int(), strokeIndex);
+				frameBuffer.set((-x + cx).int(), (-y + cy).int(), strokeIndex);
 			}
 		};
 
@@ -147,7 +147,7 @@ class Painter {
 		var error:Float = 0;
 
 		do {
-			frameBuffer.setIndex(x, y, colorIndex);
+			frameBuffer.set(x, y, colorIndex);
 
 			if (dx > dy) {
 				x += ox;
@@ -192,9 +192,9 @@ class Painter {
 				for (line in fy...ty) {
 					for (col in fx...tx) {
 						if (line == fy || line == ty - 1 || col == fx || col == tx - 1)
-							frameBuffer.setIndex(col, line, strokeIndex);
+							frameBuffer.set(col, line, strokeIndex);
 						else if (fillIndex != null)
-							frameBuffer.setIndex(col, line, fillIndex);
+							frameBuffer.set(col, line, fillIndex);
 					}
 				}
 			}

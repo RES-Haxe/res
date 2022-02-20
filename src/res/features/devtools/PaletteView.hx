@@ -21,7 +21,7 @@ class PaletteRender extends Renderable {
 				final colIndex:Int = scanline < Std.int(frameBuffer.height / 2) ? Std.int(col / colSize)
 					+ 1 : palette.byLuminance[Std.int(col / colSize)];
 
-				frameBuffer.setIndex(col, scanline, colIndex);
+				frameBuffer.set(col, scanline, colIndex);
 			}
 		}
 	}

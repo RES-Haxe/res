@@ -35,11 +35,24 @@ abstract class FrameBuffer {
 
 	public function endFrame() {}
 
-	public function getIndex(x:Int, y:Int):Int {
+	/**
+		Get color index at given position
+
+		@param x X coordinate
+		@param y Y coordinate
+	 */
+	public function get(x:Int, y:Int):Int {
 		return _indecies.get(y * width + x);
 	}
 
-	public function setIndex(x:Int, y:Int, index:Int) {
+	/**
+		Set color index at given frame buffer position
+
+		@param x X coordinate
+		@param y Y coordinate
+		@param index color index
+	 */
+	public function set(x:Int, y:Int, index:Int) {
 		if (index == 0)
 			return;
 
@@ -58,7 +71,7 @@ abstract class FrameBuffer {
 	}
 
 	/**
-		Draw a raster data line by line
+		Output raster data line by line
 
 		@param x Screen x coordinate
 		@param y Screen y coordinate
@@ -79,7 +92,7 @@ abstract class FrameBuffer {
 			final dataIndex = data.get(idxPos);
 			final index = colorMap == null ? dataIndex : colorMap[dataIndex];
 
-			setIndex(x + col, y + line, index);
+			set(x + col, y + line, index);
 
 			col++;
 

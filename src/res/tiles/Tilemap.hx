@@ -226,7 +226,7 @@ class Tilemap {
 							final paletteColorIndex:Int = tilePlace.colorMap != null ? tilePlace.colorMap.get(tileColorIndex) : tilemap.colorMap == null ? tileColorIndex : tilemap.colorMap.get(tileColorIndex);
 
 							if (paletteColorIndex != 0)
-								frameBuffer.setIndex(screenCol, screenScanline, paletteColorIndex);
+								frameBuffer.set(screenCol, screenScanline, paletteColorIndex);
 						}
 					}
 				}
