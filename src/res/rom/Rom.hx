@@ -1,5 +1,6 @@
 package res.rom;
 
+import haxe.crypto.Base64;
 import haxe.Int32;
 import haxe.io.Bytes;
 import haxe.io.BytesInput;
@@ -91,10 +92,23 @@ class Rom {
 		return macro final ROM_FILE = true;
 	}
 
+	/**
+		Macro that  creates a rom file but store it in the code as a Baas64 string.
+
+		Generates a line of code that looks like this:
+
+
+		```haxe
+		res.rom.Rom.fromBytes(haxe.crypto.Base64.decode('eNrtWTdvFUEQHgtsIdAUdAgBIuc<...>'), true);
+		```
+
+		@param src Source directory that contains the files for the ROM
+		@param compressed Whether the rom data should be compressed or not
+	 */
 	public static macro function embed(src:String = 'rom', ?compressed:Bool = true) {
 		final romBytes = RomCreator.create(src);
-		final romHex = compressed ? haxe.zip.Compress.run(romBytes, 9).toHex() : romBytes.toHex();
-
-		return macro res.rom.Rom.fromBytes(haxe.io.Bytes.ofHex($v{romHex}), $v{compressed});
+		final romBytesFinal = compressed ? haxe.zip.Compress.run(romBytes, 9) : romBytes;
+		final romBase64 = Base64.encode(romBytesFinal);
+		return macro res.rom.Rom.fromBytes(haxe.crypto.Base64.decode($v{romBase64}), $v{compressed});
 	}
 }
