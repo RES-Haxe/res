@@ -1,9 +1,10 @@
-package res.features.devtools;
+package res.chips.std;
 
 import haxe.Timer;
-import res.features.devtools.console.Console;
-import res.features.devtools.console.ConsoleCommand;
-import res.features.devtools.console.ConsoleFeature;
+import res.chips.Chip;
+import res.chips.std.console.Console;
+import res.chips.std.console.ConsoleChip;
+import res.chips.std.console.ConsoleCommand;
 import res.tiles.Tilemap;
 
 using Type;
@@ -30,7 +31,7 @@ enum FpsDisplayMethod {
 	DELTA_EXTRAPOLATION;
 }
 
-class FpsDisplay implements Feature {
+class FpsDisplay implements Chip {
 	public var showFPS:Bool = true;
 	public var method:FpsDisplayMethod = PER_SECOND;
 
@@ -71,8 +72,8 @@ class FpsDisplay implements Feature {
 			}
 		});
 
-		if (res.hasFeature('res.features.devtools.console.ConsoleFeature')) {
-			var console:Console = cast(res.getFeature('res.features.devtools.console.ConsoleFeature'), ConsoleFeature).console;
+		if (res.hasChip('res.chips.std.console.ConsoleChip')) {
+			var console:Console = cast(res.getChip('res.chips.std.console.ConsoleChip'), ConsoleChip).console;
 			console.addCommand(new FpsDisplaCommand(this));
 		}
 	}

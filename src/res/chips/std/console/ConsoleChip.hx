@@ -1,16 +1,16 @@
-package res.features.devtools.console;
+package res.chips.std.console;
 
-import res.features.Feature;
-import res.features.devtools.console.stdcmds.About;
-import res.features.devtools.console.stdcmds.Clear;
-import res.features.devtools.console.stdcmds.Help;
-import res.features.devtools.console.stdcmds.LSRom;
-import res.features.devtools.console.stdcmds.Quit;
+import res.chips.Chip;
+import res.chips.std.console.stdcmds.About;
+import res.chips.std.console.stdcmds.Clear;
+import res.chips.std.console.stdcmds.Help;
+import res.chips.std.console.stdcmds.LSRom;
+import res.chips.std.console.stdcmds.Quit;
 
 using String;
 using StringTools;
 
-class ConsoleFeature implements Feature {
+class ConsoleChip implements Chip {
 	var shown:Bool = false;
 	var res:RES;
 

@@ -1,4 +1,4 @@
-package res.features.devtools.console;
+package res.chips.std.console;
 
 class ConsoleCommand {
 	public final command:String;

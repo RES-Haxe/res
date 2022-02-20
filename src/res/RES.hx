@@ -4,8 +4,8 @@ import haxe.Rest;
 import haxe.Timer;
 import res.audio.AudioBufferCache;
 import res.bios.BIOS;
+import res.chips.Chip;
 import res.display.FrameBuffer;
-import res.features.Feature;
 import res.input.Controller;
 import res.input.ControllerEvent;
 import res.input.Keyboard;
@@ -58,7 +58,7 @@ class RES {
 	@:allow(res)
 	private var audioBufferCache:AudioBufferCache;
 
-	private var features:Map<String, Feature> = [];
+	private var chips:Map<String, Chip> = [];
 	private var prevFrameTime:Null<Float> = null;
 
 	private final _sceneHistory:Array<Scene> = [];
@@ -125,8 +125,8 @@ class RES {
 			}
 		}
 
-		if (config.features != null)
-			this.enable(...config.features);
+		if (config.chips != null)
+			this.install(...config.chips);
 
 		reset();
 	}
@@ -245,42 +245,42 @@ class RES {
 	}
 
 	/**
-		Enable features
+		Install chips
 	 */
-	public function enable(...features:Class<Feature>) {
-		for (featureClass in features) {
-			final className = featureClass.getClassName();
-			this.features[className] = featureClass.createInstance([]);
-			this.features[className].enable(this);
+	public function install(...chips:Class<Chip>) {
+		for (chipClass in chips) {
+			final className = chipClass.getClassName();
+			this.chips[className] = chipClass.createInstance([]);
+			this.chips[className].enable(this);
 		}
 	}
 
 	/**
-		Get a feature by it's class name
+		Get a chip by it's class name
 
 		@param className Full class name (e.g. `my.package.ClassName`)
 
-		@returns Feature
+		@returns Chip
 	 */
-	public function getFeature(className:String):Feature {
-		return features[className];
+	public function getChip(className:String):Chip {
+		return chips[className];
 	}
 
 	/**
-		Access a feature with it's class
+		Access a chip by it's class
 
-		@param featureClass
+		@param chipClass
 	 */
-	public function feature<T>(featureClass:Class<T>):T {
-		return cast getFeature(featureClass.getClassName());
+	public function chip<T>(chipClass:Class<T>):T {
+		return cast getChip(chipClass.getClassName());
 	}
 
-	public function hasFeature(?featureClass:Class<Feature>, ?featureClassName:String):Bool {
-		if (featureClass != null)
-			featureClassName = featureClass.getClassName();
+	public function hasChip(?chipClass:Class<Chip>, ?chipClassName:String):Bool {
+		if (chipClass != null)
+			chipClassName = chipClass.getClassName();
 
-		if (featureClassName != null)
-			return features.exists(featureClassName);
+		if (chipClassName != null)
+			return chips.exists(chipClassName);
 
 		return false;
 	}

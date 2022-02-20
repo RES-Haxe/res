@@ -1,4 +1,4 @@
-package res.features.devtools.console.stdcmds;
+package res.chips.std.console.stdcmds;
 
 class Clear extends ConsoleCommand {
 	var consoleScene:ConsoleScene;
