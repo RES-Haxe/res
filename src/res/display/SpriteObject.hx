@@ -39,8 +39,8 @@ class SpriteObject {
 
 	public var wrap:Bool = false;
 
-	public var x:Float;
-	public var y:Float;
+	public var x:Float = 0;
+	public var y:Float = 0;
 
 	/** Whether the sprite should be flipped horizontally or not */
 	public var flipX:Bool = false;
@@ -179,7 +179,7 @@ class SpriteObject {
 	}
 
 	public function render(fb:FrameBuffer) {
-		Sprite.drawSprite(fb, sprite, x != null ? x.floor() : x.floor(), y != null ? y.floor() : y.floor(), {
+		Sprite.drawSprite(fb, sprite, x.floor(), y.floor(), {
 			width: width.floor(),
 			height: height.floor(),
 			frame: currentFrameIndex,
