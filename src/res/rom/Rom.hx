@@ -1,6 +1,5 @@
 package res.rom;
 
-import haxe.crypto.Base64;
 import haxe.Int32;
 import haxe.io.Bytes;
 import haxe.io.BytesInput;
@@ -108,7 +107,7 @@ class Rom {
 	public static macro function embed(src:String = 'rom', ?compressed:Bool = true) {
 		final romBytes = RomCreator.create(src);
 		final romBytesFinal = compressed ? haxe.zip.Compress.run(romBytes, 9) : romBytes;
-		final romBase64 = Base64.encode(romBytesFinal);
+		final romBase64 = haxe.crypto.Base64.encode(romBytesFinal);
 		return macro res.rom.Rom.fromBytes(haxe.crypto.Base64.decode($v{romBase64}), $v{compressed});
 	}
 }
