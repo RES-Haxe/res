@@ -1,25 +1,48 @@
 package res.text;
 
-import res.tiles.Tileset;
+import res.display.FrameBuffer;
+import res.display.Sprite;
+
+typedef Char = {
+	x:Int,
+	y:Int,
+	width:Int,
+	height:Int,
+	xoffset:Int,
+	yoffset:Int,
+	xadvance:Int
+};
 
 class Font {
-	public final name:String;
-	public final tileset:Tileset;
-	public final characters:String;
-	public final firstTileIndex:Int;
+	public final sprite:Sprite;
+	public final base:Int;
+	public final lineHeight:Int;
+	public final characters:Map<Int, Char>;
 
-	final _charMap:Map<Int, Int>;
-
-	public inline function new(name:String, tileset:Tileset, characters:String, firstTileIndex:Int = 0) {
-		this.name = name;
-		this.tileset = tileset;
+	public inline function new(sprite:Sprite, base:Int, lineHeight:Int, characters:Map<Int, Char>) {
+		this.base = base;
+		this.lineHeight = lineHeight;
+		this.sprite = sprite;
 		this.characters = characters;
-		this.firstTileIndex = firstTileIndex;
-
-		_charMap = [for (n in 0...characters.length) characters.charCodeAt(n) => n];
 	}
 
-	public function getTileIndex(char:Int):Null<Int> {
-		return _charMap[char];
+	public function draw(frameBuffer:FrameBuffer, text:String, x:Int, y:Int, ?colorMap:ColorMap) {
+		var tx = x;
+		var ty = y;
+		for (cn in 0...text.length) {
+			final char = text.charCodeAt(cn);
+
+			if (char == '\n'.charCodeAt(0)) {
+				tx = x;
+				ty += lineHeight;
+			} else {
+				final c = characters.exists(char) ? characters[char] : characters[' '.charCodeAt(0)];
+
+				if (c != null) {
+					Sprite.drawRegion(frameBuffer, sprite, c.x, c.y, c.width, c.height, tx + c.xoffset, ty + c.yoffset);
+					tx += c.xadvance;
+				}
+			}
+		}
 	}
 }

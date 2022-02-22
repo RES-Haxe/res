@@ -13,7 +13,6 @@ import res.input.Mouse;
 import res.rom.Rom;
 import res.storage.Storage;
 import res.text.Font;
-import res.text.Textmap;
 import res.tiles.Tilemap;
 import res.tiles.Tileset;
 import res.types.RESConfig;
@@ -160,47 +159,6 @@ class RES {
 		if (config.scene != null)
 			setScene(config.scene);
 		#end
-	}
-
-	/**
-		Create a font
-
-		@param name Font name
-		@param tileset Tileset to use
-		@param characters Supported characters
-		@param firstTileIndex Index of the first tile in the tileset
-	 */
-	public function createFont(?name:String, tileset:Tileset, characters:String, ?firstTileIndex:Int = 0):Font {
-		final font = new Font(name, tileset, characters, firstTileIndex);
-
-		if (name != null)
-			rom.fonts[name] = font;
-
-		return font;
-	}
-
-	/**
-		Create a new text map
-
-		@param font
-		@param hTiles
-		@param vTiles
-		@param colorMap
-	 */
-	public function createTextmap(?font:Font, ?hTiles:Int, ?vTiles:Int, ?colorMap:ColorMap):Textmap {
-		if (font == null)
-			if (defaultFont != null)
-				font = defaultFont;
-			else
-				throw 'No default font';
-
-		if (hTiles == null)
-			hTiles = Math.ceil(width / font.tileset.tileWidth);
-
-		if (vTiles == null)
-			vTiles = Math.ceil(height / font.tileset.tileHeight);
-
-		return new Textmap(font.tileset, hTiles, vTiles, font.characters, font.firstTileIndex, colorMap);
 	}
 
 	/**

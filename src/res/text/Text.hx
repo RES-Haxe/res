@@ -2,6 +2,8 @@ package res.text;
 
 import res.display.FrameBuffer;
 
+using Math;
+
 class Text {
 	public var font:Font;
 	public var text:String;
@@ -17,25 +19,6 @@ class Text {
 		this.y = y;
 	}
 
-	public function render(frameBuffer:FrameBuffer) {
-		drawText(frameBuffer, font, text, Math.floor(x), Math.floor(y), colorMap);
-	}
-
-	public static function drawText(frameBuffer:FrameBuffer, font:Font, text:String, x:Int, y:Int, ?colorMap:ColorMap) {
-		var tx = x;
-		var ty = y;
-		for (cn in 0...text.length) {
-			final char = text.charCodeAt(cn);
-
-			if (char == '\n'.charCodeAt(0)) {
-				tx = x;
-				ty += font.tileset.tileHeight;
-			} else {
-				final idx = font.getTileIndex(char);
-				if (idx != null)
-					font.tileset.drawTile(frameBuffer, font.getTileIndex(char), tx, ty, colorMap);
-				tx += font.tileset.tileWidth;
-			}
-		}
-	}
+	public function render(frameBuffer:FrameBuffer)
+		font.draw(frameBuffer, text, x.floor(), y.floor(), colorMap);
 }

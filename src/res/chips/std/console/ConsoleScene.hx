@@ -1,9 +1,9 @@
 package res.chips.std.console;
 
 import res.Scene;
+import res.display.FrameBuffer;
 import res.input.Key;
 import res.input.KeyboardEvent;
-import res.text.Textmap;
 
 using String;
 using StringTools;
@@ -11,8 +11,6 @@ using StringTools;
 class ConsoleScene extends Scene {
 	static final BLINK_TIME:Float = 1;
 	static final CURSOR:String = '_';
-
-	var consoleText:Textmap;
 
 	final commands:Map<String, ConsoleCommand> = [];
 
@@ -33,19 +31,12 @@ class ConsoleScene extends Scene {
 	}
 
 	override function init() {
-		consoleText = res.createTextmap();
-		consoleText.scrollY = consoleText.pixelHeight - res.frameBuffer.height;
-
-		renderList.push(consoleText);
-
 		updateInput('');
 	}
 
 	function updateInput(?value:String) {
 		if (value != null)
 			commandInput = value;
-
-		consoleText.textAt(0, consoleText.vTiles - 1, '>' + commandInput + (blink ? CURSOR : ''));
 	}
 
 	override function keyboardEvent(event:KeyboardEvent) {
@@ -67,35 +58,11 @@ class ConsoleScene extends Scene {
 		}
 	}
 
-	public function clear() {
+	public function clear()
 		log.resize(0);
-		for (line in 0...consoleText.vTiles - 1)
-			consoleText.textAt(0, line, '');
-	}
 
-	public function println(s:String) {
-		var lines:Array<String> = [];
-
-		while (s.length > consoleText.hTiles) {
-			lines.push(s.substr(0, consoleText.hTiles));
-			s = s.substr(consoleText.hTiles);
-		}
-
-		if (s != '')
-			lines.push(s);
-
-		for (line in lines)
-			log.push(line);
-
-		var line = consoleText.vTiles - 2;
-		var index = log.length - 1;
-
-		while (index >= 0 && line >= 0) {
-			consoleText.textAt(0, line, log[index]);
-			index--;
-			line--;
-		}
-	}
+	public function println(s:String)
+		log.push(s);
 
 	override function update(dt:Float) {
 		if (blinkTimer >= BLINK_TIME) {
@@ -104,5 +71,25 @@ class ConsoleScene extends Scene {
 			updateInput();
 		} else
 			blinkTimer += dt;
+	}
+
+	override function render(fb:FrameBuffer) {
+		fb.clear(clearColorIndex);
+
+		final f = res.defaultFont;
+
+		f.draw(fb, '>$commandInput${blink ? CURSOR : ''}', 0, fb.height - f.lineHeight);
+
+		var l = log.length - 1;
+		var ly = fb.height - f.lineHeight * 2;
+
+		while (l >= 0) {
+			final line = log[l];
+			f.draw(fb, line, 0, ly);
+			ly -= f.lineHeight;
+			if (ly < -f.lineHeight)
+				break;
+			l--;
+		}
 	}
 }

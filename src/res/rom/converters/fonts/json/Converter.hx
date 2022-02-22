@@ -1,7 +1,8 @@
 package res.rom.converters.fonts.json;
 
 import haxe.Json;
-import haxe.io.Bytes;
+import haxe.io.BytesOutput;
+import res.rom.FontChunk.FontType;
 import sys.FileSystem;
 import sys.io.File;
 
@@ -15,7 +16,7 @@ typedef FontJson = {
 };
 
 class Converter extends res.rom.converters.Converter {
-	var tilesetChunk:TilesetChunk;
+	var spriteChunk:SpriteChunk;
 	var fontChunk:FontChunk;
 
 	override function process(fileName:String, palette:Palette):res.rom.converters.Converter {
@@ -32,17 +33,25 @@ class Converter extends res.rom.converters.Converter {
 
 		switch (ext) {
 			case 'png':
-				tilesetChunk = res.rom.converters.tilesets.png.Converter.createChunk(bitmapFile, 'font:$name', json.tileWidth, json.tileHeight, palette, true);
+				spriteChunk = res.rom.converters.sprites.png.Converter.createChunk('font:$name', File.getBytes(bitmapFile), palette);
 			case _:
 				throw 'Unsupported tileset bitmap format: $ext';
 		}
 
-		fontChunk = new FontChunk(name, Bytes.ofString(json.characters, UTF8));
+		var bo = new BytesOutput();
 
-		return super.process(fileName, palette);
+		bo.writeByte(FontType.FIXED);
+		bo.writeByte(json.tileWidth);
+		bo.writeByte(json.tileHeight);
+		bo.writeUInt16(json.characters.length);
+		bo.writeString(json.characters, UTF8);
+
+		fontChunk = new FontChunk(name, bo.getBytes());
+
+		return this;
 	}
 
 	override function getChunks():Array<RomChunk> {
-		return [tilesetChunk, fontChunk];
+		return [spriteChunk, fontChunk];
 	}
 }

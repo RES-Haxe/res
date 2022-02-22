@@ -20,7 +20,8 @@ final CONVERTERS:Map<String, Map<String, Converter>> = [
 		'png' => new res.rom.converters.palette.png.Converter()
 	],
 	'fonts' => [
-		'json' => new res.rom.converters.fonts.json.Converter()
+		'json' => new res.rom.converters.fonts.json.Converter(),
+		'fnt' => new res.rom.converters.fonts.fnt.Converter()
 	],
 	'sprites' => [
 		'aseprite' => new res.rom.converters.sprites.aseprite.Converter(),

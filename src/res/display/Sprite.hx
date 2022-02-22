@@ -77,6 +77,19 @@ class Sprite {
 		return obj;
 	}
 
+	public static function drawRegion(frameBuffer:FrameBuffer, sprite:Sprite, fx:Int, fy:Int, width:Int, height:Int, atx:Int, aty:Int, ?frame:Int = 0,
+			?colorMap:ColorMap) {
+		final frameData = sprite.frames[frame].data;
+
+		for (line in 0...height) {
+			for (col in 0...width) {
+				final oidx = frameData.getxy(sprite.width, fx + col, fy + line);
+				final index = colorMap == null ? oidx : colorMap[oidx];
+				frameBuffer.set(atx + col, aty + line, index);
+			}
+		}
+	}
+
 	/**
 		Draw a sprite
 
