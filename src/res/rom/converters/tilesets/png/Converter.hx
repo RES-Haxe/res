@@ -24,7 +24,7 @@ class Converter extends res.rom.converters.Converter {
 		final empty = Bytes.alloc(tileWidth * tileHeight);
 		empty.fill(0, empty.length, 0);
 
-		final tiles:Array<Bytes> = [];
+		final tiles:Array<Bytes> = [empty];
 
 		for (yTile in 0...vTiles) {
 			for (xTile in 0...hTiles) {

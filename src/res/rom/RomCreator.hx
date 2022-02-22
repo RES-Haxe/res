@@ -28,7 +28,8 @@ final CONVERTERS:Map<String, Map<String, Converter>> = [
 		'png' => new res.rom.converters.sprites.png.Converter()
 	],
 	'tilesets' => [
-		'aseprite' => new res.rom.converters.tilesets.aseprite.Converter()
+		'aseprite' => new res.rom.converters.tilesets.aseprite.Converter(),
+		'json' => new res.rom.converters.tilesets.json.Converter()
 	],
 	'tilemaps' => [
 		'aseprite' => new res.rom.converters.tilemaps.aseprite.Converter()
