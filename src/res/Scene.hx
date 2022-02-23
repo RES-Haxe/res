@@ -8,7 +8,7 @@ import res.input.MouseEvent;
 
 using Std;
 
-abstract class Scene {
+class Scene {
 	public var audioMixer:AudioMixer;
 
 	/** Color index to use to clear the screen (brightest color index by default) **/
@@ -74,12 +74,12 @@ abstract class Scene {
 
 	public dynamic function mouseEvent(event:MouseEvent) {}
 
-	public function update(dt:Float) {
+	public dynamic function update(dt:Float) {
 		for (item in updateList)
 			item.update(dt);
 	}
 
-	public function render(fb:FrameBuffer) {
+	public dynamic function render(fb:FrameBuffer) {
 		if (clearColorIndex != null)
 			fb.clear(clearColorIndex);
 

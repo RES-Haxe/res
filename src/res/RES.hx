@@ -13,8 +13,6 @@ import res.input.Mouse;
 import res.rom.Rom;
 import res.storage.Storage;
 import res.text.Font;
-import res.tiles.Tilemap;
-import res.tiles.Tileset;
 import res.types.RESConfig;
 
 using Math;
@@ -130,6 +128,28 @@ class RES {
 		reset();
 	}
 
+	/**
+		Creates a scene from an object that has `render` and `update` methods.
+
+		If it is already an instance of a `Scene` than just return it
+
+		@param pscene An object with a `render` and an `update` function
+	 */
+	private function ensureScene(pscene:{
+		function render(fb:FrameBuffer):Void;
+		function update(dt:Float):Void;
+	}):Scene {
+		if (Std.isOfType(pscene, Scene))
+			return cast pscene;
+
+		final wscene = new Scene();
+
+		wscene.update = pscene.update;
+		wscene.render = pscene.render;
+
+		return wscene;
+	}
+
 	public function connectController(ctrl:Controller) {
 		controllers.push(ctrl);
 		ctrl.listen(controllerEvent);
@@ -150,56 +170,15 @@ class RES {
 	public function reset() {
 		#if !skipSplash
 		if (rom.sprites.exists('splash')) {
-			setScene(new res.extra.Splash(config.main));
+			setScene(new res.extra.Splash(() -> ensureScene(config.main(this))));
 		} else {
 			if (config.main != null)
-				setScene(config.main());
+				setScene(ensureScene(config.main(this)));
 		}
 		#else
-		if (config.scene != null)
-			setScene(config.scene);
+		if (config.main != null)
+			setScene(ensureScene(config.main(this)));
 		#end
-	}
-
-	/**
-		Create a tileset
-
-		@param name Tileset name
-		@param hTiles
-		@param vTiles
-		@param overrideTileSize
-	 */
-	public function createTileset(?name:String, tileWidth:Int, tileHeight:Int):Tileset {
-		final tileset = new Tileset(tileWidth, tileHeight);
-
-		if (name != null)
-			rom.tilesets[name] = tileset;
-
-		return tileset;
-	}
-
-	/**
-		Create a tile map
-
-		@param name Tilemap name
-		@param tileset Tileset to use
-		@param hTiles Number of horizontal tiles (default - number of tiles per screen)
-		@param vTiles Number of vertical tiles (default - number of tiles per screen)
-		@param colorMap
-	 */
-	public function createTilemap(?name:String, tileset:Tileset, ?hTiles:Int, ?vTiles:Int, ?colorMap:ColorMap):Tilemap {
-		if (hTiles == null)
-			hTiles = Math.ceil(width / tileset.tileWidth);
-
-		if (vTiles == null)
-			vTiles = Math.ceil(height / tileset.tileHeight);
-
-		var tilemap = new Tilemap(tileset, hTiles, vTiles, colorMap);
-
-		if (name != null)
-			rom.tilemaps[name] = tilemap;
-
-		return tilemap;
 	}
 
 	/**
@@ -337,8 +316,12 @@ class RES {
 	/**
 		Boot an RES instance
 
-		@param platform Platform
+		@param bios BIOS
 		@param config RES Config
+		@param config.resolution Screen resolution
+		@param config.rom ROM
+		@param config.main Entry point function that should return an object that has a `render` and an `update` methods
+		@param config.chip An array of initial chips
 	 */
 	public static function boot(bios:BIOS, config:RESConfig):RES {
 		return new RES(bios, config);
