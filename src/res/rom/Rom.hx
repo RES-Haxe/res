@@ -110,4 +110,13 @@ class Rom {
 		final romBase64 = haxe.crypto.Base64.encode(romBytesFinal);
 		return macro res.rom.Rom.fromBytes(haxe.crypto.Base64.decode($v{romBase64}), $v{compressed});
 	}
+
+	/**
+		Create an empy rom
+
+		@param palette optional palette
+	 */
+	public static function empty(?palette:Palette) {
+		return new Rom(palette == null ? Palette.createDefault() : palette, [], [], [], [], [], []);
+	}
 }

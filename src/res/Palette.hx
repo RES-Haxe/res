@@ -112,6 +112,43 @@ class Palette {
 		return [0].concat(rev.slice(shift, shift + numColors));
 	}
 
+	/**
+		Create a palette with default colors
+	 */
+	public static function createDefault():Palette {
+		// SWEETIE 16 PALETTE: https://lospec.com/palette-list/sweetie-16
+		return Palette.rgb8([
+			0x000000,
+			0x1a1c2c,
+			0x5d275d,
+			0xb13e53,
+			0xef7d57,
+			0xffcd75,
+			0xa7f070,
+			0x38b764,
+			0x257179,
+			0x29366f,
+			0x3b5dc9,
+			0x41a6f6,
+			0x73eff7,
+			0xf4f4f4,
+			0x94b0c2,
+			0x566c86,
+			0x333c57
+		]);
+	}
+
+	/**
+		Create a palette from a list of RGB8 colors.
+
+		Mind that color #0 will always be used for trasparency
+
+		@param colors Array of 24bit RGB colors
+	 */
+	public static function rgb8(colors:Array<Int>) {
+		return new Palette(colors.map(c -> Color32.ofRGB8(c)));
+	}
+
 	@:allow(res)
 	private function new(colors:Array<Color32>) {
 		this.colors = colors;

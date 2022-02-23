@@ -1,5 +1,6 @@
 package res.rom;
 
+import ase.chunks.PaletteChunk.PaletteEntry;
 import haxe.PosInfos;
 import haxe.io.Bytes;
 import haxe.io.BytesOutput;
@@ -53,29 +54,11 @@ class RomCreator {
 			}
 		}
 
-		if (paletteConverter == null)
-			// SWEETIE 16 PALETTE: https://lospec.com/palette-list/sweetie-16
-			paletteConverter = new PaletteConverter([
-				0x000000,
-				0x1a1c2c,
-				0x5d275d,
-				0xb13e53,
-				0xef7d57,
-				0xffcd75,
-				0xa7f070,
-				0x38b764,
-				0x257179,
-				0x29366f,
-				0x3b5dc9,
-				0x41a6f6,
-				0x73eff7,
-				0xf4f4f4,
-				0x94b0c2,
-				0x566c86,
-				0x333c57
-			].map(c -> Color32.ofRGB8(c)));
-
-		final palette = new res.Palette(paletteConverter.colors);
+		final palette:Palette = if (paletteConverter == null) {
+			final p = Palette.createDefault();
+			paletteConverter = new PaletteConverter(p.colors);
+			p;
+		} else new Palette(paletteConverter.colors);
 
 		final byteOutput = new BytesOutput();
 
