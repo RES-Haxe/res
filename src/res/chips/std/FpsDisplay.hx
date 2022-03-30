@@ -5,7 +5,6 @@ import res.chips.Chip;
 import res.chips.std.console.Console;
 import res.chips.std.console.ConsoleChip;
 import res.chips.std.console.ConsoleCommand;
-import res.tiles.Tilemap;
 
 using Type;
 
@@ -48,8 +47,6 @@ class FpsDisplay implements Chip {
 
 		time = Timer.stamp();
 
-		final text = res.createTextmap();
-
 		res.renderHooks.after.push((res, frameBuffer) -> {
 			if (showFPS && res.lastFrameTime != 0) {
 				switch (method) {
@@ -67,8 +64,7 @@ class FpsDisplay implements Chip {
 						fpsValue = Math.round((1 / res.lastFrameTime) * 100) / 100;
 				}
 
-				text.textAt(0, 0, 'FPS: ${fpsValue}');
-				Tilemap.drawTilemap(frameBuffer, text, 1, 1);
+				res.defaultFont.draw(frameBuffer, 'FPS: ${fpsValue}', 0, 0);
 			}
 		});
 
