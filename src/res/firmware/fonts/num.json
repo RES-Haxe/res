@@ -1,0 +1,6 @@
+{
+  "bitmap": "num.png",
+  "tileWidth": 4,
+  "tileHeight": 5,
+  "characters": "0123456789.v"
+}
