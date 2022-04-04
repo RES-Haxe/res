@@ -1,8 +1,8 @@
 package res.tiles;
 
-import res.types.InterruptResult;
 import res.display.FrameBuffer;
-import res.tools.MathTools.wrapf;
+import res.tools.MathTools.wrap;
+import res.types.InterruptResult;
 
 using Math;
 
@@ -52,7 +52,8 @@ class Tilemap {
 	public var scrollX:Float = 0;
 	public var scrollY:Float = 0;
 
-	public var wrap:Bool = true;
+	public var wrapX:Bool = true;
+	public var wrapY:Bool = true;
 
 	public function new(tileset:Tileset, hTiles:Int, vTiles:Int, ?width:Int, ?height:Int, ?colorMap:ColorMap) {
 		this.tileset = tileset;
@@ -187,7 +188,7 @@ class Tilemap {
 					case NONE:
 				}
 
-				final tileScanline:Int = wrap ? (wrapf(line + scrollY, pixelHeight)).floor() : (line + scrollY).floor();
+				final tileScanline:Int = wrapY ? (wrap(line + scrollY, pixelHeight)).floor() : (line + scrollY).floor();
 
 				if (tileScanline < 0 || tileScanline >= pixelHeight)
 					continue;
@@ -203,7 +204,7 @@ class Tilemap {
 					final screenCol:Int = x + col;
 
 					if (screenCol >= 0 && screenCol < frameBuffer.width) {
-						final tileCol:Int = wrap ? (wrapf(col + scrollX, pixelWidth)).floor() : (col + scrollX).floor();
+						final tileCol:Int = wrapX ? (wrap(col + scrollX, pixelWidth)).floor() : (col + scrollX).floor();
 
 						if (tileCol < 0 || tileCol >= pixelWidth)
 							continue;

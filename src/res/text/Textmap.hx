@@ -2,7 +2,7 @@ package res.text;
 
 import res.tiles.Tilemap;
 import res.tiles.Tileset;
-import res.tools.MathTools.wrapi;
+import res.tools.MathTools.wrap;
 
 class Textmap extends Tilemap {
 	private final _charMap:Map<Int, Int> = [];
@@ -23,8 +23,8 @@ class Textmap extends Tilemap {
 	}
 
 	public function moveTo(x:Int, y:Int) {
-		cursor.x = wrapi(x, hTiles);
-		cursor.y = wrapi(y, vTiles);
+		cursor.x = wrap(x, hTiles);
+		cursor.y = wrap(y, vTiles);
 	}
 
 	public function print(?cx:Int, ?cy:Int, text:String, ?colorMap:ColorMap) {

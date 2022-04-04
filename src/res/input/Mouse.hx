@@ -1,7 +1,7 @@
 package res.input;
 
 import res.events.Emitter;
-import res.tools.MathTools.wrapi;
+import res.tools.MathTools.wrap;
 
 class Mouse extends Emitter<MouseEvent> {
 	public var enabled:Bool = true;
@@ -25,7 +25,7 @@ class Mouse extends Emitter<MouseEvent> {
 	}
 
 	public inline function moveTo(x:Int, y:Int) {
-		this.x = wrapi(x, res.frameBuffer.width);
-		this.y = wrapi(y, res.frameBuffer.height);
+		this.x = wrap(x, res.frameBuffer.width);
+		this.y = wrap(y, res.frameBuffer.height);
 	}
 }

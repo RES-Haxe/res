@@ -1,7 +1,7 @@
 package res.audio;
 
 import res.tools.MathTools.clampf;
-import res.tools.MathTools.wrapi;
+import res.tools.MathTools.wrap;
 
 class Tone implements IAudioStream {
 	public var numChannels:Int;
@@ -29,7 +29,7 @@ class Tone implements IAudioStream {
 	}
 
 	public function next():{key:Int, value:Array<Float>} {
-		final period:Float = wrapi(sample, samplesPerCycle) / samplesPerCycle;
+		final period:Float = wrap(sample, samplesPerCycle) / samplesPerCycle;
 		final amp = func(period) * volume;
 
 		return {

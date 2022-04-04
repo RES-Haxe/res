@@ -27,7 +27,7 @@ typedef RenderHooks = {
 };
 
 class RES {
-	public static final VERSION:String = '0.1.0';
+	public static final VERSION:String = '0.1.1';
 
 	public final config:RESConfig;
 
@@ -170,7 +170,7 @@ class RES {
 	public function reset() {
 		#if !skipSplash
 		if (rom.sprites.exists('splash')) {
-			setScene(new res.extra.Splash(() -> ensureScene(config.main(this))));
+			setScene(new res.extra.Splash(() -> config.main != null ? ensureScene(config.main(this)) : null));
 		} else {
 			if (config.main != null)
 				setScene(ensureScene(config.main(this)));

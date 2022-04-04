@@ -1,7 +1,7 @@
 package res.display;
 
 import haxe.io.Bytes;
-import res.tools.MathTools.wrapi;
+import res.tools.MathTools.wrap;
 
 using res.tools.BytesTools;
 
@@ -121,7 +121,7 @@ class Sprite {
 		final flipX = opts.flipX == null ? false : opts.flipX;
 		final flipY = opts.flipY == null ? false : opts.flipY;
 
-		final wrap = opts.wrap == null ? false : opts.wrap;
+		final _wrap = opts.wrap == null ? false : opts.wrap;
 
 		final scrollX = opts.scrollX == null ? 0 : opts.scrollX;
 		final scrollY = opts.scrollY == null ? 0 : opts.scrollY;
@@ -130,18 +130,18 @@ class Sprite {
 		final fromY:Int = y;
 
 		for (scanline in 0...lines) {
-			if (!((!wrap && (scanline < 0 || scanline >= frameBuffer.height)))) {
+			if (!((!_wrap && (scanline < 0 || scanline >= frameBuffer.height)))) {
 				for (col in 0...cols) {
-					final spriteCol = wrapi((flipX ? sprite.width - 1 - col : col) + scrollX, sprite.width);
-					final spriteLine = wrapi((flipY ? sprite.height - 1 - scanline : scanline) + scrollY, sprite.height);
+					final spriteCol = wrap((flipX ? sprite.width - 1 - col : col) + scrollX, sprite.width);
+					final spriteLine = wrap((flipY ? sprite.height - 1 - scanline : scanline) + scrollY, sprite.height);
 
 					final sampleIndex:Int = frame.data.getxy(sprite.width, spriteCol, spriteLine);
 
 					if (sampleIndex != 0) {
-						final screenX:Int = wrap ? wrapi(fromX + col, frameBuffer.width) : fromX + col;
-						final screenY:Int = wrap ? wrapi(fromY + scanline, frameBuffer.height) : fromY + scanline;
+						final screenX:Int = _wrap ? wrap(fromX + col, frameBuffer.width) : fromX + col;
+						final screenY:Int = _wrap ? wrap(fromY + scanline, frameBuffer.height) : fromY + scanline;
 
-						if (wrap || (screenX >= 0 && screenY >= 0 && screenX < frameBuffer.width && screenY < frameBuffer.height)) {
+						if (_wrap || (screenX >= 0 && screenY >= 0 && screenX < frameBuffer.width && screenY < frameBuffer.height)) {
 							final colorIndex = colorMap == null ? sampleIndex : colorMap.get(sampleIndex);
 							frameBuffer.set(screenX, screenY, colorIndex);
 						}

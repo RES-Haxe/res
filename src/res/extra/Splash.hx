@@ -1,28 +1,37 @@
 package res.extra;
 
+import Math.*;
 import res.display.FrameBuffer;
 import res.text.Font;
 import res.timeline.Timeline;
+import res.tools.MathTools.wrap;
 
+using res.display.Painter;
 using res.display.Sprite;
 
 class Splash extends Scene {
-	final scene:Void->Scene;
+	static final TIME:Int = 1;
+	static final BAR_SIZE:Int = 8;
+
+	final sceneFn:Void->Scene;
 
 	var font:Font;
 
-	public function new(scene:Void->Scene) {
+	var scroll:Float = 0;
+
+	public function new(sceneFn:Void->Scene) {
 		super();
 
-		this.scene = scene;
+		this.sceneFn = sceneFn;
 	}
 
 	override public function init() {
 		var timeline = new Timeline();
 
-		timeline.after(1, (_) -> {
+		timeline.after(TIME, (_) -> {
+			final scene = sceneFn();
 			if (scene != null)
-				res.setScene(scene(), true);
+				res.setScene(scene, true);
 		});
 
 		updateList.push(timeline);
@@ -33,8 +42,23 @@ class Splash extends Scene {
 			font = res.defaultFont;
 	}
 
+	override function update(dt:Float) {
+		scroll = wrap(scroll + 20 * dt, res.rom.palette.colors.length - 2);
+	}
+
 	override function render(frameBuffer:FrameBuffer) {
 		frameBuffer.clear(clearColorIndex);
+
+		for (line in 0...frameBuffer.height) {
+			final numLine = 1 + wrap(floor(line / BAR_SIZE), res.rom.palette.colors.length - 2);
+
+			for (col in 0...frameBuffer.width) {
+				if ((line < 8 || line >= frameBuffer.height - 8) || (col < 8 || col >= frameBuffer.width - 8)) {
+					final numCol = 1 + wrap(floor(col / BAR_SIZE), res.rom.palette.colors.length - 2);
+					frameBuffer.set(col, line, 1 + wrap(numLine + numCol - floor(scroll), res.rom.palette.colors.length - 2));
+				}
+			}
+		}
 
 		final sp = res.rom.sprites['splash'];
 

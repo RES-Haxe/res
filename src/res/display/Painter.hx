@@ -1,6 +1,6 @@
 package res.display;
 
-import Math.*;
+import Math.abs;
 import res.display.FrameBuffer;
 import res.geom.Rect;
 import res.tools.MathTools.*;
@@ -182,11 +182,11 @@ class Painter {
 	 */
 	public static function rect(frameBuffer:FrameBuffer, x:Int, y:Int, w:Int, h:Int, strokeIndex:Int, ?fillIndex:Int) {
 		if (Rect.intersect(0, 0, frameBuffer.width, frameBuffer.height, x, y, w, h)) {
-			final fx = mini(x, x + w);
-			final fy = mini(y, y + h);
+			final fx = min(x, x + w);
+			final fy = min(y, y + h);
 
-			final tx = maxi(x, x + w) + 1;
-			final ty = maxi(y, y + h) + 1;
+			final tx = max(x, x + w) + 1;
+			final ty = max(y, y + h) + 1;
 
 			if (tx - fx > 0 && ty - fy > 0) {
 				for (line in fy...ty) {

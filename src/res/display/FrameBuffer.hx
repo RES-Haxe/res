@@ -1,7 +1,7 @@
 package res.display;
 
 import haxe.io.Bytes;
-import res.tools.MathTools.wrapi;
+import res.tools.MathTools.wrap;
 
 abstract class FrameBuffer {
 	public final width:Int;
@@ -12,7 +12,8 @@ abstract class FrameBuffer {
 
 	public var scrollX:Int = 0;
 	public var scrollY:Int = 0;
-	public var wrap:Bool = false;
+	public var wrapX:Bool = false;
+	public var wrapY:Bool = false;
 
 	public function new(width:Int, height:Int, palette:Palette) {
 		this.width = width;
@@ -59,10 +60,11 @@ abstract class FrameBuffer {
 		x += scrollX;
 		y += scrollY;
 
-		if (wrap) {
-			x = wrapi(x, width);
-			y = wrapi(y, height);
-		}
+		if (wrapX)
+			x = wrap(x, width);
+
+		if (wrapY)
+			y = wrap(y, height);
 
 		if (checkBounds(x, y)) {
 			_indecies.set(y * width + x, index);
