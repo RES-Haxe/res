@@ -8,7 +8,7 @@ import res.input.MouseEvent;
 
 using Std;
 
-class Scene {
+class State {
 	public var audioMixer:AudioMixer;
 
 	/** Color index to use to clear the screen (brightest color index by default) **/

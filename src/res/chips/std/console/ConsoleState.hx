@@ -1,6 +1,6 @@
 package res.chips.std.console;
 
-import res.Scene;
+import res.State;
 import res.display.FrameBuffer;
 import res.input.Key;
 import res.input.KeyboardEvent;
@@ -8,7 +8,7 @@ import res.input.KeyboardEvent;
 using String;
 using StringTools;
 
-class ConsoleScene extends Scene {
+class ConsoleState extends State {
 	static final BLINK_TIME:Float = 1;
 	static final CURSOR:String = '_';
 

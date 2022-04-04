@@ -1,15 +1,15 @@
 package res.chips.std.console.stdcmds;
 
 class Clear extends ConsoleCommand {
-	var consoleScene:ConsoleScene;
+	var consoleState:ConsoleState;
 
-	public function new(consoleScene:ConsoleScene) {
+	public function new(consoleState:ConsoleState) {
 		super('clear', 'Clear console');
 
-		this.consoleScene = consoleScene;
+		this.consoleState = consoleState;
 	}
 
 	override function run(args:Array<String>, res:RES, console:Console) {
-		consoleScene.clear();
+		consoleState.clear();
 	}
 }

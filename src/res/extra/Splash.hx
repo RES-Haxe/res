@@ -9,29 +9,29 @@ import res.tools.MathTools.wrap;
 using res.display.Painter;
 using res.display.Sprite;
 
-class Splash extends Scene {
+class Splash extends State {
 	static final TIME:Int = 1;
 	static final BAR_SIZE:Int = 8;
 
-	final sceneFn:Void->Scene;
+	final stateFn:Void->State;
 
 	var font:Font;
 
 	var scroll:Float = 0;
 
-	public function new(sceneFn:Void->Scene) {
+	public function new(stateFn:Void->State) {
 		super();
 
-		this.sceneFn = sceneFn;
+		this.stateFn = stateFn;
 	}
 
 	override public function init() {
 		var timeline = new Timeline();
 
 		timeline.after(TIME, (_) -> {
-			final scene = sceneFn();
-			if (scene != null)
-				res.setScene(scene, true);
+			final state = stateFn();
+			if (state != null)
+				res.setState(state, true);
 		});
 
 		updateList.push(timeline);

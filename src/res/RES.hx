@@ -58,12 +58,12 @@ class RES {
 	private var chips:Map<String, Chip> = [];
 	private var prevFrameTime:Null<Float> = null;
 
-	private final _sceneHistory:Array<Scene> = [];
+	private final _stateHistory:Array<State> = [];
 
-	private var _scene:Scene;
-	private var _sceneResultCb:Array<Dynamic->Void> = [];
+	private var _state:State;
+	private var _stateResultCb:Array<Dynamic->Void> = [];
 
-	public var scene(get, never):Scene;
+	public var state(get, never):State;
 
 	public final frameBuffer:FrameBuffer;
 
@@ -79,8 +79,8 @@ class RES {
 	function get_height():Int
 		return frameBuffer.height;
 
-	function get_scene():Scene
-		return _scene;
+	function get_state():State
+		return _state;
 
 	private function new(bios:BIOS, config:RESConfig) {
 		this.config = config;
@@ -92,14 +92,14 @@ class RES {
 
 		keyboard = new Keyboard(this);
 		keyboard.listen((event) -> {
-			if (scene != null)
-				scene.keyboardEvent(event);
+			if (state != null)
+				state.keyboardEvent(event);
 		});
 
 		mouse = new Mouse(this);
 		mouse.listen((event) -> {
-			if (scene != null)
-				scene.mouseEvent(event);
+			if (state != null)
+				state.mouseEvent(event);
 		});
 
 		this.rom = config.rom;
@@ -129,25 +129,25 @@ class RES {
 	}
 
 	/**
-		Creates a scene from an object that has `render` and `update` methods.
+		Creates a state from an object that has `render` and `update` methods.
 
-		If it is already an instance of a `Scene` than just return it
+		If it is already an instance of a `State` than just return it
 
-		@param pscene An object with a `render` and an `update` function
+		@param pstate An object with a `render` and an `update` function
 	 */
-	private function ensureScene(pscene:{
+	private function ensureState(pstate:{
 		function render(fb:FrameBuffer):Void;
 		function update(dt:Float):Void;
-	}):Scene {
-		if (Std.isOfType(pscene, Scene))
-			return cast pscene;
+	}):State {
+		if (Std.isOfType(pstate, State))
+			return cast pstate;
 
-		final wscene = new Scene();
+		final wstate = new State();
 
-		wscene.update = pscene.update;
-		wscene.render = pscene.render;
+		wstate.update = pstate.update;
+		wstate.render = pstate.render;
 
-		return wscene;
+		return wstate;
 	}
 
 	public function connectController(ctrl:Controller) {
@@ -163,21 +163,21 @@ class RES {
 	}
 
 	private function controllerEvent(event:ControllerEvent) {
-		if (scene != null)
-			scene.controllerEvent(event);
+		if (state != null)
+			state.controllerEvent(event);
 	}
 
 	public function reset() {
 		#if !skipSplash
 		if (rom.sprites.exists('splash')) {
-			setScene(new res.extra.Splash(() -> config.main != null ? ensureScene(config.main(this)) : null));
+			setState(new res.extra.Splash(() -> config.main != null ? ensureState(config.main(this)) : null));
 		} else {
 			if (config.main != null)
-				setScene(ensureScene(config.main(this)));
+				setState(ensureState(config.main(this)));
 		}
 		#else
 		if (config.main != null)
-			setScene(ensureScene(config.main(this)));
+			setState(ensureState(config.main(this)));
 		#end
 	}
 
@@ -229,49 +229,49 @@ class RES {
 	}
 
 	/**
-		Set current scene
+		Set current state
 
-		@param newScene Scene to set
-		@param historyReplace Replace the current scene in history, instead of adding a new entry
+		@param newState State to set
+		@param historyReplace Replace the current state in history, instead of adding a new entry
 		@param onResult 
 	 */
-	public function setScene(newScene:Scene = null, ?historyReplace:Bool = false, ?onResult:Dynamic->Void):Scene {
-		if (_scene != null) {
-			_scene.leave();
-			_scene.audioMixer.pause();
+	public function setState(newState:State = null, ?historyReplace:Bool = false, ?onResult:Dynamic->Void):State {
+		if (_state != null) {
+			_state.leave();
+			_state.audioMixer.pause();
 			if (historyReplace == false)
-				_sceneHistory.push(_scene);
+				_stateHistory.push(_state);
 		}
 
-		_scene = newScene;
+		_state = newState;
 
-		if (_scene.res == null) {
-			_scene.res = this;
-			_scene.init();
+		if (_state.res == null) {
+			_state.res = this;
+			_state.init();
 		}
 
-		_scene.enter();
-		_scene.audioMixer.resume();
+		_state.enter();
+		_state.audioMixer.resume();
 
-		_sceneResultCb.push(onResult);
+		_stateResultCb.push(onResult);
 
-		return _scene;
+		return _state;
 	}
 
 	/**
-		Get pack to the previous scene
+		Get back to the previous state
 
-		@param result optional payload that will be passed to a callback (if any) given in the `setScene` method
+		@param result optional payload that will be passed to a callback (if any) given in the `setState method
 	 */
-	public function popScene(?result:Dynamic) {
-		var scene = _sceneHistory.pop();
+	public function popState(?result:Dynamic) {
+		var state = _stateHistory.pop();
 
-		if (scene != null) {
-			_scene = scene;
-			_scene.enter();
-			_scene.audioMixer.resume();
+		if (state != null) {
+			_state = state;
+			_state.enter();
+			_state.audioMixer.resume();
 
-			var cb = _sceneResultCb.pop();
+			var cb = _stateResultCb.pop();
 
 			if (cb != null)
 				cb(result);
@@ -284,8 +284,8 @@ class RES {
 		@param dt Time delta in seconds
 	 */
 	public function update(dt:Float) {
-		if (scene != null)
-			scene.update(dt);
+		if (state != null)
+			state.update(dt);
 	}
 
 	/**
@@ -297,8 +297,8 @@ class RES {
 		for (func in renderHooks.before)
 			func(this, frameBuffer);
 
-		if (scene != null)
-			scene.render(frameBuffer);
+		if (state != null)
+			state.render(frameBuffer);
 
 		for (func in renderHooks.after)
 			func(this, frameBuffer);

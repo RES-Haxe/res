@@ -14,15 +14,15 @@ class ConsoleChip implements Chip {
 	var shown:Bool = false;
 	var res:RES;
 
-	public var consoleScene:ConsoleScene;
+	public var consoleState:ConsoleState;
 
 	public var console:Console;
 
 	public function toggle() {
 		if (shown)
-			res.popScene();
+			res.popState();
 		else
-			res.setScene(consoleScene);
+			res.setState(consoleState);
 
 		shown = !shown;
 	}
@@ -31,10 +31,10 @@ class ConsoleChip implements Chip {
 		this.res = res;
 
 		console = new Console(res);
-		consoleScene = new ConsoleScene(console);
+		consoleState = new ConsoleState(console);
 
 		console.addCommand(new About());
-		console.addCommand(new Clear(consoleScene));
+		console.addCommand(new Clear(consoleState));
 		console.addCommand(new Help());
 		console.addCommand(new Quit());
 		console.addCommand(new LSRom());
