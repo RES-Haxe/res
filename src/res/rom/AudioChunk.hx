@@ -13,9 +13,9 @@ class AudioChunk extends RomChunk {
 		final input = new BytesInput(data);
 
 		final channels = input.readByte();
-		final rate = input.readUInt24();
+		final rate = input.readInt32();
 		final bps = input.readByte();
-		final dataLen = input.readUInt24();
+		final dataLen = input.readInt32();
 		final data = Bytes.alloc(dataLen);
 		input.readBytes(data, 0, dataLen);
 

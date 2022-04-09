@@ -22,14 +22,6 @@ class TilesetChunk extends RomChunk {
 
 		final tileset = new Tileset(tileWidth, tileHeight, bi.read(tileWidth * tileHeight * numTiles));
 
-		/*
-			for (_ in 0...numTiles) {
-				final tileData = Bytes.alloc(tileWidth * tileHeight);
-				bi.readBytes(tileData, 0, tileData.length);
-				tileset.createTile(tileData);
-			}
-		 */
-
 		return tileset;
 	}
 }

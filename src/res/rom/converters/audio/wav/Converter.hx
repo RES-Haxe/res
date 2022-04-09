@@ -28,7 +28,7 @@ class Converter extends res.rom.converters.Converter {
 		}
 
 		output.writeByte(wave.header.channels);
-		output.writeUInt24(wave.header.samplingRate);
+		output.writeInt32(wave.header.samplingRate);
 		output.writeByte(wave.header.bitsPerSample);
 
 		final numChannels:Int = wave.header.channels;
@@ -58,7 +58,7 @@ class Converter extends res.rom.converters.Converter {
 		final convertedData = wavOutput.getBytes();
 
 		// Data length
-		output.writeUInt24(convertedData.length);
+		output.writeInt32(convertedData.length);
 
 		// Data
 		output.writeBytes(convertedData, 0, convertedData.length);

@@ -125,8 +125,8 @@ class Converter extends res.rom.converters.Converter {
 			for (anim in sprite.animations) {
 				bytesOutput.writeUInt16(anim.name.length);
 				bytesOutput.writeString(anim.name);
-				bytesOutput.writeUInt24(anim.from);
-				bytesOutput.writeUInt24(anim.to);
+				bytesOutput.writeInt32(anim.from);
+				bytesOutput.writeInt32(anim.to);
 				bytesOutput.writeInt8(anim.direction);
 			}
 

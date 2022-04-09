@@ -35,8 +35,8 @@ class SpriteChunk extends RomChunk {
 
 			animations[name] = {
 				name: name,
-				from: bi.readUInt24(),
-				to: bi.readUInt24(),
+				from: bi.readInt32(),
+				to: bi.readInt32(),
 				direction: bi.readInt8(),
 			};
 		}
