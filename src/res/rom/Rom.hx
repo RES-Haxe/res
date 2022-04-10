@@ -33,6 +33,33 @@ class Rom {
 	}
 
 	/**
+		Create a rom
+
+		@param palette Palette to use
+		@param content
+		@param content.audio Audio data
+		@param content.tilesets Tilsets
+		@param content.tilemaps Tilemaps
+		@param content.sprites Sprites
+		@param content.fonts Fonts
+		@param content.data Data
+	 */
+	public static function create(?palette:Palette, content:{
+		?audio:Map<String, AudioData>,
+		?tilesets:Map<String, Tileset>,
+		?tilemaps:Map<String, Tilemap>,
+		?sprites:Map<String, Sprite>,
+		?fonts:Map<String, Font>,
+		?data:Map<String, Bytes>
+	}) {
+		inline function et<T>(a:Map<String, T>):Map<String, T>
+			return a == null ? [] : a;
+
+		return new Rom(palette == null ? Palette.createDefault() : palette, et(content.audio), et(content.tilesets), et(content.tilemaps),
+			et(content.sprites), et(content.fonts), et(content.data));
+	}
+
+	/**
 		Load rom from bytes
 
 		@param bytes
