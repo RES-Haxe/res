@@ -4,9 +4,6 @@ import haxe.io.Bytes;
 import haxe.io.BytesInput;
 
 class AudioData {
-	/** Name of the audio data **/
-	public final name:String;
-
 	/** Number of channels */
 	public final channels:Int;
 
@@ -25,8 +22,7 @@ class AudioData {
 
 	private final _input:BytesInput;
 
-	public function new(name:String, channels:Int, rate:Int, bps:Int, data:Bytes) {
-		this.name = name;
+	public function new(channels:Int, rate:Int, bps:Int, data:Bytes) {
 		this.channels = channels;
 		this.rate = rate;
 		this.bps = bps;

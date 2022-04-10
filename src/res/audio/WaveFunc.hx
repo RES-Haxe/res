@@ -1,5 +1,8 @@
 package res.audio;
 
+/**
+	Returns a value between -1 and 1
+ */
 typedef WaveFunc = Float->Float;
 
 function sine(p:Float):Float

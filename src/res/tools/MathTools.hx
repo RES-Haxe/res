@@ -45,6 +45,18 @@ class MathTools {
 		return x == 0 ? 0 : x < 0 ? -1 : 1;
 
 	/**
+		Sum multiple numbers
+	 */
+	public static function sum(...nums:Float):Float {
+		var result:Float = 0;
+
+		for (n in nums)
+			result += n;
+
+		return result;
+	}
+
+	/**
 		"Wrap around" a number.
 
 		- If `x >= w` - returns `x % w`

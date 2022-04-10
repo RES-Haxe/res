@@ -1,6 +1,6 @@
 package res.audio;
 
-import res.tools.MathTools.clampf;
+import res.tools.MathTools.clamp;
 import res.tools.MathTools.wrap;
 
 class Tone implements IAudioStream {
@@ -15,7 +15,7 @@ class Tone implements IAudioStream {
 
 	public function new(waveFunc:WaveFunc, frequency:Float, length:Float = 1, volume:Float = 1, channels:Int = 1, sampleRate:Int = 22050) {
 		this.sampleRate = sampleRate;
-		this.volume = clampf(volume, -1, 1);
+		this.volume = clamp(volume, -1, 1);
 		this.numSamples = Std.int(sampleRate * length);
 		this.numChannels = channels;
 
