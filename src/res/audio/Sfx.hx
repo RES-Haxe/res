@@ -2,14 +2,15 @@ package res.audio;
 
 import haxe.io.Bytes;
 import haxe.io.BytesOutput;
-import res.audio.WaveFunc.sawtooth;
+import res.audio.osc.Oscillator;
 import res.tools.MathTools.lerp;
 import res.tools.MathTools.sum;
-import res.tools.MathTools.wrap;
+
+using res.tools.ReflectTools;
 
 typedef PCMParams = {
 	?channels:Int,
-	?wave:WaveFunc,
+	?oscillator:Oscillator,
 	?bps:Int,
 	?sampleRate:Int
 };
@@ -22,7 +23,8 @@ typedef SfxParams = {
 	?release:Int,
 	?sustainTime:Int,
 	/** frequency **/
-	?freqStart:Float,
+	?freq:Float,
+	?sweep:Float
 };
 
 /**
@@ -51,13 +53,14 @@ class Sfx {
 	function createPCM():Bytes {
 		final bo = new BytesOutput();
 
-		final samplesPerCycle = Std.int(pcm.sampleRate / params.freqStart);
+		pcm.oscillator.reset();
+		pcm.oscillator.frequency = params.freq;
 
-		var sample:Int = 0;
-
-		function amp(vol:Float = 1):Int {
-			return Tools.quantize(((pcm.wave(wrap(sample, samplesPerCycle) / samplesPerCycle)) * vol), pcm.bps);
-		}
+		/**
+			Get current oscilator amplitude quantized
+		 */
+		inline function amp(vol:Float = 1):Int
+			return Tools.quantize(pcm.oscillator.amplitude * vol, pcm.bps);
 
 		final wr:Int->Void = switch (pcm.bps) {
 			case 8: (s) -> bo.writeInt8(s);
@@ -66,38 +69,32 @@ class Sfx {
 			case _: (s) -> null;
 		};
 
-		final attackSamples = samplesPerTime(params.attack);
+		final chunks:Array<{nSamples:Int, volStart:Float, volEnd:Float}> = [
+			{nSamples: samplesPerTime(params.attack), volStart: 0, volEnd: 1},
+			{nSamples: samplesPerTime(params.decay), volStart: 1, volEnd: params.sustain},
+			{nSamples: samplesPerTime(params.sustainTime), volStart: params.sustain, volEnd: params.sustain},
+			{nSamples: samplesPerTime(params.release), volStart: params.sustain, volEnd: 0},
+		];
 
-		for (a in 0...attackSamples) {
-			final vol = a / attackSamples;
-			wr(amp(vol));
-			sample++;
-		}
+		for (chunk in chunks) {
+			for (s in 0...chunk.nSamples) {
+				final vol = lerp(chunk.volStart, chunk.volEnd, s / chunk.nSamples);
+				wr(amp(vol));
 
-		final decaySamples = samplesPerTime(params.decay);
+				final msAdvance = 1000 / pcm.sampleRate;
 
-		for (a in 0...decaySamples) {
-			final vol = lerp(1, params.sustain, a / decaySamples);
-			wr(amp(vol));
-			sample++;
-		}
+				pcm.oscillator.frequency += params.sweep * (1 / pcm.sampleRate);
 
-		final sustainSamples = samplesPerTime(params.sustainTime);
-
-		for (_ in 0...sustainSamples) {
-			wr(amp(params.sustain));
-			sample++;
-		}
-
-		final releaseSamples = samplesPerTime(params.release);
-
-		for (a in 0...releaseSamples) {
-			final vol = lerp(params.sustain, 0, a / releaseSamples);
-			wr(amp(vol));
-			sample++;
+				pcm.oscillator.advance(msAdvance);
+			}
 		}
 
 		return bo.getBytes();
+	}
+
+	public function set(params:SfxParams) {
+		this.params.setValues(params);
+		return this;
 	}
 
 	/**
@@ -110,7 +107,7 @@ class Sfx {
 	static function defaultPCM():PCMParams {
 		return {
 			channels: 1,
-			wave: sawtooth,
+			oscillator: Oscillator.triangle(),
 			sampleRate: 22050,
 			bps: 16
 		};
@@ -123,7 +120,8 @@ class Sfx {
 			sustain: 0.8,
 			sustainTime: 500,
 			release: 1000,
-			freqStart: Note.G3
+			freq: Note.G3,
+			sweep: 0
 		};
 	}
 
@@ -137,17 +135,11 @@ class Sfx {
 		final pcmParams = defaultPCM();
 		final createParams = defaultParams();
 
-		if (pcm != null) {
-			for (f in Reflect.fields(pcm)) {
-				Reflect.setField(pcmParams, f, Reflect.field(pcm, f));
-			}
-		}
+		if (pcm != null)
+			pcmParams.setValues(pcm);
 
-		if (params != null) {
-			for (f in Reflect.fields(params)) {
-				Reflect.setField(createParams, f, Reflect.field(params, f));
-			}
-		}
+		if (params != null)
+			createParams.setValues(params);
 
 		return new Sfx(pcmParams, createParams);
 	}
