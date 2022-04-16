@@ -9,7 +9,7 @@ class PaletteConverter extends Converter {
 	public function new(?colors:Array<Color32>) {
 		super();
 
-		this.colors = colors == null ? [new Color32(0x00000000)] : colors;
+		this.colors = colors == null ? [] : colors;
 	}
 
 	public function getBytes():Bytes {

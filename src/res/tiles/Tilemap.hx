@@ -218,12 +218,11 @@ class Tilemap {
 
 						final tilePlace = get(tileColIndex, tileLineIndex);
 
-						if (tilePlace != null && tilePlace.index > 0 && tilePlace.index - 1 < tileset.numTiles) {
+						if (tilePlace != null && tilePlace.index - 1 < tileset.numTiles) {
 							final tileColorIndex:Int = readTilePixel(tileColIndex, tileLineIndex, inTileCol, inTileScanline);
 							final paletteColorIndex:Int = tilePlace.colorMap != null ? tilePlace.colorMap.get(tileColorIndex) : colorMap == null ? tileColorIndex : colorMap[tileColorIndex];
 
-							if (paletteColorIndex != 0)
-								frameBuffer.set(screenCol, screenScanline, paletteColorIndex);
+							frameBuffer.set(screenCol, screenScanline, paletteColorIndex);
 						}
 					}
 				}

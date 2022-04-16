@@ -6,7 +6,6 @@ import haxe.io.Bytes;
 class Tileset {
 	public final tileWidth:Int;
 	public final tileHeight:Int;
-	public final baseIndex:Int;
 
 	var _tilesData:Bytes;
 
@@ -28,10 +27,9 @@ class Tileset {
 	function get_numTiles():Int
 		return Std.int(_tilesData.length / tileSize);
 
-	public function new(tileWidth:Int, tileHeight:Int, ?tilesData:Bytes, baseIndex:Int = 1) {
+	public function new(tileWidth:Int, tileHeight:Int, ?tilesData:Bytes) {
 		this.tileWidth = tileWidth;
 		this.tileHeight = tileHeight;
-		this.baseIndex = baseIndex;
 
 		if (tilesData != null) {
 			if (tilesData.length % (tileWidth * tileHeight) == 0)
@@ -53,9 +51,8 @@ class Tileset {
 	public function getIndex(tileIndex:Int, x:Int, y:Int):Int
 		return _tilesData.get(tileIndex * tileSize + y * tileWidth + x);
 
-	public function getTileData(tileIndex:Int) {
+	public function getTileData(tileIndex:Int)
 		return _tilesData.sub(tileIndex * tileSize, tileSize);
-	}
 
 	/**
 		Add a tile to set
@@ -74,31 +71,4 @@ class Tileset {
 
 	public function drawTile(frameBuffer:FrameBuffer, tileIndex:Int, x:Int, y:Int, ?colorMap:ColorMap)
 		frameBuffer.raster(x, y, _tilesData, tileIndex * tileSize, tileWidth, tileHeight, colorMap);
-	/**
-			Create a tile from bytes
-
-			@param data Bytes of indecies
-		public function createTile(data:Bytes):Tile {
-			if (data.length != tileSize * tileSize)
-				throw 'Invalid data size for the tile ($tileSize x $tileSize = ${tileSize * tileSize} bytes expected)';
-			return addTile(new Tile(tileSize, data));
-		}
-	 */
-	/**
-			Line by line
-
-			Each byte is an index in a palette sample
-		public function fromBytes(bytes:Bytes, srcWidth:Int, srcHeight:Int) {
-			if (bytes.length != srcWidth * srcHeight)
-				throw 'Invalid data size: expecting ${srcWidth * srcHeight}, got: ${bytes.length}';
-
-			for (tileY in 0...Std.int(srcHeight / tileSize)) {
-				for (tileX in 0...Std.int(srcWidth / tileSize)) {
-					final tile = new Tile(tileSize);
-					tile.yank(bytes, srcWidth, tileX * tileSize, tileY * tileSize);
-					tiles.push(tile);
-				}
-			}
-		}
-	 */
 }

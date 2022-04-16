@@ -5,16 +5,25 @@ import res.types.ColorComponent;
 class Palette {
 	public final colors:Array<Color32>;
 
-	var _byLuminance:Array<Int>;
+	final _indecies:Array<Int>;
+
+	/**
+		Array of all color indexes of the palette
+	 */
+	public var indecies(get, never):Array<Int>;
+
+	inline function get_indecies()
+		return _indecies;
+
+	final _luminance:Array<Int>;
 
 	/**
 		Color **indecies** sorted by their luminance
 	 */
-	public var byLuminance(get, never):Array<Int>;
+	public var luminance(get, never):Array<Int>;
 
-	inline function get_byLuminance() {
-		return _byLuminance;
-	}
+	inline function get_luminance()
+		return _luminance;
 
 	/**
 		Index of the brightest color in the palette
@@ -22,7 +31,7 @@ class Palette {
 	public var brightestIndex(get, never):Int;
 
 	inline function get_brightestIndex():Int
-		return _byLuminance[_byLuminance.length - 1];
+		return _luminance[_luminance.length - 1];
 
 	/**
 		Index of the darkest color in the palette
@@ -30,11 +39,14 @@ class Palette {
 	public var darkestIndex(get, never):Int;
 
 	inline function get_darkestIndex():Int
-		return _byLuminance[1];
+		return _luminance[0];
 
-	public var size(get, never):Int;
+	/**
+		Number of colors in the Palette
+	 */
+	public var numColors(get, never):Int;
 
-	inline function get_size():Int
+	inline function get_numColors():Int
 		return colors.length;
 
 	/**
@@ -60,7 +72,7 @@ class Palette {
 		@returns the index of the closes color in the palette
 	 */
 	public function closest(color:Color32):Int {
-		var distances:Array<{index:Int, distance:Float}> = [for (i in 0...size)
+		var distances:Array<{index:Int, distance:Float}> = [for (i in indecies)
 			({
 				index:i, distance:get(i).distance(color)
 			})];
@@ -75,42 +87,16 @@ class Palette {
 
 		Suitable for creating index maps
 	 */
-	public function getIndecies():Array<Int> {
-		return [for (n in 0...colors.length) n];
-	};
+	public function createIndecies():Array<Int>
+		return indecies.slice(0);
 
 	/**
 		Get color by its index 
+
+		@param index 1-based color index
 	 */
-	public function get(index:Int):Color32 {
-		return colors[index];
-	}
-
-	/**
-		Create a color ramp of colors ascending by their luminance
-
-		@param numColor Number of colors in the ramp
-		@param shift 
-
-		@returns Array of color indecies. First index is the darkest in the ramp
-	 */
-	public function rampAsc(numColors:Int, shift:Int = 0):Array<Int> {
-		return [0].concat(_byLuminance.slice(shift, shift + numColors));
-	}
-
-	/**
-		Create a color ramp of colors descending by their luminance
-
-		@param numColor Number of colors in the ramp
-		@param shift 
-
-		@returns Array of color indecies. First index is the brightest in the ramp
-	 */
-	public function rampDesc(numColors:Int, shift:Int = 0):Array<Int> {
-		final rev = _byLuminance.copy();
-		rev.reverse();
-		return [0].concat(rev.slice(shift, shift + numColors));
-	}
+	public function get(index:Int):Color32
+		return colors[index - 1];
 
 	/**
 		Create a palette with default colors
@@ -118,7 +104,6 @@ class Palette {
 	public static function createDefault():Palette {
 		// SWEETIE 16 PALETTE: https://lospec.com/palette-list/sweetie-16
 		return Palette.rgb8([
-			0x000000,
 			0x1a1c2c,
 			0x5d275d,
 			0xb13e53,
@@ -153,8 +138,10 @@ class Palette {
 	private function new(colors:Array<Color32>) {
 		this.colors = colors;
 
-		_byLuminance = getIndecies();
-		_byLuminance.sort((idxa, idxb) -> {
+		_indecies = [for (i in 1...numColors + 1) i];
+
+		_luminance = createIndecies();
+		_luminance.sort((idxa, idxb) -> {
 			if (get(idxa).luminance == get(idxb).luminance)
 				return 0;
 			if (get(idxa).luminance > get(idxb).luminance)
