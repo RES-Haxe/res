@@ -17,8 +17,11 @@ class PaletteConverter extends Converter {
 
 		bo.writeByte(colors.length);
 
-		for (color in colors)
-			bo.writeUInt24(color.output);
+		for (color in colors) {
+			bo.writeByte(color.b);
+			bo.writeByte(color.g);
+			bo.writeByte(color.r);
+		}
 
 		return bo.getBytes();
 	}

@@ -1,5 +1,6 @@
 package res.bios.common;
 
+import sys.FileSystem;
 import haxe.Json;
 import res.storage.Storage;
 import sys.io.File;
@@ -20,6 +21,7 @@ class FileStorage extends Storage {
 	}
 
 	public function restore() {
-		data = Json.parse(File.getContent(fileName));
+		if (FileSystem.exists(fileName))
+			data = Json.parse(File.getContent(fileName));
 	}
 }

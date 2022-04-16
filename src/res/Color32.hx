@@ -35,7 +35,7 @@ class Color32 {
 	public final luminance:Float;
 
 	public static function ofRGB8(rgb24:Int, ?outFormat:Array<ColorComponent>):Color32 {
-		return new Color32(rgb24, [A, R, G, B], outFormat);
+		return new Color32(rgb24, [A, R, G, B], outFormat, 255);
 	}
 
 	inline function component(cmp:ColorComponent) {
@@ -68,9 +68,11 @@ class Color32 {
 			bytes.set(3 - n, component(outFormat[n]));
 
 		_output = bytes.getInt32(0);
+
+		return this;
 	}
 
-	public function new(i:Int, ?inFormat:Array<ColorComponent>, ?outFormat:Array<ColorComponent>) {
+	public function new(i:Int, ?inFormat:Array<ColorComponent>, ?outFormat:Array<ColorComponent>, ?alpha:Int) {
 		if (inFormat == null)
 			inFormat = [R, G, B, A];
 
@@ -96,7 +98,7 @@ class Color32 {
 		b = bytes.get(3 - inFormat.indexOf(B));
 		bf = b / 255;
 
-		a = bytes.get(3 - inFormat.indexOf(A));
+		a = alpha == null ? bytes.get(3 - inFormat.indexOf(A)) : alpha;
 		af = a / 255;
 
 		/**

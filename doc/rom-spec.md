@@ -26,7 +26,9 @@
 LONG        Magic Number `0x52524f4d` (`'RROM'` string)
 BYTE        Number of colors in the Palette
 + For each color
-  BYTE[3]   Three bytes for Blue, Green, and Red color components
+  BYTE      BLUE color component
+  BYTE      GREEN color component
+  BYTE      RED color component
 ```
 
 ## Chunks
