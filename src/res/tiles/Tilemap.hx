@@ -116,7 +116,18 @@ class Tilemap {
 			throw 'Out of tile map bounds (col: $x, line: $y, size: $hTiles x $vTiles)';
 	}
 
-	public dynamic function scanlineInrpt(screenLine:Int, tilemapLine:Int):InterruptResult
+	/**
+		Called before each line of the tilemap raster is being drawn
+
+		@param screenLine Line number on the screen (frame buffer)
+		@param tilemapLine Line number within the tilemap
+
+		@return
+			`DROP` - to drop the given line
+			`HALT` - to stop drawing the tilemap altogether 
+			`NONE` - to do nothing
+	 */
+	public dynamic function rasterInrpt(screenLine:Int, tilemapLine:Int):InterruptResult
 		return NONE;
 
 	public function set(tileCol:Int, tileLine:Int, tileIndex:Int, flipX:Bool = false, flipY:Bool = false, rot90cw:Bool = false, ?colorMap:ColorMap,
@@ -180,7 +191,7 @@ class Tilemap {
 			final screenScanline = y + line;
 
 			if (screenScanline >= 0 && screenScanline < frameBuffer.height) {
-				switch scanlineInrpt(screenScanline, line) {
+				switch rasterInrpt(screenScanline, line) {
 					case DROP:
 						continue;
 					case HALT:

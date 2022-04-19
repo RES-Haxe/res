@@ -1,5 +1,5 @@
 package res.chips;
 
-interface Chip {
-	function enable(res:RES):Void;
+abstract class Chip {
+	abstract public function enable(res:RES):Void;
 }

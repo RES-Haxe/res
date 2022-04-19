@@ -19,7 +19,7 @@ class Splash extends State {
 	final stateFn:Void->State;
 
 	var font:Font;
-	var scroll:Int = 0;
+	var phase:Float = 0;
 	var timeline = new Timeline();
 
 	var bgMap:Tilemap;
@@ -53,8 +53,8 @@ class Splash extends State {
 
 		bgMap = new Tilemap(tileset, res.rom.palette.numColors, 1, res.frameBuffer.width, res.frameBuffer.height);
 
-		bgMap.scanlineInrpt = (screenLine, _) -> {
-			bgMap.scrollX = -(scroll + Math.sin(screenLine / res.frameBuffer.height * (Math.PI * 2 * 2)) * 32);
+		bgMap.rasterInrpt = (screenLine, _) -> {
+			bgMap.scrollX = Math.sin(phase + Math.PI * (screenLine / res.frameBuffer.height * (res.frameBuffer.height / 64))) * 16;
 			return NONE;
 		};
 
@@ -64,6 +64,7 @@ class Splash extends State {
 
 	override function update(dt:Float) {
 		timeline.update(dt);
+		phase = wrap(phase + Math.PI * dt, Math.PI * 2);
 	}
 
 	override function render(frameBuffer:FrameBuffer) {
@@ -81,7 +82,5 @@ class Splash extends State {
 
 		if (font != null)
 			font.drawPivot(frameBuffer, 'v${RES.VERSION}', Std.int(frameBuffer.width / 2), Std.int(frameBuffer.height / 2 + sp.height / 2) + 2, 0.5, 0);
-
-		scroll = wrap(scroll + 1, res.rom.palette.numColors * BAR_SIZE);
 	}
 }

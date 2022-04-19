@@ -13,5 +13,5 @@ typedef RESConfig = {
 		function render(fb:FrameBuffer):Void;
 		function update(dt:Float):Void;
 	},
-	?chips:Array<Class<Chip>>
+	?chips:Array<Chip>
 };

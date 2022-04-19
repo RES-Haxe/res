@@ -184,10 +184,10 @@ class RES {
 	/**
 		Install chips
 	 */
-	public function install(...chips:Class<Chip>) {
-		for (chipClass in chips) {
-			final className = chipClass.getClassName();
-			this.chips[className] = chipClass.createInstance([]);
+	public function install(...chips:Chip) {
+		for (chip in chips) {
+			final className = chip.getClass().getClassName();
+			this.chips[className] = chip;
 			this.chips[className].enable(this);
 		}
 	}

@@ -18,7 +18,7 @@ class Palette {
 	final _luminance:Array<Int>;
 
 	/**
-		Color **indecies** sorted by their luminance
+		Color **indecies** sorted by their luminance from darkest to brightest
 	 */
 	public var luminance(get, never):Array<Int>;
 

@@ -10,7 +10,7 @@ import res.chips.std.console.stdcmds.Quit;
 using String;
 using StringTools;
 
-class ConsoleChip implements Chip {
+class ConsoleChip extends Chip {
 	var shown:Bool = false;
 	var res:RES;
 
@@ -26,6 +26,8 @@ class ConsoleChip implements Chip {
 
 		shown = !shown;
 	}
+
+	public function new() {}
 
 	public function enable(res:RES) {
 		this.res = res;

@@ -30,6 +30,16 @@ class Vector2 {
 		return new Vector2(xy.x, xy.y);
 	}
 
+	/**
+		Sums two 2-component vectors
+
+		@param a
+		@param b
+	 */
+	public static function sum(a:{x:Float, y:Float}, b:{x:Float, y:Float}):{x:Float, y:Float} {
+		return {x: a.x + b.x, y: a.y + b.y};
+	}
+
 	public static function xy(?x:Float = 0, ?y:Float) {
 		return new Vector2(x, y);
 	}
