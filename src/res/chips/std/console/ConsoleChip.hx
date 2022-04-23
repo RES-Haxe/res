@@ -11,7 +11,6 @@ using String;
 using StringTools;
 
 class ConsoleChip extends Chip {
-	var shown:Bool = false;
 	var res:RES;
 
 	public var consoleState:ConsoleState;
@@ -19,12 +18,12 @@ class ConsoleChip extends Chip {
 	public var console:Console;
 
 	public function toggle() {
-		if (shown)
-			res.popState();
-		else
+		if (consoleState.isActive())
+			consoleState.rollUp();
+		else {
+			consoleState.rollDown(res.state);
 			res.setState(consoleState);
-
-		shown = !shown;
+		}
 	}
 
 	public function new() {}

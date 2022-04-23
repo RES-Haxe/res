@@ -5,7 +5,14 @@ using Lambda;
 class Timeline {
 	var totalTime:Float = 0;
 
-	var events:Array<TimelineEvent> = [];
+	final events:Array<TimelineEvent> = [];
+
+	final forWhileItems:Array<{
+		totalTime:Float,
+		time:Float,
+		callback:(Float, Float) -> Void,
+		?done:() -> Void
+	}> = [];
 
 	public function new() {}
 
@@ -21,6 +28,10 @@ class Timeline {
 		return event;
 	}
 
+	public function cancel(event:TimelineEvent) {
+		events.remove(event);
+	}
+
 	public function every(time:Float, callback:TimelineCallback, ?repeats:Int = -1, ?startImmediately:Bool = false) {
 		if (startImmediately) {
 			callback(0);
@@ -30,8 +41,18 @@ class Timeline {
 		return event;
 	}
 
-	public function cancel(event:TimelineEvent) {
-		events.remove(event);
+	/**
+		The callback will be executed on every update for the set period of time
+
+		@param time
+	 */
+	public function forWhile(time:Float, callback:(Float, Float) -> Void, ?done:() -> Void) {
+		forWhileItems.push({
+			totalTime: time,
+			time: 0,
+			callback: callback,
+			done: done
+		});
 	}
 
 	public function update(dt:Float) {
@@ -45,6 +66,18 @@ class Timeline {
 				} else {
 					events.remove(event);
 				}
+			}
+		}
+
+		for (fwe in forWhileItems) {
+			fwe.callback(fwe.time, fwe.totalTime);
+
+			if (fwe.time >= fwe.totalTime) {
+				if (fwe.done != null)
+					fwe.done();
+				forWhileItems.remove(fwe);
+			} else {
+				fwe.time = Math.min(fwe.totalTime, fwe.time + dt);
 			}
 		}
 

@@ -2,25 +2,35 @@ package res.chips.std.console;
 
 import res.State;
 import res.display.FrameBuffer;
+import res.display.Painter.rect;
 import res.input.Key;
 import res.input.KeyboardEvent;
+import res.timeline.Timeline;
+import res.tools.MathTools.lerp;
 
 using String;
 using StringTools;
 
 class ConsoleState extends State {
 	static final BLINK_TIME:Float = 1;
+	static final ROLL_TIME:Float = 0.3;
 	static final CURSOR:String = '_';
+	static final PROMPT:String = '>';
 
-	final commands:Map<String, ConsoleCommand> = [];
+	var active:Bool = false;
+
+	var backTo:State;
 
 	var commandInput:String = '';
 
 	var blinkTimer:Float = 0;
 	var blink:Bool = true;
+	var rolling:Bool = false;
+	var rollBottom:Int = 0;
+
+	var timeline:Timeline;
 
 	final log:Array<String> = [];
-
 	final console:Console;
 
 	public function new(console:Console) {
@@ -28,6 +38,39 @@ class ConsoleState extends State {
 
 		this.console = console;
 		this.console.println = println;
+	}
+
+	public function isActive():Bool {
+		return active;
+	}
+
+	public function rollDown(from:State) {
+		backTo = from;
+		rolling = true;
+		active = true;
+
+		timeline = new Timeline();
+		timeline.forWhile(ROLL_TIME, (t, tt) -> {
+			rollBottom = Math.floor(lerp(0, res.frameBuffer.height / 2, t / tt));
+		}, () -> {
+			rolling = false;
+			timeline = null;
+		});
+	}
+
+	public function rollUp() {
+		if (!rolling) {
+			rolling = true;
+			timeline = new Timeline();
+			timeline.forWhile(ROLL_TIME, (t, tt) -> {
+				rollBottom = Math.floor(lerp(res.frameBuffer.height / 2, 0, t / tt));
+			}, () -> {
+				rolling = false;
+				timeline = null;
+				active = false;
+				res.popState();
+			});
+		}
 	}
 
 	override function init() {
@@ -71,17 +114,22 @@ class ConsoleState extends State {
 			updateInput();
 		} else
 			blinkTimer += dt;
+
+		if (timeline != null)
+			timeline.update(dt);
 	}
 
 	override function render(fb:FrameBuffer) {
-		fb.clear(clearColorIndex);
+		backTo.render(fb);
+
+		rect(fb, 0, 0, fb.width, rollBottom, clearColorIndex, clearColorIndex);
 
 		final f = res.defaultFont;
 
-		f.draw(fb, '>$commandInput${blink ? CURSOR : ''}', 0, fb.height - f.lineHeight);
+		f.draw(fb, '$PROMPT$commandInput${blink ? CURSOR : ''}', 0, rollBottom - f.lineHeight);
 
 		var l = log.length - 1;
-		var ly = fb.height - f.lineHeight * 2;
+		var ly = rollBottom - f.lineHeight * 2;
 
 		while (l >= 0) {
 			final line = log[l];
