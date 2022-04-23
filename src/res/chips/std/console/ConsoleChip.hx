@@ -6,6 +6,7 @@ import res.chips.std.console.stdcmds.Clear;
 import res.chips.std.console.stdcmds.Help;
 import res.chips.std.console.stdcmds.LSRom;
 import res.chips.std.console.stdcmds.Quit;
+import res.chips.std.console.stdcmds.Reset;
 
 using String;
 using StringTools;
@@ -32,13 +33,12 @@ class ConsoleChip extends Chip {
 		this.res = res;
 
 		console = new Console(res);
-		consoleState = new ConsoleState(console);
 
 		console.addCommand(new About());
-		console.addCommand(new Clear(consoleState));
 		console.addCommand(new Help());
-		console.addCommand(new Quit());
 		console.addCommand(new LSRom());
+		console.addCommand(new Quit());
+		console.addCommand(new Reset());
 
 		res.keyboard.listen((ev) -> {
 			switch (ev) {
@@ -47,5 +47,12 @@ class ConsoleChip extends Chip {
 				case _:
 			}
 		});
+
+		reset();
+	}
+
+	override function reset() {
+		consoleState = new ConsoleState(console);
+		console.addCommand(new Clear(consoleState));
 	}
 }

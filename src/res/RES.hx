@@ -168,6 +168,9 @@ class RES {
 	}
 
 	public function reset() {
+		for (chip in chips)
+			chip.reset();
+
 		#if !skipSplash
 		if (rom.sprites.exists('splash')) {
 			setState(new res.extra.Splash(() -> config.main != null ? ensureState(config.main(this)) : null));
