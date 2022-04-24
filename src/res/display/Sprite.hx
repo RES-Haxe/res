@@ -77,7 +77,7 @@ class Sprite {
 		return obj;
 	}
 
-	public static function drawRegion(frameBuffer:FrameBuffer, sprite:Sprite, fx:Int, fy:Int, width:Int, height:Int, atx:Int, aty:Int, ?frame:Int = 0,
+	public static function drawSpriteRegion(frameBuffer:FrameBuffer, sprite:Sprite, fx:Int, fy:Int, width:Int, height:Int, atx:Int, aty:Int, ?frame:Int = 0,
 			?colorMap:ColorMap) {
 		final frameData = sprite.frames[frame].data;
 
@@ -189,4 +189,17 @@ class Sprite {
 	 */
 	public static function drawSpritePivot(frameBuffer:FrameBuffer, sprite:Sprite, x:Int, y:Int, ?px:Float = 0.5, ?py:Float = 0.5, ?opts, ?colorMap)
 		drawSprite(frameBuffer, sprite, Math.floor(x - sprite.width * px), Math.floor(y - sprite.height * py), opts, colorMap);
+
+	/**
+		Draw a sprite using an Anchor - a point inside the sprite to use as it's origin
+
+		@param frameBuffer FrameBuffer to draw the sprite on
+		@param sprite Sprite to draw
+		@param x Origin X position
+		@param y Origin Y position
+		@param ax X position inside the sprite to use as it's origin
+		@param ay Y position inside the sprite to use as it's origin
+	 */
+	public static function drawSpriteAnchor(frameBuffer:FrameBuffer, sprite:Sprite, x:Int, y:Int, ax:Int = 0, ay:Int = 0, ?opts, ?colorMap)
+		drawSprite(frameBuffer, sprite, x - ax, y - ay, opts, colorMap);
 }

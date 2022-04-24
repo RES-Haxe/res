@@ -74,12 +74,12 @@ class State {
 
 	public dynamic function mouseEvent(event:MouseEvent) {}
 
-	public dynamic function update(dt:Float) {
+	public function update(dt:Float) {
 		for (item in updateList)
 			item.update(dt);
 	}
 
-	public dynamic function render(fb:FrameBuffer) {
+	public function render(fb:FrameBuffer) {
 		if (clearColorIndex != null)
 			fb.clear(clearColorIndex);
 

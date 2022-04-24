@@ -40,6 +40,13 @@ class Vector2 {
 		return {x: a.x + b.x, y: a.y + b.y};
 	}
 
+	public static function arr(a:Array<Float>):{x:Float, y:Float} {
+		return {
+			x: a[0],
+			y: a[1]
+		};
+	}
+
 	public static function xy(?x:Float = 0, ?y:Float) {
 		return new Vector2(x, y);
 	}

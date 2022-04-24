@@ -2,6 +2,30 @@ package res.tools;
 
 class MathTools {
 	/**
+		Bezier curve
+
+		@param points Control points
+		@param t Parameter
+	 */
+	public static function bezier(points:Array<{x:Float, y:Float}>, t:Float):{x:Float, y:Float} {
+		if (points.length == 2) {
+			return {
+				x: lerp(points[0].x, points[1].x, t),
+				y: lerp(points[0].y, points[1].y, t)
+			};
+		} else if (points.length > 2) {
+			return bezier([for (n in 0...points.length - 1)
+				{
+					x: lerp(points[n].x, points[n + 1].x, t),
+					y: lerp(points[n].y, points[n + 1].y, t)
+				}], t);
+		} else if (points.length == 1)
+			return points[0];
+		else
+			throw 'Too few control points';
+	}
+
+	/**
 		Clamps a value between an upper and lower bound
 	 */
 	public static inline function clamp<T:Float>(x:T, low:T, high:T):T
@@ -10,9 +34,9 @@ class MathTools {
 	/**
 		Linear interpolation
 
-		@param a
-		@param b
-		@param t
+		@param a From value
+		@param b To value
+		@param t Parameter
 	 */
 	public static inline function lerp(a:Float, b:Float, t:Float):Float
 		return a + (b - a) * t;

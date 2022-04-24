@@ -26,6 +26,30 @@ typedef RenderHooks = {
 	after:Array<RenderHookFunction>
 };
 
+class PseudoState extends State {
+	final pstate:{
+		function render(fb:FrameBuffer):Void;
+		function update(dt:Float):Void;
+	};
+
+	public function new(pstate:{
+		function render(fb:FrameBuffer):Void;
+		function update(dt:Float):Void;
+	}) {
+		super();
+
+		this.pstate = pstate;
+	}
+
+	override function update(dt:Float) {
+		pstate.update(dt);
+	}
+
+	override function render(fb:FrameBuffer) {
+		pstate.render(fb);
+	}
+}
+
 class RES {
 	public static final VERSION:String = '0.1.1';
 
@@ -142,10 +166,7 @@ class RES {
 		if (Std.isOfType(pstate, State))
 			return cast pstate;
 
-		final wstate = new State();
-
-		wstate.update = pstate.update;
-		wstate.render = pstate.render;
+		final wstate = new PseudoState(pstate);
 
 		return wstate;
 	}
