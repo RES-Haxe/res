@@ -10,6 +10,9 @@ import res.text.Font;
 import res.tiles.Tilemap;
 import res.tiles.Tileset;
 
+inline function et<T>(a:Map<String, T>):Map<String, T>
+	return a == null ? [] : a;
+
 class Rom {
 	public static inline var MAGIC_NUMBER:Int32 = 0x52524f4d; // RROM
 
@@ -44,17 +47,7 @@ class Rom {
 		@param content.fonts Fonts
 		@param content.data Data
 	 */
-	public static function create(?palette:Palette, content:{
-		?audio:Map<String, AudioData>,
-		?tilesets:Map<String, Tileset>,
-		?tilemaps:Map<String, Tilemap>,
-		?sprites:Map<String, Sprite>,
-		?fonts:Map<String, Font>,
-		?data:Map<String, Bytes>
-	}) {
-		inline function et<T>(a:Map<String, T>):Map<String, T>
-			return a == null ? [] : a;
-
+	public static function create(?palette:Palette, content:RomContent) {
 		return new Rom(palette == null ? Palette.createDefault() : palette, et(content.audio), et(content.tilesets), et(content.tilemaps),
 			et(content.sprites), et(content.fonts), et(content.data));
 	}
@@ -65,7 +58,7 @@ class Rom {
 		@param bytes
 		@param compressed Whether the data is gzip compressed or not
 	 */
-	public static function fromBytes(bytes:Bytes, ?compressed:Bool = true):Rom {
+	public static function fromBytes(bytes:Bytes, ?compressed:Bool = true, ?add:RomContent):Rom {
 		final bytesInput = new BytesInput(compressed ? InflateImpl.run(new BytesInput(bytes)) : bytes);
 
 		if (bytesInput.readInt32() != MAGIC_NUMBER)
@@ -74,12 +67,12 @@ class Rom {
 		// Read number of colors
 		final numColors = bytesInput.readByte();
 		final palette:Palette = new Palette([for (_ in 0...numColors) Color32.ofRGB8(bytesInput.readUInt24())]);
-		final audio:Map<String, AudioData> = [];
-		final sprites:Map<String, Sprite> = [];
-		final tilesets:Map<String, Tileset> = [];
-		final tilemaps:Map<String, Tilemap> = [];
-		final fonts:Map<String, Font> = [];
-		final data:Map<String, Bytes> = [];
+		final audio:Map<String, AudioData> = add != null ? et(add.audio) : [];
+		final sprites:Map<String, Sprite> = add != null ? et(add.sprites) : [];
+		final tilesets:Map<String, Tileset> = add != null ? et(add.tilesets) : [];
+		final tilemaps:Map<String, Tilemap> = add != null ? et(add.tilemaps) : [];
+		final fonts:Map<String, Font> = add != null ? et(add.fonts) : [];
+		final data:Map<String, Bytes> = add != null ? et(add.data) : [];
 
 		while (bytesInput.position < bytesInput.length) {
 			final chunk = RomChunk.read(bytesInput);
@@ -130,12 +123,13 @@ class Rom {
 
 		@param src Source directory that contains the files for the ROM
 		@param compressed Whether the rom data should be compressed or not
+		@param add Additional content
 	 */
-	public static macro function embed(src:String = 'rom', ?compressed:Bool = true) {
+	public static macro function embed(src:String = 'rom', ?compressed:Bool = true, ?add:haxe.macro.Expr.ExprOf<RomContent>) {
 		final romBytes = RomCreator.create(src);
 		final romBytesFinal = compressed ? haxe.zip.Compress.run(romBytes, 9) : romBytes;
 		final romBase64 = haxe.crypto.Base64.encode(romBytesFinal);
-		return macro res.rom.Rom.fromBytes(haxe.crypto.Base64.decode($v{romBase64}), $v{compressed});
+		return macro res.rom.Rom.fromBytes(haxe.crypto.Base64.decode($v{romBase64}), $v{compressed}, ${add});
 	}
 
 	/**

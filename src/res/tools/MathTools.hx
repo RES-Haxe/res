@@ -19,9 +19,7 @@ class MathTools {
 					x: lerp(points[n].x, points[n + 1].x, t),
 					y: lerp(points[n].y, points[n + 1].y, t)
 				}], t);
-		} else if (points.length == 1)
-			return points[0];
-		else
+		} else
 			throw 'Too few control points';
 	}
 
