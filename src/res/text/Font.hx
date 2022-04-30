@@ -48,7 +48,7 @@ class Font {
 		return result;
 	}
 
-	public function draw(frameBuffer:FrameBuffer, text:String, x:Int, y:Int, ?colorMap:ColorMap) {
+	public function draw(frameBuffer:FrameBuffer, text:String, x:Int, y:Int, ?colorMap:IndexMap) {
 		var tx = x;
 		var ty = y;
 		for (cn in 0...text.length) {
@@ -68,7 +68,7 @@ class Font {
 		}
 	}
 
-	public function drawPivot(frameBuffer:FrameBuffer, text:String, x:Int, y:Int, px:Float = 0.5, py:Float = 0.5, ?colorMap:ColorMap) {
+	public function drawPivot(frameBuffer:FrameBuffer, text:String, x:Int, y:Int, px:Float = 0.5, py:Float = 0.5, ?colorMap:IndexMap) {
 		final m = measure(text);
 		draw(frameBuffer, text, Std.int(x - m.width * px), Std.int(y - m.height * py), colorMap);
 	}

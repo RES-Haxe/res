@@ -9,7 +9,7 @@ class Textmap extends Tilemap {
 
 	public final cursor:{x:Int, y:Int} = {x: 0, y: 0};
 
-	public function new(tileset:Tileset, hTiles:Int, vTiles:Int, characters:String, ?firstTileIndex:Int = 0, ?colorMap:ColorMap) {
+	public function new(tileset:Tileset, hTiles:Int, vTiles:Int, characters:String, ?firstTileIndex:Int = 0, ?colorMap:IndexMap) {
 		super(tileset, hTiles, vTiles, colorMap);
 
 		for (ci in 0...characters.length)
@@ -27,7 +27,7 @@ class Textmap extends Tilemap {
 		cursor.y = wrap(y, vTiles);
 	}
 
-	public function print(?cx:Int, ?cy:Int, text:String, ?colorMap:ColorMap) {
+	public function print(?cx:Int, ?cy:Int, text:String, ?colorMap:IndexMap) {
 		final words = text.split(' ');
 
 		if (cx != null && cy != null)
@@ -73,7 +73,7 @@ class Textmap extends Tilemap {
 		@param char String containing the character to place. Only the first character will be used if the string is longer
 		@param colorMap Color map
 	 */
-	public function setChar(atx:Int, aty:Int, char:String, ?colorMap:ColorMap) {
+	public function setChar(atx:Int, aty:Int, char:String, ?colorMap:IndexMap) {
 		if (char.length == 0)
 			throw '`char` must contain a character to set';
 		set(atx, aty, _charMap[char.charCodeAt(0)], colorMap);
@@ -88,7 +88,7 @@ class Textmap extends Tilemap {
 		@param colorMap Array of color indecies to use
 		@param clearEnd Clear any tiles to the end of the line
 	 */
-	public function textAt(atx:Int, aty:Int, text:String, ?colorMap:ColorMap, ?clearEnd:Bool = true) {
+	public function textAt(atx:Int, aty:Int, text:String, ?colorMap:IndexMap, ?clearEnd:Bool = true) {
 		if (aty >= 0 && aty < map.length) {
 			for (tx in atx...hTiles) {
 				var ci = tx - atx;
@@ -112,7 +112,7 @@ class Textmap extends Tilemap {
 		@param clearStart Remove any tiles from the left side to the first character of the string
 		@param clearEnd Clear any tiles to the end of the line
 	 */
-	public function textCentered(aty:Int, text:String, ?colorMap:ColorMap, ?clearStart:Bool = true, ?clearEnd:Bool = true) {
+	public function textCentered(aty:Int, text:String, ?colorMap:IndexMap, ?clearStart:Bool = true, ?clearEnd:Bool = true) {
 		final pos:Int = Std.int((hTiles - text.length) / 2);
 
 		if (clearStart)

@@ -1,6 +1,6 @@
 package res;
 
-abstract ColorMap(Map<Int, Int>) from Map<Int, Int> to Map<Int, Int> {
+abstract IndexMap(Map<Int, Int>) from Map<Int, Int> to Map<Int, Int> {
 	public function new(map:Map<Int, Int>) {
 		this = map;
 	}

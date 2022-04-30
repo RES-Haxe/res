@@ -17,7 +17,7 @@ class Tilemap {
 	/** Number of Vertical tiles **/
 	public var vTiles:Int;
 
-	public var colorMap:ColorMap;
+	public var colorMap:IndexMap;
 
 	public var indexMap:Array<Int> = null;
 
@@ -55,11 +55,11 @@ class Tilemap {
 	public var wrapX:Bool = true;
 	public var wrapY:Bool = true;
 
-	public function new(tileset:Tileset, hTiles:Int, vTiles:Int, ?width:Int, ?height:Int, ?colorMap:ColorMap) {
+	public function new(tileset:Tileset, hTiles:Int, vTiles:Int, ?width:Int, ?height:Int, ?colorMap:IndexMap) {
 		this.tileset = tileset;
 		this.width = width == null ? tileset.tileWidth * hTiles : width;
 		this.height = height == null ? tileset.tileHeight * vTiles : height;
-		this.colorMap = colorMap == null ? new ColorMap([]) : colorMap;
+		this.colorMap = colorMap == null ? new IndexMap([]) : colorMap;
 
 		resize(hTiles, vTiles);
 	}
@@ -130,7 +130,7 @@ class Tilemap {
 	public dynamic function rasterInrpt(screenLine:Int, tilemapLine:Int):InterruptResult
 		return NONE;
 
-	public function set(tileCol:Int, tileLine:Int, tileIndex:Int, flipX:Bool = false, flipY:Bool = false, rot90cw:Bool = false, ?colorMap:ColorMap,
+	public function set(tileCol:Int, tileLine:Int, tileIndex:Int, flipX:Bool = false, flipY:Bool = false, rot90cw:Bool = false, ?colorMap:IndexMap,
 			?data:Dynamic) {
 		place(tileCol, tileLine, {
 			index: tileIndex,

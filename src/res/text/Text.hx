@@ -6,7 +6,7 @@ using Math;
 
 class Text {
 	public var font:Font;
-	public var colorMap:ColorMap;
+	public var colorMap:IndexMap;
 	public var x:Float = 0;
 	public var y:Float = 0;
 
@@ -40,7 +40,7 @@ class Text {
 	function get_height():Int
 		return _height;
 
-	public function new(font:Font, text:String = '', ?x:Float = 0, ?y:Float = 0, ?colorMap:ColorMap) {
+	public function new(font:Font, text:String = '', ?x:Float = 0, ?y:Float = 0, ?colorMap:IndexMap) {
 		this.font = font;
 		this.text = text;
 		this.colorMap = colorMap;

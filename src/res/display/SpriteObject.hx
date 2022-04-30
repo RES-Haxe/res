@@ -29,7 +29,7 @@ class SpriteObject {
 	/** Whether the animation should be looped or not (default `true`) */
 	public var loop:Bool = true;
 
-	public var colorMap:ColorMap;
+	public var colorMap:IndexMap;
 
 	/** The width of the rectangle in which the sprite should be rendered (initial value is the width of the sprite) */
 	public var width:Int;
@@ -80,7 +80,7 @@ class SpriteObject {
 		return result;
 	}
 
-	public function new(sprite:Sprite, ?play:Bool = false, ?colorMap:ColorMap) {
+	public function new(sprite:Sprite, ?play:Bool = false, ?colorMap:IndexMap) {
 		this.sprite = sprite;
 		this.colorMap = colorMap;
 

@@ -1,12 +1,12 @@
 package res.tiles;
 
-import res.ColorMap;
+import res.IndexMap;
 
 typedef TilePlace = {
 	index:Int,
 	?flipX:Bool,
 	?flipY:Bool,
 	?rot90cw:Bool,
-	?colorMap:ColorMap,
+	?colorMap:IndexMap,
 	?data:Dynamic
 }

@@ -70,7 +70,7 @@ class Sprite {
 		frames.push(new SpriteFrame(data, duration));
 	}
 
-	public function createObject(?x:Float = 0, ?y:Float = 0, ?colorMap:ColorMap):SpriteObject {
+	public function createObject(?x:Float = 0, ?y:Float = 0, ?colorMap:IndexMap):SpriteObject {
 		var obj = new SpriteObject(this, colorMap);
 		obj.x = x;
 		obj.y = y;
@@ -78,7 +78,7 @@ class Sprite {
 	}
 
 	public static function drawSpriteRegion(frameBuffer:FrameBuffer, sprite:Sprite, fx:Int, fy:Int, width:Int, height:Int, atx:Int, aty:Int, ?frame:Int = 0,
-			?colorMap:ColorMap) {
+			?colorMap:IndexMap) {
 		final frameData = sprite.frames[frame].data;
 
 		for (line in 0...height) {
@@ -108,7 +108,7 @@ class Sprite {
 		@param opts.wrap
 		@param colorMap
 	 */
-	public static function drawSprite(frameBuffer:FrameBuffer, sprite:Sprite, ?x:Int = 0, ?y:Int = 0, ?opts:DrawSpriteOptions, ?colorMap:ColorMap) {
+	public static function drawSprite(frameBuffer:FrameBuffer, sprite:Sprite, ?x:Int = 0, ?y:Int = 0, ?opts:DrawSpriteOptions, ?colorMap:IndexMap) {
 		opts = opts == null ? {} : opts;
 
 		final frameIndex = opts.frame == null ? 0 : opts.frame;

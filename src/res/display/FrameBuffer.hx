@@ -83,7 +83,7 @@ abstract class FrameBuffer {
 		@param numLine Number of line to draw. If not specified - set all the indecies from the data
 		@param colorMap Optional color map
 	 */
-	public function raster(x:Int, y:Int, data:Bytes, srcPos:Int, lineWidth:Int, ?numLines:Int, ?colorMap:ColorMap) {
+	public function raster(x:Int, y:Int, data:Bytes, srcPos:Int, lineWidth:Int, ?numLines:Int, ?colorMap:IndexMap) {
 		var pos = 0;
 		var col = 0;
 		var line = 0;

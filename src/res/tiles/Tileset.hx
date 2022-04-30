@@ -69,6 +69,6 @@ class Tileset {
 			throw 'Invalid tile data size';
 	}
 
-	public function drawTile(frameBuffer:FrameBuffer, tileIndex:Int, x:Int, y:Int, ?colorMap:ColorMap)
+	public function drawTile(frameBuffer:FrameBuffer, tileIndex:Int, x:Int, y:Int, ?colorMap:IndexMap)
 		frameBuffer.raster(x, y, _tilesData, tileIndex * tileSize, tileWidth, tileHeight, colorMap);
 }
