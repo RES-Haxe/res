@@ -9,7 +9,7 @@ using Math;
 class Tilemap {
 	var map:Array<Array<TilePlace>> = [[]];
 
-	public final tileset:Tileset;
+	public var tileset:Tileset;
 
 	/** Number of Horizontal tiles **/
 	public var hTiles:Int;
@@ -43,10 +43,10 @@ class Tilemap {
 	/** Y screen coordinate of the left-top corner of the area to draw tilemap at */
 	public var y:Int = 0;
 
-	/** Width of the area to draw tilemap at */
+	/** Width of the area to draw tilemap at in pixels */
 	public var width:Int;
 
-	/** Height of the area to draw tilemap at */
+	/** Height of the area to draw tilemap at in pixels */
 	public var height:Int;
 
 	public var scrollX:Float = 0;
@@ -55,10 +55,21 @@ class Tilemap {
 	public var wrapX:Bool = true;
 	public var wrapY:Bool = true;
 
-	public function new(tileset:Tileset, hTiles:Int, vTiles:Int, ?width:Int, ?height:Int, ?colorMap:IndexMap) {
+	/**
+		Create a new tilemap based on another one
+
+		Useful for creating tilemap instances from tilemaps in ROM
+	 */
+	public static function create(src:Tilemap, ?tileset:Tileset) {
+		final tilemap = src.clone();
+		tilemap.tileset = tileset != null ? tileset : tilemap.tileset;
+		return tilemap;
+	}
+
+	public function new(?tileset:Tileset, hTiles:Int, vTiles:Int, ?width:Int = 100, ?height:Int = 100, ?colorMap:IndexMap) {
 		this.tileset = tileset;
-		this.width = width == null ? tileset.tileWidth * hTiles : width;
-		this.height = height == null ? tileset.tileHeight * vTiles : height;
+		this.width = width;
+		this.height = height;
 		this.colorMap = colorMap == null ? new IndexMap([]) : colorMap;
 
 		resize(hTiles, vTiles);
@@ -187,6 +198,9 @@ class Tilemap {
 		@param frameBuffer FrameBuffer to render to
 	 */
 	public function render(frameBuffer:FrameBuffer) {
+		if (tileset == null)
+			return;
+
 		for (line in 0...height) {
 			final screenScanline = y + line;
 

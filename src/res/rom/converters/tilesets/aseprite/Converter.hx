@@ -28,7 +28,7 @@ class Converter extends res.rom.converters.Converter {
 		final tilesets = ase.firstFrame.chunkTypes[ChunkType.TILESET];
 
 		if (tilesets != null) {
-			final aseTilesetChunk:ase.chunks.TilesetChunk = cast tilesets[0];
+			final aseTilesetChunk:ase.chunks.TilesetChunk = cast tilesets[tilesets.length - 1];
 
 			final tileWidth = aseTilesetChunk.width;
 			final tileHeight = aseTilesetChunk.height;

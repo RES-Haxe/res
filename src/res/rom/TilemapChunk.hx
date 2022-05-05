@@ -13,12 +13,12 @@ class TilemapChunk extends RomChunk {
 	public function getTilemap(tileset:Tileset):Tilemap {
 		final bytesInput = new BytesInput(data);
 
-		final hTiles:Int = bytesInput.readInt32();
-		final vTiles:Int = bytesInput.readInt32();
-		final tilemap = new Tilemap(tileset, hTiles, vTiles);
+		final cols:Int = bytesInput.readInt32();
+		final lines:Int = bytesInput.readInt32();
+		final tilemap = new Tilemap(tileset, cols, lines);
 
-		for (line in 0...vTiles) {
-			for (col in 0...hTiles) {
+		for (line in 0...lines) {
+			for (col in 0...cols) {
 				final tileIndex = bytesInput.readUInt16();
 				final flipX = bytesInput.readByte() == 1;
 				final flipY = bytesInput.readByte() == 1;

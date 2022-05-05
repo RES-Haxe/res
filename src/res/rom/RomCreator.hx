@@ -1,6 +1,5 @@
 package res.rom;
 
-import ase.chunks.PaletteChunk.PaletteEntry;
 import haxe.PosInfos;
 import haxe.io.Bytes;
 import haxe.io.BytesOutput;
