@@ -8,7 +8,7 @@ import sys.io.File;
 using haxe.io.Path;
 
 class Converter extends res.rom.converters.Converter {
-	var tilesetChunk:TilesetChunk;
+	var tilesetChunks:Array<TilesetChunk>;
 	var reuseRepeated:Bool;
 
 	public function new(?reuseRepeated:Bool = true) {
@@ -17,105 +17,52 @@ class Converter extends res.rom.converters.Converter {
 		this.reuseRepeated = reuseRepeated;
 	}
 
-	public static function createChunk(name:String, bytes:Bytes, ?reuseRepeated = true):TilesetChunk {
+	public static function createTilesetChunk(name:String, tilesetChunk:ase.chunks.TilesetChunk) {
+		final tileWidth = tilesetChunk.width;
+		final tileHeight = tilesetChunk.height;
+
+		if (tileWidth > 256 || tileHeight > 256)
+			throw 'Tile size cannot exceed 256px';
+
+		final bytesOutput = new BytesOutput();
+
+		bytesOutput.writeByte(tileWidth);
+		bytesOutput.writeByte(tileHeight);
+		bytesOutput.writeInt32(tilesetChunk.numTiles);
+
+		bytesOutput.writeBytes(tilesetChunk.uncompressedTilesetImage, 0, tilesetChunk.uncompressedTilesetImage.length);
+
+		return new TilesetChunk(name, bytesOutput.getBytes());
+	}
+
+	public static function createChunks(name:String, bytes:Bytes, ?reuseRepeated = true):Array<TilesetChunk> {
+		final result:Array<TilesetChunk> = [];
 		final ase = ase.Ase.fromBytes(bytes);
 
 		if (ase.header.colorDepth != INDEXED)
 			throw 'Only indexed aseprite files are allowed';
 
-		final bytesOutput = new BytesOutput();
-
-		final tilesets = ase.firstFrame.chunkTypes[ChunkType.TILESET];
+		final tilesets:Array<ase.chunks.TilesetChunk> = cast ase.firstFrame.chunkTypes[ChunkType.TILESET];
 
 		if (tilesets != null) {
-			final aseTilesetChunk:ase.chunks.TilesetChunk = cast tilesets[tilesets.length - 1];
+			for (aseTilesetChunk in tilesets)
+				result.push(createTilesetChunk(name, aseTilesetChunk));
+		} else
+			trace('No tilesets in $name');
 
-			final tileWidth = aseTilesetChunk.width;
-			final tileHeight = aseTilesetChunk.height;
-
-			if (tileWidth > 256 || tileHeight > 256)
-				throw 'Tile size cannot exceed 256px';
-
-			bytesOutput.writeByte(tileWidth);
-			bytesOutput.writeByte(tileHeight);
-			bytesOutput.writeInt32(aseTilesetChunk.numTiles);
-
-			bytesOutput.writeBytes(aseTilesetChunk.uncompressedTilesetImage, 0, aseTilesetChunk.uncompressedTilesetImage.length);
-		} else {
-			final merged = res.rom.tools.AseTools.merge(ase);
-
-			final tiles:Array<Bytes> = [];
-
-			final tileWidth = ase.header.gridWidth;
-			final tileHeight = ase.header.gridHeight;
-
-			if (tileWidth > 256 || tileHeight > 256)
-				throw 'Tile cannot be larger than 256px for any dimension';
-
-			final hTiles:Int = Math.floor(ase.width / tileWidth);
-			final vTiles:Int = Math.floor(ase.height / tileHeight);
-
-			for (line in 0...vTiles) {
-				for (col in 0...hTiles) {
-					final tileData = Bytes.alloc(tileWidth * tileHeight);
-
-					for (t_line in 0...tileHeight) {
-						final srcPos = ((line * tileHeight) + t_line) * ase.width + (col * tileWidth);
-						final dstPos = t_line * tileWidth;
-
-						tileData.blit(dstPos, merged, srcPos, tileWidth);
-					}
-
-					var empty:Bool = true;
-
-					for (n in 0...tileData.length) {
-						if (tileData.get(n) != 0) {
-							empty = false;
-							break;
-						}
-					}
-
-					if (!empty) {
-						var exists:Bool = false;
-
-						if (reuseRepeated) {
-							for (exTile in tiles) {
-								if (exTile.compare(tileData) == 0) {
-									exists = true;
-									break;
-								}
-							}
-
-							if (!exists)
-								tiles.push(tileData);
-						} else
-							tiles.push(tileData);
-					}
-				}
-			}
-
-			bytesOutput.writeByte(tileWidth);
-			bytesOutput.writeByte(tileHeight);
-			bytesOutput.writeInt32(tiles.length);
-
-			for (tileData in tiles) {
-				bytesOutput.writeBytes(tileData, 0, tileData.length);
-			}
-		}
-
-		return new TilesetChunk(name, bytesOutput.getBytes());
+		return result;
 	}
 
 	override function process(fileName:String, palette:Palette) {
 		final bytes = File.getBytes(fileName);
 		final name = fileName.withoutDirectory().withoutExtension();
 
-		tilesetChunk = createChunk(name, bytes, reuseRepeated);
+		tilesetChunks = createChunks(name, bytes, reuseRepeated);
 
 		return this;
 	}
 
 	override function getChunks():Array<RomChunk> {
-		return [tilesetChunk];
+		return cast tilesetChunks;
 	}
 }

@@ -78,7 +78,7 @@ class Splash extends State {
 
 		frameBuffer.circle((frameBuffer.width / 2).int(), (frameBuffer.height / 2 + 2).int(), 25, bg, bg);
 
-		frameBuffer.drawSprite(sp, Std.int((frameBuffer.width - sp.width) / 2), Std.int((frameBuffer.height - sp.height) / 2));
+		frameBuffer.sprite(sp, Std.int((frameBuffer.width - sp.width) / 2), Std.int((frameBuffer.height - sp.height) / 2));
 
 		if (font != null)
 			font.drawPivot(frameBuffer, 'v${RES.VERSION}', Std.int(frameBuffer.width / 2), Std.int(frameBuffer.height / 2 + sp.height / 2) + 2, 0.5, 0);

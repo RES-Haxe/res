@@ -19,6 +19,9 @@ abstract class BIOS {
 
 	abstract public function createStorage():Storage;
 
+	public function ready(cb:Void->Void)
+		cb();
+
 	public function new(name:String) {
 		this.name = name;
 	}

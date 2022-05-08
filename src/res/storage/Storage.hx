@@ -1,6 +1,6 @@
 package res.storage;
 
-abstract class Storage {
+class Storage {
 	var data:Map<String, Dynamic> = [];
 
 	public function new() {}
@@ -33,7 +33,7 @@ abstract class Storage {
 		return val == null ? defaultValue : cast data[key];
 	}
 
-	abstract public function save():Void;
+	public function save() {}
 
-	abstract public function restore():Void;
+	public function restore() {}
 }

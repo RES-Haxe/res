@@ -105,6 +105,15 @@ class Tilemap {
 				line[index].index = tileIndex;
 	}
 
+	/**
+		Set the size of the tilemap to fit the frame buffer
+	 */
+	public function fullscreen(fb:FrameBuffer) {
+		x = y = 0;
+		width = fb.width;
+		height = fb.height;
+	}
+
 	inline public function inBounds(tileCol:Int, tileLine:Int):Bool {
 		return (tileLine >= 0 && tileLine < vTiles && tileCol >= 0 && tileCol < hTiles);
 	}

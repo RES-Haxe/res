@@ -85,7 +85,7 @@ class Rom {
 				case TILESET:
 					tilesets[chunk.name] = cast(chunk, TilesetChunk).getTileset();
 				case TILEMAP:
-					tilemaps[chunk.name] = cast(chunk, TilemapChunk).getTilemap(tilesets.exists(chunk.name) ? tilesets[chunk.name] : null);
+					tilemaps[chunk.name] = cast(chunk, TilemapChunk).getTilemap(tilesets);
 				case FONT:
 					fonts[chunk.name] = cast(chunk, FontChunk).getFont(sprites['font:${chunk.name}']);
 				case DATA:

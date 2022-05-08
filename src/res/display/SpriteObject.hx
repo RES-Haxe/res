@@ -23,6 +23,9 @@ enum PingPongCycle {
 class SpriteObject {
 	public final sprite:Sprite;
 
+	/** Animation speed scale */
+	public var animationSpeed:Float = 1;
+
 	/** Whether the animation should be playing */
 	public var playing:Bool = false;
 
@@ -115,6 +118,12 @@ class SpriteObject {
 			trace('No animation named <$name>');
 	}
 
+	public function play(?name:String) {
+		if (name != null)
+			setAnimation(name);
+		playing = true;
+	}
+
 	public dynamic function stopped() {};
 
 	function nextFrame() {
@@ -174,20 +183,30 @@ class SpriteObject {
 				nextFrame();
 			}
 
-			_frameTime += dt;
+			_frameTime += (dt * animationSpeed);
 		}
 	}
 
-	public function render(fb:FrameBuffer) {
-		Sprite.drawSprite(fb, sprite, x.floor(), y.floor(), {
-			width: width.floor(),
-			height: height.floor(),
-			frame: currentFrameIndex,
-			flipX: flipX,
-			flipY: flipY,
-			scrollX: scrollX,
-			scrollY: scrollY,
-			wrap: wrap
-		});
-	}
+	/**
+		Draw a sprite object
+
+		@param fb Frame buffer
+		@param obj Sprite object
+		@param x Override x
+		@param y Override y
+	 */
+	public static function spriteObject(fb:FrameBuffer, obj:SpriteObject, ?x:Float, ?y:Float)
+		Sprite.sprite(fb, obj.sprite, (x == null ? obj.x : x).floor(), (y == null ? obj.y : y).floor(), {
+			width: obj.width.floor(),
+			height: obj.height.floor(),
+			frame: obj.currentFrameIndex,
+			flipX: obj.flipX,
+			flipY: obj.flipY,
+			scrollX: obj.scrollX,
+			scrollY: obj.scrollY,
+			wrap: obj.wrap
+		}, obj.colorMap);
+
+	public function render(fb:FrameBuffer)
+		spriteObject(fb, this);
 }

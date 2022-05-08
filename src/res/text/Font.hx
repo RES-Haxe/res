@@ -61,7 +61,7 @@ class Font {
 				final c = characters.exists(char) ? characters[char] : characters[' '.charCodeAt(0)];
 
 				if (c != null) {
-					Sprite.drawSpriteRegion(frameBuffer, sprite, c.x, c.y, c.width, c.height, tx + c.xoffset, ty + c.yoffset);
+					Sprite.spriteRegion(frameBuffer, sprite, c.x, c.y, c.width, c.height, tx + c.xoffset, ty + c.yoffset);
 					tx += c.xadvance;
 				}
 			}

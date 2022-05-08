@@ -91,17 +91,21 @@ class RES {
 
 	public final frameBuffer:FrameBuffer;
 
+	private var _width:Int;
+
 	/** Shorthand for `platform.frameBuffer.width` */
 	public var width(get, never):Int;
 
 	function get_width():Int
-		return frameBuffer.width;
+		return _width;
+
+	private var _height:Int;
 
 	/** Shorthand for `platform.frameBuffer.height` */
 	public var height(get, never):Int;
 
 	function get_height():Int
-		return frameBuffer.height;
+		return _height;
 
 	function get_state():State
 		return _state;
@@ -130,9 +134,12 @@ class RES {
 
 		final frameSize = config.resolution.pixelSize();
 
+		_width = frameSize.width;
+		_height = frameSize.height;
+
 		this.bios = bios;
 		this.bios.connect(this);
-		this.frameBuffer = bios.createFrameBuffer(frameSize.width, frameSize.height, rom.palette);
+		this.frameBuffer = bios.createFrameBuffer(_width, _height, rom.palette);
 		this.storage = bios.createStorage();
 		this.storage.restore();
 
@@ -346,9 +353,14 @@ class RES {
 		@param config.rom ROM
 		@param config.main Entry point function that should return an object that has a `render` and an `update` methods
 		@param config.chip An array of initial chips
+		@param onBooted will be called after the boot
 	 */
-	public static function boot(bios:BIOS, config:RESConfig):RES {
-		return new RES(bios, config);
+	public static function boot(bios:BIOS, config:RESConfig, ?onBooted:RES->Void) {
+		bios.ready(() -> {
+			final res = new RES(bios, config);
+			if (onBooted != null)
+				onBooted(res);
+		});
 	}
 }
 
