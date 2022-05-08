@@ -11,7 +11,7 @@ using Std;
 class State {
 	public var audioMixer:AudioMixer;
 
-	/** Color index to use to clear the screen (brightest color index by default) **/
+	/** Color index to use to clear the screen (darkest color index by default) **/
 	public var clearColorIndex:Null<Int> = null;
 
 	public var res(default, set):RES;
@@ -23,7 +23,7 @@ class State {
 			audioMixer = res.bios.createAudioMixer();
 			audioMixer.audioBufferCache = res.audioBufferCache;
 
-			clearColorIndex = res.rom.palette.darkestIndex;
+			clearColorIndex = res.rom.palette.darkest;
 		}
 
 		return res;

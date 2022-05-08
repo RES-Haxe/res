@@ -74,7 +74,7 @@ class Splash extends State {
 
 		final sp = res.rom.sprites['splash'];
 
-		final bg = res.rom.palette.darkestIndex;
+		final bg = res.rom.palette.darkest;
 
 		frameBuffer.circle((frameBuffer.width / 2).int(), (frameBuffer.height / 2 + 2).int(), 25, bg, bg);
 

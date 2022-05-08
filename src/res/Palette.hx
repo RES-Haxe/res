@@ -28,17 +28,17 @@ class Palette {
 	/**
 		Index of the brightest color in the palette
 	 */
-	public var brightestIndex(get, never):Int;
+	public var brightest(get, never):Int;
 
-	inline function get_brightestIndex():Int
+	inline function get_brightest():Int
 		return _luminance[_luminance.length - 1];
 
 	/**
 		Index of the darkest color in the palette
 	 */
-	public var darkestIndex(get, never):Int;
+	public var darkest(get, never):Int;
 
-	inline function get_darkestIndex():Int
+	inline function get_darkest():Int
 		return _luminance[0];
 
 	/**
