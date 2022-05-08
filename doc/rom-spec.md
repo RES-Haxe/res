@@ -57,6 +57,8 @@ BYTE[w*h*n] Tiles' pixels
 ### Tilemap (`0x02`)
 
 ```
+BYTE        Length of the string (n)
+CHAR[n]     Name of a Tileset to use for this tilemap
 DWORD       Number of tiles horizontally (h)
 DWORD       Number of tiles vertically (v)
 + For each LINE of tiles (0...v)
