@@ -17,6 +17,7 @@ final CONVERTERS:Map<String, Map<String, Converter>> = [
 	],
 	'palette' => [
 		'' => new res.rom.converters.palette.text.Converter(),
+		'aseprite' => new res.rom.converters.palette.aseprite.Converter(),
 		'png' => new res.rom.converters.palette.png.Converter()
 	],
 	'fonts' => [
