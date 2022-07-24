@@ -1,13 +1,12 @@
 package res.types;
 
 import res.RES;
-import res.Resolution;
 import res.chips.Chip;
 import res.display.FrameBuffer;
 import res.rom.Rom;
 
 typedef RESConfig = {
-	resolution:Resolution,
+	resolution:Array<Int>,
 	rom:Rom,
 	?main:RES -> {
 		function render(fb:FrameBuffer):Void;

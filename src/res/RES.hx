@@ -17,7 +17,6 @@ import res.types.RESConfig;
 
 using Math;
 using Type;
-using res.tools.ResolutionTools;
 
 typedef RenderHookFunction = RES->FrameBuffer->Void;
 
@@ -63,7 +62,6 @@ class RES {
 
 	public final keyboard:Keyboard;
 	public final mouse:Mouse;
-	public final resolution:Resolution;
 	public final bios:BIOS;
 	public final storage:Storage;
 	public final renderHooks:RenderHooks = {
@@ -113,7 +111,8 @@ class RES {
 	private function new(bios:BIOS, config:RESConfig) {
 		this.config = config;
 
-		this.resolution = config.resolution;
+		if (config.resolution.length != 2)
+			throw 'Resolution must have exactly two elements for width and height';
 
 		controller = new Controller("player1");
 		connectController(controller);
@@ -132,10 +131,8 @@ class RES {
 
 		this.rom = config.rom;
 
-		final frameSize = config.resolution.pixelSize();
-
-		_width = frameSize.width;
-		_height = frameSize.height;
+		_width = config.resolution[0];
+		_height = config.resolution[1];
 
 		this.bios = bios;
 		this.bios.connect(this);
