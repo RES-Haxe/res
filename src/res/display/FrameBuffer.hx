@@ -3,39 +3,18 @@ package res.display;
 import haxe.io.Bytes;
 import res.tools.MathTools.wrap;
 
-class FrameBuffer {
-	public final width:Int;
-	public final height:Int;
-
-	final _indecies:Bytes;
-
+class FrameBuffer extends Bitmap {
 	public var scrollX:Int = 0;
 	public var scrollY:Int = 0;
 	public var wrapX:Bool = false;
 	public var wrapY:Bool = false;
-
-	public function new(width:Int, height:Int) {
-		this.width = width;
-		this.height = height;
-		_indecies = Bytes.alloc(width * height);
-	}
 
 	inline function checkBounds(x:Int, y:Int):Bool {
 		return x >= 0 && y >= 0 && x < width && y < height;
 	}
 
 	public function clear(index:Int) {
-		_indecies.fill(0, _indecies.length, index);
-	}
-
-	/**
-		Get color index at given position
-
-		@param x X coordinate
-		@param y Y coordinate
-	 */
-	public function get(x:Int, y:Int):Int {
-		return _indecies.get(y * width + x);
+		data.fill(0, data.length, index);
 	}
 
 	/**
@@ -45,7 +24,7 @@ class FrameBuffer {
 		@param y Y coordinate
 		@param index color index
 	 */
-	public function set(x:Int, y:Int, index:Int) {
+	override public function set(x:Int, y:Int, index:Int) {
 		if (index == 0)
 			return;
 
@@ -59,7 +38,7 @@ class FrameBuffer {
 			y = wrap(y, height);
 
 		if (checkBounds(x, y))
-			_indecies.set(y * width + x, index);
+			super.set(x, y, index);
 	}
 
 	/**

@@ -1,7 +1,6 @@
 package res.display;
 
 import Math.abs;
-import res.display.FrameBuffer;
 import res.geom.Rect;
 import res.tools.MathTools.*;
 import res.types.Shape;
@@ -9,16 +8,23 @@ import res.types.Shape;
 using Std;
 
 /**
-	Can be used as a static extension for FrameBuffer
+	Tool class for drawing shapes on a `Bitmap`
+
+	Can be used as a static extension for `Bitmap`/`FrameBuffer`
 
 	e.g.:
 
 	```haxe
 	using res.display.Painter;
 
+	final bitmap:Bitmap = new Bitmap(128, 128);
+
 	// ...
 
 	function render(frameBuffer:FrameBuffer) {
+
+		bitmap.circle(64, 64, 64, 7, 2);
+
 		frameBuffer.line(0, 0, 100, 100, 5);
 	}
 
@@ -28,21 +34,21 @@ class Painter {
 	/**
 		Draw a circle
 
-		@param frameBuffer
+		@param bitmap
 		@param cx Center x
 		@param cy Center y
 		@param r radius
 		@param strokeIndex Stroke color index
 		@param fillIndex Fill color index
 	 */
-	public static function circle(frameBuffer:FrameBuffer, cx:Int, cy:Int, r:Int, strokeIndex:Int, ?fillIndex:Int) {
-		ellipse(frameBuffer, cx, cy, r, r, strokeIndex, fillIndex);
+	public static function circle(bitmap:Bitmap, cx:Int, cy:Int, r:Int, strokeIndex:Int, ?fillIndex:Int) {
+		ellipse(bitmap, cx, cy, r, r, strokeIndex, fillIndex);
 	}
 
 	/**
 		Draw an ellipse
 
-		@param frameBuffer
+		@param bitmap
 		@param cx
 		@param cy
 		@param rx
@@ -52,7 +58,7 @@ class Painter {
 
 		@see https://www.geeksforgeeks.org/midpoint-ellipse-drawing-algorithm/
 	 */
-	public static function ellipse(frameBuffer:FrameBuffer, cx:Int, cy:Int, rx:Int, ry:Int, strokeIndex:Int, ?fillIndex:Int) {
+	public static function ellipse(bitmap:Bitmap, cx:Int, cy:Int, rx:Int, ry:Int, strokeIndex:Int, ?fillIndex:Int) {
 		var dx:Float;
 		var dy:Float;
 		var d1:Float;
@@ -75,14 +81,14 @@ class Painter {
 				for (px in fx...tx + 1) {
 					final index = px == fx || px == tx ? strokeIndex : fillIndex;
 
-					frameBuffer.set(px, (y + cy).int(), index);
-					frameBuffer.set(px, (-y + cy).int(), index);
+					bitmap.set(px, (y + cy).int(), index);
+					bitmap.set(px, (-y + cy).int(), index);
 				}
 			} else {
-				frameBuffer.set((x + cx).int(), (y + cy).int(), strokeIndex);
-				frameBuffer.set((-x + cx).int(), (y + cy).int(), strokeIndex);
-				frameBuffer.set((x + cx).int(), (-y + cy).int(), strokeIndex);
-				frameBuffer.set((-x + cx).int(), (-y + cy).int(), strokeIndex);
+				bitmap.set((x + cx).int(), (y + cy).int(), strokeIndex);
+				bitmap.set((-x + cx).int(), (y + cy).int(), strokeIndex);
+				bitmap.set((x + cx).int(), (-y + cy).int(), strokeIndex);
+				bitmap.set((-x + cx).int(), (-y + cy).int(), strokeIndex);
 			}
 		};
 
@@ -124,14 +130,14 @@ class Painter {
 	/**
 		Draw a Line 
 
-		@param frameBuffer
+		@param bitmap
 		@param x0 Origin X
 		@param y0 Origin Y
 		@param x1 Destination X
 		@param y1 Destination Y
 		@param colorIndex
 	 */
-	public static function line(frameBuffer:FrameBuffer, x0:Int, y0:Int, x1:Int, y1:Int, colorIndex:Int) {
+	public static function line(bitmap:Bitmap, x0:Int, y0:Int, x1:Int, y1:Int, colorIndex:Int) {
 		final dx:Int = abs(x1 - x0).int();
 		final dy:Int = abs(y1 - y0).int();
 
@@ -147,7 +153,7 @@ class Painter {
 		var error:Float = 0;
 
 		do {
-			frameBuffer.set(x, y, colorIndex);
+			bitmap.set(x, y, colorIndex);
 
 			if (dx > dy) {
 				x += ox;
@@ -172,7 +178,7 @@ class Painter {
 	/**
 		Draw a Rectangle
 
-		@param frameBuffer
+		@param bitmap
 		@param x X screen coordinate
 		@param y Y screen coordinate
 		@param w Width
@@ -180,8 +186,8 @@ class Painter {
 		@param strokeIndex Stroke color index 
 		@param fillIndex Fill color index
 	 */
-	public static function rect(frameBuffer:FrameBuffer, x:Int, y:Int, w:Int, h:Int, strokeIndex:Int, ?fillIndex:Int) {
-		if (Rect.intersect(0, 0, frameBuffer.width, frameBuffer.height, x, y, w, h)) {
+	public static function rect(bitmap:Bitmap, x:Int, y:Int, w:Int, h:Int, strokeIndex:Int, ?fillIndex:Int) {
+		if (Rect.intersect(0, 0, bitmap.width, bitmap.height, x, y, w, h)) {
 			final fx = min(x, x + w);
 			final fy = min(y, y + h);
 
@@ -192,9 +198,9 @@ class Painter {
 				for (line in fy...ty) {
 					for (col in fx...tx) {
 						if (line == fy || line == ty - 1 || col == fx || col == tx - 1)
-							frameBuffer.set(col, line, strokeIndex);
+							bitmap.set(col, line, strokeIndex);
 						else if (fillIndex != null)
-							frameBuffer.set(col, line, fillIndex);
+							bitmap.set(col, line, fillIndex);
 					}
 				}
 			}
@@ -204,17 +210,17 @@ class Painter {
 	/**
 		Draw a shape
 
-		@param frameBuffer
+		@param bitmap
 		@param shape
 		@param colorIndex
 		@param fillIndex
 	 */
-	public static function shape(frameBuffer:FrameBuffer, shape:Shape, strokeIndex:Int, ?fillIndex:Int) {
+	public static function shape(bitmap:Bitmap, shape:Shape, strokeIndex:Int, ?fillIndex:Int) {
 		switch (shape) {
 			case CIRCLE(cx, cy, r):
-				circle(frameBuffer, cx.int(), cy.int(), r.int(), strokeIndex, fillIndex);
+				circle(bitmap, cx.int(), cy.int(), r.int(), strokeIndex, fillIndex);
 			case RECT(cx, cy, w, h):
-				rect(frameBuffer, (cx - w / 2).int(), (cy - h / 2).int(), w.int(), h.int(), strokeIndex, fillIndex);
+				rect(bitmap, (cx - w / 2).int(), (cy - h / 2).int(), w.int(), h.int(), strokeIndex, fillIndex);
 		}
 	}
 }
