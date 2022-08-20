@@ -20,6 +20,11 @@ abstract class BIOS {
 	abstract public function createStorage():Storage;
 
 	/**
+		Implement cursor visibility toggle here
+	**/
+	public function setCursorVisibility(value:Bool) {}
+
+	/**
 		Implement any preperational code here and call `cb` whenever BIOS is
 		ready to be connected with the RES instance
 	**/

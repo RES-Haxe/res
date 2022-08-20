@@ -9,6 +9,15 @@ class Mouse extends Emitter<MouseEvent> {
 	public var x:Int;
 	public var y:Int;
 
+	public var isDown:Bool = false;
+
+	public var cursorVisible(default, set):Bool = true;
+
+	function set_cursorVisible(value:Bool) {
+		res.bios.setCursorVisibility(value);
+		return cursorVisible = value;
+	}
+
 	var res:RES;
 
 	@:allow(res)
@@ -17,10 +26,12 @@ class Mouse extends Emitter<MouseEvent> {
 	}
 
 	public function push(button:MouseButton, posX:Int, posY:Int) {
+		isDown = true;
 		emit(DOWN(button, posX, posY));
 	}
 
 	public function release(button:MouseButton, posX:Int, posY:Int) {
+		isDown = false;
 		emit(UP(button, posX, posY));
 	}
 
