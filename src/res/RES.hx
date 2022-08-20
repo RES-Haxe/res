@@ -5,6 +5,7 @@ import haxe.Timer;
 import res.audio.AudioBufferCache;
 import res.bios.BIOS;
 import res.chips.Chip;
+import res.display.CRT;
 import res.display.FrameBuffer;
 import res.input.Controller;
 import res.input.ControllerEvent;
@@ -63,6 +64,7 @@ class RES {
 	public final keyboard:Keyboard;
 	public final mouse:Mouse;
 	public final bios:BIOS;
+	public final crt:CRT;
 	public final storage:Storage;
 	public final renderHooks:RenderHooks = {
 		before: [],
@@ -78,6 +80,7 @@ class RES {
 	private var audioBufferCache:AudioBufferCache;
 
 	private var chips:Map<String, Chip> = [];
+
 	private var prevFrameTime:Null<Float> = null;
 
 	private final _stateHistory:Array<State> = [];
@@ -86,8 +89,6 @@ class RES {
 	private var _stateResultCb:Array<Dynamic->Void> = [];
 
 	public var state(get, never):State;
-
-	public final frameBuffer:FrameBuffer;
 
 	private var _width:Int;
 
@@ -136,9 +137,11 @@ class RES {
 
 		this.bios = bios;
 		this.bios.connect(this);
-		this.frameBuffer = bios.createFrameBuffer(_width, _height, rom.palette);
 		this.storage = bios.createStorage();
 		this.storage.restore();
+		this.crt = bios.createCRT(_width, _height);
+
+		rom.palette.format(this.crt.pixelFormat);
 
 		audioBufferCache = new AudioBufferCache(this);
 
@@ -250,10 +253,11 @@ class RES {
 		return false;
 	}
 
+	/**
+		Shutdown the system
+	**/
 	public function poweroff() {
-		#if sys
-		Sys.exit(0);
-		#end
+		bios.shutdown();
 	}
 
 	/**
@@ -320,18 +324,20 @@ class RES {
 		Produce a frame
 	 */
 	public function render() {
-		frameBuffer.beginFrame();
+		if (state != null) {
+			final frameBuffer = state.frameBuffer;
 
-		for (func in renderHooks.before)
-			func(this, frameBuffer);
+			for (func in renderHooks.before)
+				func(this, frameBuffer);
 
-		if (state != null)
-			state.render(frameBuffer);
+			if (state != null)
+				state.render(frameBuffer);
 
-		for (func in renderHooks.after)
-			func(this, frameBuffer);
+			for (func in renderHooks.after)
+				func(this, frameBuffer);
 
-		frameBuffer.endFrame();
+			crt.raster(frameBuffer, rom.palette);
+		}
 
 		final currentStamp = Timer.stamp();
 
@@ -357,6 +363,7 @@ class RES {
 			final res = new RES(bios, config);
 			if (onBooted != null)
 				onBooted(res);
+			bios.startup();
 		});
 	}
 }

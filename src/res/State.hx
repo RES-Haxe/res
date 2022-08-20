@@ -14,6 +14,13 @@ class State {
 	/** Color index to use to clear the screen (darkest color index by default) **/
 	public var clearColorIndex:Null<Int> = null;
 
+	private var _frameBuffer:FrameBuffer;
+
+	public var frameBuffer(get, never):FrameBuffer;
+
+	function get_frameBuffer():FrameBuffer
+		return _frameBuffer;
+
 	public var res(default, set):RES;
 
 	function set_res(_res:RES) {
@@ -24,6 +31,8 @@ class State {
 			audioMixer.audioBufferCache = res.audioBufferCache;
 
 			clearColorIndex = res.rom.palette.darkest;
+
+			_frameBuffer = new FrameBuffer(res.width, res.height);
 		}
 
 		return res;

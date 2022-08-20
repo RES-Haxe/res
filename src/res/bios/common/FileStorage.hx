@@ -1,8 +1,8 @@
 package res.bios.common;
 
-import sys.FileSystem;
 import haxe.Json;
 import res.storage.Storage;
+import sys.FileSystem;
 import sys.io.File;
 
 using Reflect;
@@ -16,11 +16,11 @@ class FileStorage extends Storage {
 		this.fileName = fileName;
 	}
 
-	public function save() {
+	override public function save() {
 		File.saveContent(fileName, Json.stringify(data));
 	}
 
-	public function restore() {
+	override public function restore() {
 		if (FileSystem.exists(fileName))
 			data = Json.parse(File.getContent(fileName));
 	}

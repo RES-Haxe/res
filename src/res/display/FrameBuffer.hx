@@ -3,11 +3,10 @@ package res.display;
 import haxe.io.Bytes;
 import res.tools.MathTools.wrap;
 
-abstract class FrameBuffer {
+class FrameBuffer {
 	public final width:Int;
 	public final height:Int;
 
-	final _palette:Palette;
 	final _indecies:Bytes;
 
 	public var scrollX:Int = 0;
@@ -15,10 +14,9 @@ abstract class FrameBuffer {
 	public var wrapX:Bool = false;
 	public var wrapY:Bool = false;
 
-	public function new(width:Int, height:Int, palette:Palette) {
+	public function new(width:Int, height:Int) {
 		this.width = width;
 		this.height = height;
-		_palette = palette;
 		_indecies = Bytes.alloc(width * height);
 	}
 
@@ -26,15 +24,9 @@ abstract class FrameBuffer {
 		return x >= 0 && y >= 0 && x < width && y < height;
 	}
 
-	abstract private function setPixel(x:Int, y:Int, color:Color32):Void;
-
-	public function beginFrame() {}
-
 	public function clear(index:Int) {
 		_indecies.fill(0, _indecies.length, index);
 	}
-
-	public function endFrame() {}
 
 	/**
 		Get color index at given position
@@ -66,10 +58,8 @@ abstract class FrameBuffer {
 		if (wrapY)
 			y = wrap(y, height);
 
-		if (checkBounds(x, y)) {
+		if (checkBounds(x, y))
 			_indecies.set(y * width + x, index);
-			setPixel(x, y, _palette.get(index));
-		}
 	}
 
 	/**

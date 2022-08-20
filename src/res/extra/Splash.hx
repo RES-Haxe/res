@@ -51,10 +51,10 @@ class Splash extends State {
 
 		final tileset = new Tileset(BAR_SIZE, BAR_SIZE, tilesBytes.getBytes());
 
-		bgMap = new Tilemap(tileset, res.rom.palette.numColors, 1, res.frameBuffer.width, res.frameBuffer.height);
+		bgMap = new Tilemap(tileset, res.rom.palette.numColors, 1, res.width, res.height);
 
 		bgMap.rasterInrpt = (screenLine, _) -> {
-			bgMap.scrollX = Math.sin(phase + Math.PI * (screenLine / res.frameBuffer.height * (res.frameBuffer.height / 64))) * 16;
+			bgMap.scrollX = Math.sin(phase + Math.PI * (screenLine / res.height * (res.height / 64))) * 16;
 			return NONE;
 		};
 

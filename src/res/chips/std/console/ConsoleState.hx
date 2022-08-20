@@ -51,7 +51,7 @@ class ConsoleState extends State {
 
 		timeline = new Timeline();
 		timeline.forWhile(ROLL_TIME, (t, tt) -> {
-			rollBottom = Math.floor(lerp(0, res.frameBuffer.height / 2, t / tt));
+			rollBottom = Math.floor(lerp(0, res.height / 2, t / tt));
 		}, () -> {
 			rolling = false;
 			timeline = null;
@@ -63,7 +63,7 @@ class ConsoleState extends State {
 			rolling = true;
 			timeline = new Timeline();
 			timeline.forWhile(ROLL_TIME, (t, tt) -> {
-				rollBottom = Math.floor(lerp(res.frameBuffer.height / 2, 0, t / tt));
+				rollBottom = Math.floor(lerp(res.height / 2, 0, t / tt));
 			}, () -> {
 				rolling = false;
 				timeline = null;

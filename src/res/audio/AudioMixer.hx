@@ -1,6 +1,6 @@
 package res.audio;
 
-class AudioMixer {
+abstract class AudioMixer {
 	public final playing:Array<AudioChannel> = [];
 
 	var pausedChannels:Array<AudioChannel> = [];
@@ -67,7 +67,5 @@ class AudioMixer {
 		@param buffer Audio buffer
 		@param loop Whether the channel should be looped or not
 	 */
-	public function createAudioChannel(buffer:IAudioBuffer, ?loop:Bool):AudioChannel {
-		throw new haxe.exceptions.NotImplementedException();
-	}
+	abstract public function createAudioChannel(buffer:IAudioBuffer, ?loop:Bool):AudioChannel;
 }
