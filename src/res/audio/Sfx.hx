@@ -37,7 +37,7 @@ class Sfx {
 	public var totalTime(get, never):Int;
 
 	function get_totalTime() {
-		return Std.int(sum(params.attack, params.decay + params.sustainTime + params.release));
+		return Std.int(sum([params.attack, params.decay + params.sustainTime + params.release]));
 	}
 
 	public var totalSamples(get, never):Int;

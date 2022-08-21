@@ -2,6 +2,13 @@ package res.tools;
 
 class MathTools {
 	/**
+		Calculate average
+	**/
+	public static function avg(numbers:Array<Float>):Float {
+		return sum(numbers) / numbers.length;
+	}
+
+	/**
 		Bezier curve
 
 		@param points Control points
@@ -53,6 +60,16 @@ class MathTools {
 
 	/**
 		Returns parameter useful for `lerp` function
+
+		```haxe
+		return (v - a) / (b - a);
+		```
+
+		If `a` equals `0`, `b` equals `100` and `v` equals to `50` - returns `0.5`
+
+		@param a From value (0)
+		@param b To value (1)
+		@param v The value
 	 */
 	public static inline function param(a:Float, b:Float, v:Float):Float
 		return (v - a) / (b - a);
@@ -69,7 +86,7 @@ class MathTools {
 	/**
 		Sum multiple numbers
 	 */
-	public static function sum(...nums:Float):Float {
+	public static function sum(nums:Array<Float>):Float {
 		var result:Float = 0;
 
 		for (n in nums)
@@ -84,7 +101,7 @@ class MathTools {
 		- If `x >= w` - returns `x % w`
 		- If `x < 0` - returns `w + (x % w)`
 
-		Useful to make sure a number is always within `0, w` boundaries
+		Useful to make sure a number is always within `0, w` boundaries for repeating patterns
 
 		@param x The number
 		@param w The "width" of the boundaries 

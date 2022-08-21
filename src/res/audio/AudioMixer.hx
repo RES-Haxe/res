@@ -68,4 +68,13 @@ abstract class AudioMixer {
 		@param loop Whether the channel should be looped or not
 	 */
 	abstract public function createAudioChannel(buffer:IAudioBuffer, ?loop:Bool):AudioChannel;
+
+	/**
+		Update Audio Buffer Cache
+
+		@param total If `true` - all the buffers will be (re-)created, otherwise only the new ones will be added
+	**/
+	public function updateCache(total:Bool = false) {
+		audioBufferCache.update(total);
+	}
 }

@@ -3,6 +3,7 @@ package res;
 import haxe.Rest;
 import haxe.Timer;
 import res.audio.AudioBufferCache;
+import res.audio.AudioMixer;
 import res.bios.BIOS;
 import res.chips.Chip;
 import res.display.CRT;
@@ -52,6 +53,8 @@ class PseudoState extends State {
 
 class RES {
 	public static final VERSION:String = '0.1.1';
+
+	public final audioMixer:AudioMixer;
 
 	public final config:RESConfig;
 
@@ -135,15 +138,17 @@ class RES {
 		_width = config.resolution[0];
 		_height = config.resolution[1];
 
+		audioBufferCache = new AudioBufferCache(this);
+
 		this.bios = bios;
 		this.bios.connect(this);
+		this.audioMixer = bios.createAudioMixer();
+		this.audioMixer.audioBufferCache = audioBufferCache;
 		this.storage = bios.createStorage();
 		this.storage.restore();
 		this.crt = bios.createCRT(_width, _height);
 
 		rom.palette.format(this.crt.pixelFormat);
-
-		audioBufferCache = new AudioBufferCache(this);
 
 		if (rom.fonts.exists('kernal')) {
 			defaultFont = rom.fonts['kernal'];
