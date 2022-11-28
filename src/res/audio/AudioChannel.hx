@@ -3,26 +3,16 @@ package res.audio;
 import haxe.exceptions.NotImplementedException;
 import res.events.Emitter;
 
-class AudioChannel extends Emitter<AudioEvent> {
-	public function isEnded():Bool {
-		throw new NotImplementedException();
-	}
+abstract class AudioChannel extends Emitter<AudioEvent> {
+	abstract public function isEnded():Bool;
 
-	public function isPlaying():Bool {
-		throw new NotImplementedException();
-	}
+	abstract public function isPlaying():Bool;
 
-	public function pause():Void {
-		throw new NotImplementedException();
-	}
+	abstract public function pause():Void;
 
-	public function resume():Void {
-		throw new NotImplementedException();
-	}
+	abstract public function resume():Void;
 
-	public function start():Void {
-		throw new NotImplementedException();
-	}
+	abstract public function start():Void;
 
 	public function stop():Void {
 		emit(ENDED);

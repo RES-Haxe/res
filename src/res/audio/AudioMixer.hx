@@ -67,7 +67,7 @@ abstract class AudioMixer {
 		@param buffer Audio buffer
 		@param loop Whether the channel should be looped or not
 	 */
-	abstract public function createAudioChannel(buffer:IAudioBuffer, ?loop:Bool):AudioChannel;
+	abstract public function createAudioChannel(buffer:IAudioBuffer, loop:Bool):AudioChannel;
 
 	/**
 		Update Audio Buffer Cache
