@@ -13,7 +13,7 @@ class FrameBuffer extends Bitmap {
 		return x >= 0 && y >= 0 && x < width && y < height;
 	}
 
-	public function clear(index:Int) {
+	public function clear(index:Int = 1) {
 		data.fill(0, data.length, index);
 	}
 
