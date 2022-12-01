@@ -48,14 +48,16 @@ class FontChunk extends RomChunk {
 				final chars:Map<Int, Char> = [];
 				final tileWidth:Int = bi.readByte();
 				final tileHeight:Int = bi.readByte();
-				final strlen = bi.readUInt16();
-				final characters = bi.readString(strlen, UTF8);
+				final utf8Len:Int = bi.readUInt16();
+				final charactersBytes = Bytes.alloc(utf8Len);
+				bi.readBytes(charactersBytes, 0, utf8Len);
+				final characters:String = charactersBytes.toString();
 
-				var nchar = 0;
+				var nchar:Int = 0;
 
 				for (line in 0...Std.int(sprite.height / tileHeight)) {
 					for (col in 0...Std.int(sprite.width / tileWidth)) {
-						final charCode = characters.charCodeAt(nchar);
+						final charCode:Int = characters.charCodeAt(nchar);
 
 						chars[charCode] = {
 							x: col * tileWidth,

@@ -43,8 +43,14 @@ class Converter extends res.rom.converters.Converter {
 		bo.writeByte(FontType.FIXED);
 		bo.writeByte(json.tileWidth);
 		bo.writeByte(json.tileHeight);
-		bo.writeUInt16(json.characters.length);
-		bo.writeString(json.characters, UTF8);
+
+		final cbo = new BytesOutput();
+		cbo.writeString(json.characters, UTF8);
+
+		final characterBytes = cbo.getBytes();
+
+		bo.writeUInt16(characterBytes.length);
+		bo.writeBytes(characterBytes, 0, characterBytes.length);
 
 		fontChunk = new FontChunk(name, bo.getBytes());
 
