@@ -77,6 +77,31 @@ class Sprite {
 		return obj;
 	}
 
+	/**
+		Get a color index from a pixel of a frame
+
+		@param frame Frame index
+		@param x
+		@param y
+	**/
+	public function get(frame:Int, x:Int, y:Int):Int {
+		return frames[frame].data.getxy(width, x, y);
+	}
+
+	/**
+		Draw a part of a sprite
+
+		@param frameBuffer
+		@param sprite
+		@param fx From X - position within the sprite
+		@param fy From Y - position within the sprite
+		@param width Width of the rectangle
+		@param height Height of the rectangle
+		@param atx X position to draw to
+		@param aty Y position to draw to
+		@param frame Frame number
+		@param colorMap Color map
+	**/
 	public static function spriteRegion(frameBuffer:FrameBuffer, sprite:Sprite, fx:Int, fy:Int, width:Int, height:Int, atx:Int, aty:Int, ?frame:Int = 0,
 			?colorMap:IndexMap) {
 		final frameData = sprite.frames[frame].data;

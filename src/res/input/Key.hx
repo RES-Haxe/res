@@ -130,4 +130,17 @@ class Key {
 	public static inline final MOUSE_MIDDLE = 2;
 	public static inline final MOUSE_BACK = 3;
 	public static inline final MOUSE_FORWARD = 4;
+
+	/** a bit that is set for left keys **/
+	public static inline var LOC_LEFT = 256;
+
+	/** a bit that is set for right keys **/
+	public static inline var LOC_RIGHT = 512;
+
+	public static inline var LSHIFT = SHIFT | LOC_LEFT;
+	public static inline var RSHIFT = SHIFT | LOC_RIGHT;
+	public static inline var LCTRL = CTRL | LOC_LEFT;
+	public static inline var RCTRL = CTRL | LOC_RIGHT;
+	public static inline var LALT = ALT | LOC_LEFT;
+	public static inline var RALT = ALT | LOC_RIGHT;
 }
