@@ -2,6 +2,8 @@ package res.display;
 
 import haxe.io.Bytes;
 import res.tools.MathTools.wrap;
+import res.tools.MathTools.lerp;
+import res.tools.MathTools.param;
 
 using res.tools.BytesTools;
 
@@ -86,6 +88,27 @@ class Sprite {
 	**/
 	public function get(frame:Int, x:Int, y:Int):Int {
 		return frames[frame].data.getxy(width, x, y);
+	}
+
+	/**
+		Draw a sprite into a rectangle with arbitrary width and height
+
+		@param frameBuffer
+		@param sprite
+		@param x X of the rectangle to draw to
+		@param y Y of the rectangle to draw to
+		@param width The width of the rectangle to draw to 
+		@param height The height of the rectangle to draw to 
+	**/
+	public static function spriteRect(frameBuffer:FrameBuffer, sprite:Sprite, x:Int, y:Int, width:Int, height:Int, ?frame:Int = 0) {
+		for (line in 0...height) {
+			for (col in 0...width) {
+				final sprite_x = Math.floor(lerp(0, sprite.width, param(0, width, col)));
+				final sprite_y = Math.floor(lerp(0, sprite.height, param(0, height, line)));
+				final px = sprite.get(frame, sprite_x, sprite_y);
+				frameBuffer.set(x + col, y + line, px);
+			}
+		}
 	}
 
 	/**
