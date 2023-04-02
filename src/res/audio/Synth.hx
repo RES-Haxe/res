@@ -15,7 +15,7 @@ typedef PCMParams = {
 	?sampleRate:Int
 };
 
-typedef SfxParams = {
+typedef SynthParams = {
 	/** Envelope */
 	?attack:Int,
 	?decay:Int,
@@ -30,9 +30,9 @@ typedef SfxParams = {
 /**
 	Sound effect generator
  */
-class Sfx {
+class Synth {
 	var pcm:PCMParams;
-	var params:SfxParams;
+	var params:SynthParams;
 
 	public var totalTime(get, never):Int;
 
@@ -92,7 +92,7 @@ class Sfx {
 		return bo.getBytes();
 	}
 
-	public function set(params:SfxParams) {
+	public function set(params:SynthParams) {
 		this.params.setValues(params);
 		return this;
 	}
@@ -113,7 +113,7 @@ class Sfx {
 		};
 	}
 
-	static function defaultParams():SfxParams {
+	static function defaultParams():SynthParams {
 		return {
 			attack: 200,
 			decay: 100,
@@ -131,7 +131,7 @@ class Sfx {
 		@param pcm PCM parameters
 		@param params Sound effect params
 	 */
-	public static function create(?pcm:PCMParams, ?params:SfxParams) {
+	public static function create(?pcm:PCMParams, ?params:SynthParams) {
 		final pcmParams = defaultPCM();
 		final createParams = defaultParams();
 
@@ -141,10 +141,10 @@ class Sfx {
 		if (params != null)
 			createParams.setValues(params);
 
-		return new Sfx(pcmParams, createParams);
+		return new Synth(pcmParams, createParams);
 	}
 
-	private function new(pcm:PCMParams, params:SfxParams) {
+	private function new(pcm:PCMParams, params:SynthParams) {
 		if ([8, 16, 32].indexOf(pcm.bps) == -1)
 			throw 'Unsupported bit depth: ${pcm.bps}';
 

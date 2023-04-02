@@ -138,11 +138,10 @@ class RES {
 		_width = config.resolution[0];
 		_height = config.resolution[1];
 
-		audioBufferCache = new AudioBufferCache(this);
-
 		this.bios = bios;
 		this.bios.connect(this);
 		this.audioMixer = bios.createAudioMixer();
+		audioBufferCache = new AudioBufferCache(this);
 		this.audioMixer.audioBufferCache = audioBufferCache;
 		this.storage = bios.createStorage();
 		this.storage.restore();
