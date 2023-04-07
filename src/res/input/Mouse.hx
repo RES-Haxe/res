@@ -6,8 +6,8 @@ import res.tools.MathTools.wrap;
 class Mouse extends Emitter<MouseEvent> {
 	public var enabled:Bool = true;
 
-	public var x:Int;
-	public var y:Int;
+	public var x:Int = 0;
+	public var y:Int = 0;
 
 	public var isDown:Bool = false;
 
