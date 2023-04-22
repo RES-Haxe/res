@@ -190,13 +190,13 @@ class SpriteObject {
 	/**
 		Draw a sprite object
 
-		@param fb Frame buffer
+		@param surface Frame buffer
 		@param obj Sprite object
 		@param x Override x
 		@param y Override y
 	 */
-	public static function spriteObject(fb:FrameBuffer, obj:SpriteObject, ?x:Float, ?y:Float)
-		Sprite.sprite(fb, obj.sprite, (x == null ? obj.x : x).floor(), (y == null ? obj.y : y).floor(), {
+	public static function spriteObject(surface:Bitmap, obj:SpriteObject, ?x:Float, ?y:Float)
+		Sprite.sprite(surface, obj.sprite, (x == null ? obj.x : x).floor(), (y == null ? obj.y : y).floor(), {
 			width: obj.width.floor(),
 			height: obj.height.floor(),
 			frame: obj.currentFrameIndex,
@@ -207,6 +207,6 @@ class SpriteObject {
 			wrap: obj.wrap
 		}, obj.colorMap);
 
-	public function render(fb:FrameBuffer)
-		spriteObject(fb, this);
+	public function render(surface:FrameBuffer)
+		spriteObject(surface, this);
 }

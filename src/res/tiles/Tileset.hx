@@ -1,5 +1,6 @@
 package res.tiles;
 
+import res.display.Bitmap;
 import res.display.FrameBuffer;
 import haxe.io.Bytes;
 
@@ -69,6 +70,6 @@ class Tileset {
 			throw 'Invalid tile data size';
 	}
 
-	public function drawTile(frameBuffer:FrameBuffer, tileIndex:Int, x:Int, y:Int, ?colorMap:IndexMap)
-		frameBuffer.raster(x, y, _tilesData, tileIndex * tileSize, tileWidth, tileHeight, colorMap);
+	public function drawTile(surface:Bitmap, tileIndex:Int, x:Int, y:Int, ?colorMap:IndexMap)
+		return surface.raster(x, y, _tilesData, tileIndex * tileSize, tileWidth, tileHeight, colorMap);
 }

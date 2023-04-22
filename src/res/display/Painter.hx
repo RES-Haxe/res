@@ -34,21 +34,20 @@ class Painter {
 	/**
 		Draw a circle
 
-		@param bitmap
+		@param surface
 		@param cx Center x
 		@param cy Center y
 		@param r radius
 		@param strokeIndex Stroke color index
 		@param fillIndex Fill color index
 	 */
-	public static function circle(bitmap:Bitmap, cx:Int, cy:Int, r:Int, strokeIndex:Int, ?fillIndex:Int) {
-		ellipse(bitmap, cx, cy, r, r, strokeIndex, fillIndex);
-	}
+	public static function circle(surface:Bitmap, cx:Int, cy:Int, r:Int, strokeIndex:Int, ?fillIndex:Int)
+		return ellipse(surface, cx, cy, r, r, strokeIndex, fillIndex);
 
 	/**
 		Draw an ellipse
 
-		@param bitmap
+		@param surface
 		@param cx
 		@param cy
 		@param rx
@@ -58,7 +57,7 @@ class Painter {
 
 		@see https://www.geeksforgeeks.org/midpoint-ellipse-drawing-algorithm/
 	 */
-	public static function ellipse(bitmap:Bitmap, cx:Int, cy:Int, rx:Int, ry:Int, strokeIndex:Int, ?fillIndex:Int) {
+	public static function ellipse(surface:Bitmap, cx:Int, cy:Int, rx:Int, ry:Int, strokeIndex:Int, ?fillIndex:Int) {
 		var dx:Float;
 		var dy:Float;
 		var d1:Float;
@@ -81,14 +80,14 @@ class Painter {
 				for (px in fx...tx + 1) {
 					final index = px == fx || px == tx ? strokeIndex : fillIndex;
 
-					bitmap.set(px, (y + cy).int(), index);
-					bitmap.set(px, (-y + cy).int(), index);
+					surface.set(px, (y + cy).int(), index);
+					surface.set(px, (-y + cy).int(), index);
 				}
 			} else {
-				bitmap.set((x + cx).int(), (y + cy).int(), strokeIndex);
-				bitmap.set((-x + cx).int(), (y + cy).int(), strokeIndex);
-				bitmap.set((x + cx).int(), (-y + cy).int(), strokeIndex);
-				bitmap.set((-x + cx).int(), (-y + cy).int(), strokeIndex);
+				surface.set((x + cx).int(), (y + cy).int(), strokeIndex);
+				surface.set((-x + cx).int(), (y + cy).int(), strokeIndex);
+				surface.set((x + cx).int(), (-y + cy).int(), strokeIndex);
+				surface.set((-x + cx).int(), (-y + cy).int(), strokeIndex);
 			}
 		};
 
@@ -125,24 +124,25 @@ class Painter {
 				d2 = d2 + dx - dy + (rx * rx);
 			}
 		}
+		return surface;
 	}
 
 	/**
 		Draw a Line 
 
-		@param bitmap
+		@param surface
 		@param x0 Origin X
 		@param y0 Origin Y
 		@param x1 Destination X
 		@param y1 Destination Y
 		@param colorIndex
 	 */
-	public static function line(bitmap:Bitmap, x0:Int, y0:Int, x1:Int, y1:Int, colorIndex:Int) {
+	public static function line(surface:Bitmap, x0:Int, y0:Int, x1:Int, y1:Int, colorIndex:Int) {
 		final dx:Int = abs(x1 - x0).int();
 		final dy:Int = abs(y1 - y0).int();
 
 		if (dx == 0 && dy == 0)
-			return;
+			return surface;
 
 		var x:Int = x0;
 		var y:Int = y0;
@@ -153,7 +153,7 @@ class Painter {
 		var error:Float = 0;
 
 		do {
-			bitmap.set(x, y, colorIndex);
+			surface.set(x, y, colorIndex);
 
 			if (dx > dy) {
 				x += ox;
@@ -173,12 +173,14 @@ class Painter {
 				}
 			}
 		} while (!(x == x1 && y == y1));
+
+		return surface;
 	}
 
 	/**
 		Draw a Rectangle
 
-		@param bitmap
+		@param surface
 		@param x X screen coordinate
 		@param y Y screen coordinate
 		@param w Width
@@ -186,8 +188,8 @@ class Painter {
 		@param strokeIndex Stroke color index 
 		@param fillIndex Fill color index
 	 */
-	public static function rect(bitmap:Bitmap, x:Int, y:Int, w:Int, h:Int, strokeIndex:Int, ?fillIndex:Int) {
-		if (Rect.intersect(0, 0, bitmap.width, bitmap.height, x, y, w, h)) {
+	public static function rect(surface:Bitmap, x:Int, y:Int, w:Int, h:Int, strokeIndex:Int, ?fillIndex:Int) {
+		if (Rect.intersect(0, 0, surface.width, surface.height, x, y, w, h)) {
 			final fx = min(x, x + w);
 			final fy = min(y, y + h);
 
@@ -198,29 +200,32 @@ class Painter {
 				for (line in fy...ty) {
 					for (col in fx...tx) {
 						if (line == fy || line == ty - 1 || col == fx || col == tx - 1)
-							bitmap.set(col, line, strokeIndex);
+							surface.set(col, line, strokeIndex);
 						else if (fillIndex != null)
-							bitmap.set(col, line, fillIndex);
+							surface.set(col, line, fillIndex);
 					}
 				}
 			}
 		}
+
+		return surface;
 	}
 
 	/**
 		Draw a shape
 
-		@param bitmap
+		@param surface
 		@param shape
 		@param colorIndex
 		@param fillIndex
 	 */
-	public static function shape(bitmap:Bitmap, shape:Shape, strokeIndex:Int, ?fillIndex:Int) {
+	public static function shape(surface:Bitmap, shape:Shape, strokeIndex:Int, ?fillIndex:Int) {
 		switch (shape) {
 			case CIRCLE(cx, cy, r):
-				circle(bitmap, cx.int(), cy.int(), r.int(), strokeIndex, fillIndex);
+				circle(surface, cx.int(), cy.int(), r.int(), strokeIndex, fillIndex);
 			case RECT(cx, cy, w, h):
-				rect(bitmap, (cx - w / 2).int(), (cy - h / 2).int(), w.int(), h.int(), strokeIndex, fillIndex);
+				rect(surface, (cx - w / 2).int(), (cy - h / 2).int(), w.int(), h.int(), strokeIndex, fillIndex);
 		}
+		return surface;
 	}
 }

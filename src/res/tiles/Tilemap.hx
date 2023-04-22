@@ -1,6 +1,6 @@
 package res.tiles;
 
-import res.display.FrameBuffer;
+import res.display.Bitmap;
 import res.tools.MathTools.wrap;
 import res.types.InterruptResult;
 
@@ -106,12 +106,12 @@ class Tilemap {
 	}
 
 	/**
-		Set the size of the tilemap to fit the frame buffer
+		Set the size of the tilemap to fit the surface
 	 */
-	public function fullscreen(fb:FrameBuffer) {
+	public function fullscreen(surface:Bitmap) {
 		x = y = 0;
-		width = fb.width;
-		height = fb.height;
+		width = surface.width;
+		height = surface.height;
 	}
 
 	inline public function inBounds(tileCol:Int, tileLine:Int):Bool {
@@ -204,16 +204,16 @@ class Tilemap {
 	/**
 		Draw the tilemap
 
-		@param frameBuffer FrameBuffer to render to
+		@param surface Bitmap to render to
 	 */
-	public function render(frameBuffer:FrameBuffer) {
+	public function render(surface:Bitmap) {
 		if (tileset == null)
 			return;
 
 		for (line in 0...height) {
 			final screenScanline = y + line;
 
-			if (screenScanline >= 0 && screenScanline < frameBuffer.height) {
+			if (screenScanline >= 0 && screenScanline < surface.height) {
 				switch rasterInrpt(screenScanline, line) {
 					case DROP:
 						continue;
@@ -237,7 +237,7 @@ class Tilemap {
 				for (col in 0...width) {
 					final screenCol:Int = x + col;
 
-					if (screenCol >= 0 && screenCol < frameBuffer.width) {
+					if (screenCol >= 0 && screenCol < surface.width) {
 						final tileCol:Int = wrapX ? (wrap(col + scrollX, pixelWidth)).floor() : (col + scrollX).floor();
 
 						if (tileCol < 0 || tileCol >= pixelWidth)
@@ -256,7 +256,7 @@ class Tilemap {
 							final tileColorIndex:Int = readTilePixel(tileColIndex, tileLineIndex, inTileCol, inTileScanline);
 							final paletteColorIndex:Int = tilePlace.colorMap != null ? tilePlace.colorMap.get(tileColorIndex) : colorMap == null ? tileColorIndex : colorMap[tileColorIndex];
 
-							frameBuffer.set(screenCol, screenScanline, paletteColorIndex);
+							surface.set(screenCol, screenScanline, paletteColorIndex);
 						}
 					}
 				}

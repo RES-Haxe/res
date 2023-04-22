@@ -1,9 +1,9 @@
 package res.display;
 
 import haxe.io.Bytes;
-import res.tools.MathTools.wrap;
 import res.tools.MathTools.lerp;
 import res.tools.MathTools.param;
+import res.tools.MathTools.wrap;
 
 using res.tools.BytesTools;
 
@@ -91,57 +91,9 @@ class Sprite {
 	}
 
 	/**
-		Draw a sprite into a rectangle with arbitrary width and height
-
-		@param frameBuffer
-		@param sprite
-		@param x X of the rectangle to draw to
-		@param y Y of the rectangle to draw to
-		@param width The width of the rectangle to draw to 
-		@param height The height of the rectangle to draw to 
-	**/
-	public static function spriteRect(frameBuffer:FrameBuffer, sprite:Sprite, x:Int, y:Int, width:Int, height:Int, ?frame:Int = 0) {
-		for (line in 0...height) {
-			for (col in 0...width) {
-				final sprite_x = Math.floor(lerp(0, sprite.width, param(0, width, col)));
-				final sprite_y = Math.floor(lerp(0, sprite.height, param(0, height, line)));
-				final px = sprite.get(frame, sprite_x, sprite_y);
-				frameBuffer.set(x + col, y + line, px);
-			}
-		}
-	}
-
-	/**
-		Draw a part of a sprite
-
-		@param frameBuffer
-		@param sprite
-		@param fx From X - position within the sprite
-		@param fy From Y - position within the sprite
-		@param width Width of the rectangle
-		@param height Height of the rectangle
-		@param atx X position to draw to
-		@param aty Y position to draw to
-		@param frame Frame number
-		@param colorMap Color map
-	**/
-	public static function spriteRegion(frameBuffer:FrameBuffer, sprite:Sprite, fx:Int, fy:Int, width:Int, height:Int, atx:Int, aty:Int, ?frame:Int = 0,
-			?colorMap:IndexMap) {
-		final frameData = sprite.frames[frame].data;
-
-		for (line in 0...height) {
-			for (col in 0...width) {
-				final oidx = frameData.getxy(sprite.width, fx + col, fy + line);
-				final index = colorMap == null ? oidx : colorMap[oidx];
-				frameBuffer.set(atx + col, aty + line, index);
-			}
-		}
-	}
-
-	/**
 		Draw a sprite
 
-		@param frameBuffer
+		@param surface
 		@param sprite
 		@param x
 		@param y
@@ -156,7 +108,7 @@ class Sprite {
 		@param opts.wrap
 		@param colorMap
 	 */
-	public static function sprite(frameBuffer:FrameBuffer, sprite:Sprite, ?x:Int = 0, ?y:Int = 0, ?opts:DrawSpriteOptions, ?colorMap:IndexMap) {
+	public static function sprite(surface:Bitmap, sprite:Sprite, ?x:Int = 0, ?y:Int = 0, ?opts:DrawSpriteOptions, ?colorMap:IndexMap) {
 		opts = opts == null ? {} : opts;
 
 		final frameIndex = opts.frame == null ? 0 : opts.frame;
@@ -178,7 +130,7 @@ class Sprite {
 		final fromY:Int = y;
 
 		for (scanline in 0...lines) {
-			if (!((!_wrap && (scanline < 0 || scanline >= frameBuffer.height)))) {
+			if (!((!_wrap && (scanline < 0 || scanline >= surface.height)))) {
 				for (col in 0...cols) {
 					final spriteCol = wrap((flipX ? sprite.width - 1 - col : col) + scrollX, sprite.width);
 					final spriteLine = wrap((flipY ? sprite.height - 1 - scanline : scanline) + scrollY, sprite.height);
@@ -186,17 +138,68 @@ class Sprite {
 					final sampleIndex:Int = frame.data.getxy(sprite.width, spriteCol, spriteLine);
 
 					if (sampleIndex != 0) {
-						final screenX:Int = _wrap ? wrap(fromX + col, frameBuffer.width) : fromX + col;
-						final screenY:Int = _wrap ? wrap(fromY + scanline, frameBuffer.height) : fromY + scanline;
+						final screenX:Int = _wrap ? wrap(fromX + col, surface.width) : fromX + col;
+						final screenY:Int = _wrap ? wrap(fromY + scanline, surface.height) : fromY + scanline;
 
-						if (_wrap || (screenX >= 0 && screenY >= 0 && screenX < frameBuffer.width && screenY < frameBuffer.height)) {
+						if (_wrap || (screenX >= 0 && screenY >= 0 && screenX < surface.width && screenY < surface.height)) {
 							final colorIndex = colorMap == null ? sampleIndex : colorMap.get(sampleIndex);
-							frameBuffer.set(screenX, screenY, colorIndex);
+							surface.set(screenX, screenY, colorIndex);
 						}
 					}
 				}
 			}
 		}
+		return surface;
+	}
+
+	/**
+		Draw a sprite into a rectangle with arbitrary width and height
+
+		@param surface Surface to draw sprite to
+		@param sprite Sprite to draw
+		@param x X of the rectangle to draw to
+		@param y Y of the rectangle to draw to
+		@param width The width of the rectangle to draw to 
+		@param height The height of the rectangle to draw to 
+	**/
+	public static function spriteRect(surface:Bitmap, sprite:Sprite, x:Int, y:Int, width:Int, height:Int, ?frame:Int = 0) {
+		for (line in 0...height) {
+			for (col in 0...width) {
+				final sprite_x = Math.floor(lerp(0, sprite.width, param(0, width, col)));
+				final sprite_y = Math.floor(lerp(0, sprite.height, param(0, height, line)));
+				final px = sprite.get(frame, sprite_x, sprite_y);
+				surface.set(x + col, y + line, px);
+			}
+		}
+		return surface;
+	}
+
+	/**
+		Draw a part of a sprite
+
+		@param surface Surface to draw the sprite to
+		@param sprite Sprite to draw
+		@param fx From X - position within the sprite
+		@param fy From Y - position within the sprite
+		@param width Width of the rectangle
+		@param height Height of the rectangle
+		@param atx X position to draw to
+		@param aty Y position to draw to
+		@param frame Frame number
+		@param colorMap Color map
+	**/
+	public static function spriteRegion(surface:Bitmap, sprite:Sprite, fx:Int, fy:Int, width:Int, height:Int, atx:Int, aty:Int, ?frame:Int = 0,
+			?colorMap:IndexMap) {
+		final frameData = sprite.frames[frame].data;
+
+		for (line in 0...height) {
+			for (col in 0...width) {
+				final oidx = frameData.getxy(sprite.width, fx + col, fy + line);
+				final index = colorMap == null ? oidx : colorMap[oidx];
+				surface.set(atx + col, aty + line, index);
+			}
+		}
+		return surface;
 	}
 
 	/**
@@ -218,7 +221,7 @@ class Sprite {
 		0,1 +--------+ 1,1
 		```
 
-		@param frameBuffer FrameBuffer to draw the sprite on
+		@param surface Surface to draw the sprite on
 		@param sprite Sprite to draw
 		@param x Origin X position
 		@param y Origin Y position
@@ -235,19 +238,19 @@ class Sprite {
 		@param opts.wrap
 		@param colorMap
 	 */
-	public static function spritePivot(frameBuffer:FrameBuffer, sprite:Sprite, x:Int, y:Int, ?px:Float = 0.5, ?py:Float = 0.5, ?opts, ?colorMap)
-		Sprite.sprite(frameBuffer, sprite, Math.floor(x - sprite.width * px), Math.floor(y - sprite.height * py), opts, colorMap);
+	public static function spritePivot(surface:Bitmap, sprite:Sprite, x:Int, y:Int, ?px:Float = 0.5, ?py:Float = 0.5, ?opts, ?colorMap)
+		return Sprite.sprite(surface, sprite, Math.floor(x - sprite.width * px), Math.floor(y - sprite.height * py), opts, colorMap);
 
 	/**
 		Draw a sprite using an Anchor - a point inside the sprite to use as it's origin
 
-		@param frameBuffer FrameBuffer to draw the sprite on
+		@param surface Surface to draw the sprite on
 		@param sprite Sprite to draw
 		@param x Origin X position
 		@param y Origin Y position
 		@param ax X position inside the sprite to use as it's origin
 		@param ay Y position inside the sprite to use as it's origin
 	 */
-	public static function spriteAnchor(frameBuffer:FrameBuffer, sprite:Sprite, x:Int, y:Int, ax:Int = 0, ay:Int = 0, ?opts, ?colorMap)
-		Sprite.sprite(frameBuffer, sprite, x - ax, y - ay, opts, colorMap);
+	public static function spriteAnchor(surface:Bitmap, sprite:Sprite, x:Int, y:Int, ax:Int = 0, ay:Int = 0, ?opts, ?colorMap)
+		return Sprite.sprite(surface, sprite, x - ax, y - ay, opts, colorMap);
 }

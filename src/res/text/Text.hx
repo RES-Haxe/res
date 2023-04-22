@@ -1,6 +1,6 @@
 package res.text;
 
-import res.display.FrameBuffer;
+import res.display.Bitmap;
 
 using Math;
 
@@ -48,6 +48,6 @@ class Text {
 		this.y = y;
 	}
 
-	public function render(frameBuffer:FrameBuffer)
-		font.draw(frameBuffer, text, x.floor(), y.floor(), colorMap);
+	public function render(surface:Bitmap)
+		font.draw(surface, text, x.floor(), y.floor(), colorMap);
 }

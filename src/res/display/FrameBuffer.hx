@@ -1,6 +1,5 @@
 package res.display;
 
-import haxe.io.Bytes;
 import res.tools.MathTools.wrap;
 
 class FrameBuffer extends Bitmap {
@@ -13,9 +12,11 @@ class FrameBuffer extends Bitmap {
 		return x >= 0 && y >= 0 && x < width && y < height;
 	}
 
-	public function clear(index:Int = 1) {
-		data.fill(0, data.length, index);
-	}
+	/**
+		Unnecessary wrapper to fill with the default color index 1
+	 */
+	public function clear(index:Int = 1)
+		return fill(index);
 
 	/**
 		Set color index at given frame buffer position
@@ -39,40 +40,5 @@ class FrameBuffer extends Bitmap {
 
 		if (checkBounds(x, y))
 			super.set(x, y, index);
-	}
-
-	/**
-		Output raster data line by line
-
-		@param x Screen x coordinate
-		@param y Screen y coordinate
-		@param data Bytes with raster indecies
-		@param srcPos Position of the first index in data
-		@param lineWidth The width of each line in raster
-		@param numLine Number of line to draw. If not specified - set all the indecies from the data
-		@param colorMap Optional color map
-	 */
-	public function raster(x:Int, y:Int, data:Bytes, srcPos:Int, lineWidth:Int, ?numLines:Int, ?colorMap:IndexMap) {
-		var pos = 0;
-		var col = 0;
-		var line = 0;
-
-		while (srcPos + pos < data.length && (numLines == null || line < numLines)) {
-			final idxPos = srcPos + pos;
-
-			final dataIndex = data.get(idxPos);
-			final index = colorMap == null ? dataIndex : colorMap[dataIndex];
-
-			set(x + col, y + line, index);
-
-			col++;
-
-			if (col == lineWidth) {
-				col = 0;
-				line++;
-			}
-
-			pos++;
-		}
 	}
 }

@@ -1,6 +1,6 @@
 package res.ui;
 
-import res.display.FrameBuffer;
+import res.display.Bitmap;
 
 using res.display.Painter;
 
@@ -65,7 +65,7 @@ class UI {
 	/**
 		Draw the element itself
 	**/
-	public dynamic function drawElement(fb:FrameBuffer, self:UI, bounds:{
+	public dynamic function drawElement(surface:Bitmap, self:UI, bounds:{
 		x:Int,
 		y:Int,
 		width:Int,
@@ -150,8 +150,8 @@ class UI {
 	/**
 		Draw the whole tree of elements
 	**/
-	public function draw(fb:FrameBuffer) {
-		drawElement(fb, this, {
+	public function draw(surface:Bitmap) {
+		drawElement(surface, this, {
 			x: gx(),
 			y: gy(),
 			width: width,
@@ -159,6 +159,6 @@ class UI {
 		});
 
 		for (child in children)
-			child.draw(fb);
+			child.draw(surface);
 	}
 }
