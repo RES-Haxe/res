@@ -15,7 +15,7 @@ class FrameBuffer extends Bitmap {
 	/**
 		Unnecessary wrapper to fill with the default color index 1
 	 */
-	public function clear(index:Int = 1)
+	inline public function clear(index:Int = 1)
 		return fill(index);
 
 	/**

@@ -2,9 +2,20 @@ package res.tiles;
 
 import res.display.Bitmap;
 import res.tools.MathTools.wrap;
+import res.types.InterruptFunc;
 import res.types.InterruptResult;
 
 using Math;
+
+final noneInterruptFunc:InterruptFunc = (_, _) -> NONE;
+
+typedef TilemapOptions = {
+	?rasterInterrupt:InterruptFunc,
+	?wrapX:Bool,
+	?wrapY:Bool,
+	?scrollX:Float,
+	?scrollY:Float,
+};
 
 class Tilemap {
 	var map:Array<Array<TilePlace>> = [[]];
@@ -206,9 +217,44 @@ class Tilemap {
 
 		@param surface Bitmap to render to
 	 */
-	public function render(surface:Bitmap) {
+	public function render(surface:Bitmap)
+		tilemap(surface, this, x, y, width, height, colorMap);
+
+	/**
+		Render a Tilemap
+
+		@param surface Surface to render a tilemap to
+		@param tilemap Tilemap to render
+		@param x
+		@param y
+		@param width
+		@param height
+		@param colorMap
+		@param more Tilemap properties override
+		@param more.rasterInterrupt
+		@param more.wrapX
+		@param more.wrapY
+		@param more.scrollX
+		@param more.scrollY
+	**/
+	public static function tilemap(surface:Bitmap, tilemap:Tilemap, ?x:Int = 0, ?y:Int = 0, ?width:Int, ?height:Int, ?colorMap:IndexMap,
+			?more:TilemapOptions) {
+		final tileset = tilemap.tileset;
+
 		if (tileset == null)
 			return;
+
+		if (more == null)
+			more = {};
+
+		// The following will be drasticly improved after migrating to Haxe 4.3+
+		final rasterInrpt = more.rasterInterrupt == null ? tilemap.rasterInrpt : more.rasterInterrupt;
+
+		final pixelWidth = tileset.tileWidth * tilemap.hTiles;
+		final pixelHeight = tileset.tileHeight * tilemap.vTiles;
+
+		width = width != null ? width : tilemap.width;
+		height = height != null ? height : tilemap.height;
 
 		for (line in 0...height) {
 			final screenScanline = y + line;
@@ -222,6 +268,12 @@ class Tilemap {
 					case NONE:
 				}
 
+				final wrapX = more.wrapX == null ? tilemap.wrapX : more.wrapX;
+				final wrapY = more.wrapY == null ? tilemap.wrapY : more.wrapY;
+
+				final scrollX = more.scrollX == null ? tilemap.scrollX : more.scrollX;
+				final scrollY = more.scrollY == null ? tilemap.scrollY : more.scrollY;
+
 				final tileScanline:Int = wrapY ? (wrap(line + scrollY, pixelHeight)).floor() : (line + scrollY).floor();
 
 				if (tileScanline < 0 || tileScanline >= pixelHeight)
@@ -229,8 +281,8 @@ class Tilemap {
 
 				var tileLineIndex:Int = (tileScanline / tileset.tileHeight).floor();
 
-				if (tileLineIndex >= vTiles)
-					tileLineIndex = tileLineIndex % vTiles;
+				if (tileLineIndex >= tilemap.vTiles)
+					tileLineIndex = tileLineIndex % tilemap.vTiles;
 
 				final inTileScanline:Int = tileScanline % tileset.tileHeight;
 
@@ -245,15 +297,15 @@ class Tilemap {
 
 						var tileColIndex:Int = (tileCol / tileset.tileWidth).floor();
 
-						if (tileColIndex >= hTiles)
-							tileColIndex = tileColIndex % hTiles;
+						if (tileColIndex >= tilemap.hTiles)
+							tileColIndex = tileColIndex % tilemap.hTiles;
 
 						final inTileCol:Int = tileCol % tileset.tileWidth;
 
-						final tilePlace = get(tileColIndex, tileLineIndex);
+						final tilePlace = tilemap.get(tileColIndex, tileLineIndex);
 
 						if (tilePlace != null && tilePlace.index - 1 < tileset.numTiles) {
-							final tileColorIndex:Int = readTilePixel(tileColIndex, tileLineIndex, inTileCol, inTileScanline);
+							final tileColorIndex:Int = tilemap.readTilePixel(tileColIndex, tileLineIndex, inTileCol, inTileScanline);
 							final paletteColorIndex:Int = tilePlace.colorMap != null ? tilePlace.colorMap.get(tileColorIndex) : colorMap == null ? tileColorIndex : colorMap[tileColorIndex];
 
 							surface.set(screenCol, screenScanline, paletteColorIndex);
