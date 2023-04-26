@@ -19,59 +19,59 @@ class Converter extends res.rom.converters.Converter {
 		final aseTilesetChunks:Array<ase.chunks.TilesetChunk> = cast aseSprite.firstFrame.chunkTypes[ChunkType.TILESET];
 		final hasTileset = aseTilesetChunks != null && aseTilesetChunks.length != 0;
 
-		if (hasTileset) {
-			final createdTilesets:Map<Int, TilesetChunk> = [];
+		if (!hasTileset) {
+			trace('No tilesets in $name');
+			return result;
+		}
 
-			for (layerIndex => layer in aseSprite.layers) {
-				if (layer.chunk.layerType == Tilemap) {
-					final celChunk:CelChunk = aseSprite.frames[0].cel(layerIndex).chunk;
+		final createdTilesets:Map<Int, TilesetChunk> = [];
 
-					if (celChunk.celType == CompressedTilemap) {
-						final tilemapName = '${name}_${layer.name}';
+		for (chunk in aseTilesetChunks) {
+			final tilesetChunk = createTilesetChunk('${name}_${chunk.id}', chunk);
+			createdTilesets[chunk.id] = tilesetChunk;
+			result.push(tilesetChunk);
+		}
 
-						if (!createdTilesets.exists(layer.chunk.tilesetIndex)) {
-							final aseChunk = (() -> {
-								for (chunk in aseTilesetChunks) {
-									if (chunk.id == layer.chunk.tilesetIndex)
-										return chunk;
-								}
+		for (layerIndex => layer in aseSprite.layers) {
+			if (layer.chunk.layerType != Tilemap)
+				continue;
 
-								return null;
-							})();
+			final celChunk:CelChunk = aseSprite.frames[0].cel(layerIndex).chunk;
 
-							final newTilesetChunk = createTilesetChunk(tilemapName, aseChunk);
-							createdTilesets[layer.chunk.tilesetIndex] = newTilesetChunk;
-							result.push(newTilesetChunk);
-							newTilesetChunk;
-						}
+			if (celChunk.celType != CompressedTilemap)
+				continue;
 
-						final bo = new BytesOutput();
-						bo.writeByte(tilemapName.length);
-						bo.writeString(tilemapName);
-						bo.writeInt32(celChunk.width);
-						bo.writeInt32(celChunk.height);
+			if (!createdTilesets.exists(layer.chunk.tilesetIndex)) {
+				trace('$name -> ${layer.name}: tileset not found: #${layer.chunk.tilesetIndex}');
+				continue;
+			}
 
-						final inp = new BytesInput(celChunk.tilemapData);
+			final tilemapName = '${name}_${layer.name}';
+			final tilesetName = createdTilesets[layer.chunk.tilesetIndex].name;
 
-						for (_ in 0...celChunk.height) {
-							for (_ in 0...celChunk.width) {
-								final tileData = inp.readInt32();
+			final bo = new BytesOutput();
+			bo.writeByte(tilesetName.length);
+			bo.writeString(tilesetName);
+			bo.writeInt32(celChunk.width);
+			bo.writeInt32(celChunk.height);
 
-								final tileId = tileData & celChunk.bitmaskTileId;
+			final inp = new BytesInput(celChunk.tilemapData);
 
-								bo.writeUInt16(tileId);
-								bo.writeByte(tileData & celChunk.bitmaskXFlip); // flipX
-								bo.writeByte(tileData & celChunk.bitmaskYFlip); // flipY
-								bo.writeByte(tileData & celChunk.bitmask90CWRotation); // rot90cw
-							}
-						}
+			for (_ in 0...celChunk.height) {
+				for (_ in 0...celChunk.width) {
+					final tileData = inp.readInt32();
 
-						result.push(new TilemapChunk(tilemapName, bo.getBytes()));
-					}
+					final tileId = tileData & celChunk.bitmaskTileId;
+
+					bo.writeUInt16(tileId);
+					bo.writeByte(tileData & celChunk.bitmaskXFlip); // flipX
+					bo.writeByte(tileData & celChunk.bitmaskYFlip); // flipY
+					bo.writeByte(tileData & celChunk.bitmask90CWRotation); // rot90cw
 				}
 			}
-		} else
-			trace('No tilesets in $name');
+
+			result.push(new TilemapChunk(tilemapName, bo.getBytes()));
+		}
 
 		return result;
 	}
