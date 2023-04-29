@@ -1,4 +1,7 @@
 {
+  "indentation": {
+    "character": "tab"
+  },
   "wrapping": {
     "arrayWrap": {
       "defaultWrap": "keep"

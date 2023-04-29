@@ -1,6 +1,6 @@
 {
   "name": "res",
-  "url": "https://github.com/RES-Haxe/RES",
+  "url": "https://github.com/RES-Haxe/res",
   "license": "MIT",
   "tags": ["engine", "pixelart", "raster", "gamedev"],
   "description": "Raster Entertainment System",

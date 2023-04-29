@@ -1,0 +1,10 @@
+{
+  "indentation": {
+    "character": "  "
+  },
+  "wrapping": {
+    "methodChain": {
+      "defaultWrap": "onePerLine"
+    }
+  }
+}
