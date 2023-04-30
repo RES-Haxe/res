@@ -2,12 +2,19 @@
   "name": "res",
   "url": "https://github.com/RES-Haxe/res",
   "license": "MIT",
-  "tags": ["engine", "pixelart", "raster", "gamedev"],
+  "tags": [
+    "engine",
+    "pixelart",
+    "raster",
+    "gamedev"
+  ],
   "description": "Raster Entertainment System",
-  "version": "0.1.1",
+  "version": "0.1.1-alpha",
   "classPath": "src/",
   "releasenote": "Initial release",
-  "contributors": ["miriti"],
+  "contributors": [
+    "miriti"
+  ],
   "dependencies": {
     "ase": "",
     "format": ""
