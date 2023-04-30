@@ -1,5 +1,6 @@
 package cli.common;
 
+import cli.ResCli.CLI_CONFIG_FILENAME;
 import cli.CLI.error;
 import cli.OS.getHomeDir;
 import haxe.Json;
@@ -14,12 +15,10 @@ typedef CliConfig = {
 	}
 };
 
-final CLI_CONFIG_FILENAME:String = '.res-cli.json';
-
 function getCliConfig(resCli:ResCli):CliConfig {
 	final cfg_file_path:Array<String> = [];
 
-	cfg_file_path.push(resCli.workingDir);
+	cfg_file_path.push(Sys.getCwd());
 
 	cfg_file_path.push(Path.join([getHomeDir(), '.config', 'res']));
 	cfg_file_path.push(Path.join([getHomeDir(), '.config']));

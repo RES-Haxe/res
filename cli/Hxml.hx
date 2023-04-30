@@ -38,6 +38,6 @@ function createHaxeArgs(resCli:ResCli, cfg:ResProjectConfig, platform:PlatformId
 function writeHxmlFile(resCli:ResCli, cfg:ResProjectConfig, platform:PlatformId) {
 	final fileName = 'res.$platform.hxml';
 	final fileContent = createHaxeArgs(resCli, cfg, platform).map(p -> p.join(' ')).join('\n');
-	File.saveContent('${resCli.workingDir}/$fileName', fileContent);
+	File.saveContent('${Sys.getCwd()}/$fileName', fileContent);
 	return fileName;
 }

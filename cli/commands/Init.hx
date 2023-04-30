@@ -7,8 +7,9 @@ import cli.CLI.error;
 import cli.Hxml.writeHxmlFile;
 import cli.OS.copyTree;
 import cli.OS.relativizePath;
+import cli.ResCli.CLI_CONFIG_FILENAME;
+import cli.ResCli.PROJECT_CONFIG_FILENAME;
 import cli.common.CliConfig;
-import cli.common.ProjectConfig.PROJECT_CONFIG_FILENAME;
 import cli.types.ResProjectConfig;
 import haxe.Json;
 import haxe.io.Path;
@@ -37,19 +38,10 @@ class Init extends Command {
 				name: 'dir',
 				type: STRING,
 				desc: 'Directory to initialize the project in. Use "." to initialize the project in the current directory',
-				defaultValue: (?prev) -> Path.join([resCli.workingDir, prev != null ? prev['name'] : '{name}']),
+				defaultValue: (?prev) -> Path.join([Sys.getCwd(), prev != null ? prev['name'] : '{name}']),
 				requred: false,
 				interactive: false,
 				example: './my_game'
-			},
-			{
-				name: 'platforms',
-				type: MULTIPLE(['hl', 'js']),
-				desc: 'List of the platforms to initialize. Use a JSON array to list the platforms. Currently available: hl (HashLink), js (JavaScript)',
-				defaultValue: (?prev) -> Json.stringify(['hl', 'js']),
-				requred: false,
-				interactive: false,
-				example: '["hl"]',
 			},
 			{
 				name: 'template',
@@ -63,13 +55,13 @@ class Init extends Command {
 		];
 
 	public function run(args:Map<String, String>) {
-		final dir = Path.normalize(Path.isAbsolute(args['dir']) ? args['dir'] : Path.join([resCli.workingDir, args['dir']]));
+		final dir = Path.normalize(Path.isAbsolute(args['dir']) ? args['dir'] : Path.join([args['dir']]));
 
 		if (!FileSystem.exists(dir)) {
 			try {
 				FileSystem.createDirectory(dir);
 			} catch (error) {
-				return CLI.error(error.message);
+				return CLI.error('Failed to create direcotry $dir: ${error.message}');
 			}
 		}
 
@@ -91,9 +83,9 @@ class Init extends Command {
 		if (!FileSystem.exists(templatePath))
 			return error('Template <$template> not found');
 
-		final currentDir = Path.normalize(resCli.workingDir);
+		final currentDir = Sys.getCwd();
 
-		resCli.cd(dir);
+		Sys.setCwd(dir);
 
 		println('Initializing a RES project in: $dir...');
 

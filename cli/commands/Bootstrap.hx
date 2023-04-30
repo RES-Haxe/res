@@ -25,9 +25,7 @@ class Bootstrap extends Command {
 		return [];
 
 	function downloadRuntime() {
-		final runtimeDir = Path.join([resCli.workingDir, RUNTIME_DIR]);
-
-		if (FileSystem.exists(runtimeDir))
+		if (FileSystem.exists(RUNTIME_DIR))
 			return;
 
 		final sys_name = Sys.systemName().toLowerCase();
@@ -42,17 +40,17 @@ class Bootstrap extends Command {
 			default: throw 'Unsuppored platform';
 		}
 
-		FileSystem.createDirectory(runtimeDir);
+		FileSystem.createDirectory(RUNTIME_DIR);
 
 		print('Download hashlink...');
 		final hl_url = 'https://github.com/HaxeFoundation/hashlink/releases/download/latest/hashlink-2206f8c-${platform}';
-		final hl_archive = Path.join([resCli.workingDir, hl_url.withoutDirectory()]);
+		final hl_archive = hl_url.withoutDirectory();
 
 		downloadFile(hl_url, hl_archive);
-		extractArchive(hl_archive, runtimeDir);
-		for (dir in FileSystem.readDirectory(runtimeDir)) {
+		extractArchive(hl_archive, RUNTIME_DIR);
+		for (dir in FileSystem.readDirectory(RUNTIME_DIR)) {
 			if (dir.startsWith('hashlink'))
-				FileSystem.rename(Path.join([runtimeDir, dir]), Path.join([runtimeDir, 'hashlink']));
+				FileSystem.rename(Path.join([RUNTIME_DIR, dir]), Path.join([RUNTIME_DIR, 'hashlink']));
 		}
 		FileSystem.deleteFile(hl_archive);
 	}

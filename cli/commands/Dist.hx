@@ -24,13 +24,14 @@ class Dist extends Command {
 
 		final projectConfig = getProjectConfig(resCli);
 
-		final distPath = Path.join([resCli.workingDir, 'dist']);
+		final distPath = 'dist';
 
 		createDirectory(distPath);
 
 		switch (args['platform']) {
 			case 'hl':
 				final hlDistPath = Path.join([distPath, 'hl']);
+				final hlBuildPath = projectConfig.build.path;
 
 				if (exists(hlDistPath))
 					wipeDirectory(hlDistPath);
@@ -38,7 +39,7 @@ class Dist extends Command {
 				createDirectory(hlDistPath);
 
 				println('Copy runtime files...');
-				copyTree(Path.join([resCli.workingDir, RUNTIME_DIR, 'hashlink']), '${resCli.workingDir}/dist/hl');
+				copyTree(Path.join([RUNTIME_DIR, 'hashlink']), hlDistPath);
 				wipeDirectory(Path.join([hlDistPath, 'include']));
 
 				final exeName = appExt(Path.join([hlDistPath, projectConfig.dist.exeName]));
@@ -50,9 +51,9 @@ class Dist extends Command {
 					Sys.command('chmod +x $exeName');
 
 				println('Copy bytecode');
-				copyTree('${resCli.workingDir}/build/hl', '${resCli.workingDir}/dist/hl');
+				copyTree(hlBuildPath, hlDistPath);
 
-				println('Done: dist/hl');
+				println('Done: $hlDistPath');
 			case 'js':
 				println('Not implemented yet');
 			default:

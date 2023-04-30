@@ -6,19 +6,16 @@ import haxe.Json;
 import haxe.io.Path;
 import sys.FileSystem;
 import sys.io.File;
+import cli.ResCli.PROJECT_CONFIG_FILENAME;
 
 using Reflect;
 
-final PROJECT_CONFIG_FILENAME = 'res.json';
-
 function getProjectConfig(resCli:ResCli):ResProjectConfig {
-	final cfgFilePath = Path.join([resCli.workingDir, PROJECT_CONFIG_FILENAME]);
-
-	if (!FileSystem.exists(cfgFilePath))
-		error('${PROJECT_CONFIG_FILENAME} is missing in ${resCli.workingDir}');
+	if (!FileSystem.exists(PROJECT_CONFIG_FILENAME))
+		error('${PROJECT_CONFIG_FILENAME} is missing in ${Sys.getCwd()}');
 
 	try {
-		final parsedData:Dynamic<String> = Json.parse(File.getContent(cfgFilePath));
+		final parsedData:Dynamic<String> = Json.parse(File.getContent(PROJECT_CONFIG_FILENAME));
 		final result:ResProjectConfig = {
 			name: parsedData.field('name'),
 			version: parsedData.field('version'),

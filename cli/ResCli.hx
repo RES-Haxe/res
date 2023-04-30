@@ -13,6 +13,8 @@ import haxe.io.Path;
 import sys.FileSystem;
 
 final RUNTIME_DIR = '.runtime';
+final PROJECT_CONFIG_FILENAME = 'res.json';
+final CLI_CONFIG_FILENAME:String = '.res-cli.json';
 
 class ResCli {
 	public final commands:Map<String, Command>;
@@ -21,22 +23,16 @@ class ResCli {
 	public final tools:cli.Tools;
 	public final baseDir:String;
 
-	public var workingDir:String;
-
-	public function new(args:Array<String>, wd:String) {
-		cd(wd);
-
-		final runtimeDir = Path.join([wd, RUNTIME_DIR]);
-
-		if (FileSystem.exists(runtimeDir)) {
+	public function new(args:Array<String>, baseDir:String) {
+		if (FileSystem.exists(RUNTIME_DIR)) {
 			final PATH = Sys.getEnv('PATH');
 			final addPath:Array<String> = [PATH];
-			for (dir in FileSystem.readDirectory(runtimeDir))
-				addPath.push(Path.join([runtimeDir, dir]));
+			for (dir in FileSystem.readDirectory(RUNTIME_DIR))
+				addPath.push(Path.join([RUNTIME_DIR, dir]));
 			Sys.putEnv('PATH', addPath.join(Sys.systemName().toLowerCase() == 'windows' ? ';' : ':'));
 		}
 
-		baseDir = Sys.getCwd();
+		this.baseDir = baseDir;
 
 		tools = new cli.Tools(this);
 
@@ -58,10 +54,6 @@ class ResCli {
 			error('No such command: ${cmdName}');
 
 		cmdArgs = getArguments(args, command.expectedArgs(this));
-	}
-
-	public function cd(newWd:String) {
-		workingDir = newWd;
 	}
 
 	public function run()

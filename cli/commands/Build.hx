@@ -34,8 +34,6 @@ class Build extends Command {
 
 		final hxmlFile = writeHxmlFile(resCli, config, platform);
 
-		Sys.setCwd(resCli.workingDir);
-
 		print('Build: ');
 		final exitCode = resCli.tools.haxe.run([hxmlFile], (s) -> {}, (err) -> {
 			Sys.stderr().writeString('$err\n');
