@@ -82,7 +82,7 @@ class Setup extends Command {
 		if (sysname == 'windows') {
 			// ???
 		} else {
-			final scriptPath = sysname == 'linux' ? '/usr/local/bin/res' : Path.normalize('~/bin/res');
+			final scriptPath = '/usr/local/bin/res';
 			final scriptSrc = Path.join([resCli.baseDir, 'extra', 'res']);
 
 			command("sudo", ['cp', scriptSrc, scriptPath]);
