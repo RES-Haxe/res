@@ -17,6 +17,16 @@ function getHomeDir() {
 }
 
 /**
+	Get temp directory
+**/
+function getTempDir() {
+	if (Sys.systemName() == "Windows")
+		return Sys.getEnv('USERPROFILE');
+
+	return '/tmp';
+}
+
+/**
 	Copy file tree
 **/
 function copyTree(from:String, to:String, verbose:Bool = false) {
@@ -57,6 +67,10 @@ function wipeDirectory(dirPath:String) {
 function extractArchive(archive:String, dest:String)
 	command('tar', ['-xf', archive, '-C', dest]);
 
+/**
+	Add ".exe" extension to the filename on Windows
+	Don't otherwise
+**/
 function appExt(name:String)
 	return Sys.systemName().toLowerCase() == 'windows' ? '$name.exe' : name;
 

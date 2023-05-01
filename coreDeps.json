@@ -1,15 +1,33 @@
 {
   "*": [
-    ["res", "git", "https://github.com/RES-Haxe/res.git"],
-    ["ase"],
-    ["format"]
+    [
+      "res"
+    ],
+    [
+      "ase"
+    ],
+    [
+      "format"
+    ]
   ],
   "hl": [
-    ["res-hl", "git", "https://github.com/RES-Haxe/res-hl.git"],
-    ["hlsdl"],
-    ["hlopenal"]
+    [
+      "res-hl",
+      "git",
+      "https://github.com/RES-Haxe/res-hl.git"
+    ],
+    [
+      "hlsdl"
+    ],
+    [
+      "hlopenal"
+    ]
   ],
   "js": [
-    ["res-html5", "git", "https://github.com/RES-Haxe/res-html5.git"]
+    [
+      "res-html5",
+      "git",
+      "https://github.com/RES-Haxe/res-html5.git"
+    ]
   ]
 }

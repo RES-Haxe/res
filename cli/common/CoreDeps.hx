@@ -1,6 +1,7 @@
 package cli.common;
 
 import cli.CLI.error;
+import cli.types.ResProjectConfig.DependenciesList;
 import cli.types.ResProjectConfig.PlatformId;
 import haxe.Json;
 import haxe.io.Path;
@@ -17,7 +18,8 @@ function getCoreDeps(resCli:ResCli) {
 
 	final jsonData:Dynamic<String> = Json.parse(File.getContent(coreDepsFile));
 
-	final dependencies:Map<PlatformId, Array<Array<String>>> = [];
+	final dependencies:Map<PlatformId, DependenciesList> = [];
+
 	for (platformId in jsonData.fields()) {
 		if (['*', 'js', 'hl'].indexOf(platformId) == -1)
 			continue;

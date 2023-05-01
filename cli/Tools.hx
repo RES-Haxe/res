@@ -14,6 +14,7 @@ class Tool {
 	public final version:Null<String>;
 
 	public final cmdPath:String;
+	public final which:String;
 
 	final verboseVersionCheck:Bool;
 	final versionArgs:Array<String>;
@@ -59,11 +60,12 @@ class Tool {
 		final versionCheckResult = getVersion();
 		this.version = versionCheckResult != null ? parseVersion != null ? parseVersion(versionCheckResult) : versionCheckResult : null;
 		this.available = version != null;
+		final whichCmd = Sys.systemName() == 'Windows' ? 'where' : 'which';
+		this.which = new Process(whichCmd, [cmdPath]).stdout.readAll().toString().trim();
 	}
 }
 
 class Tools {
-	public final git:Tool;
 	public final neko:Tool;
 	public final haxe:Tool;
 	public final haxelib:Tool;
@@ -83,7 +85,6 @@ class Tools {
 			return toolName;
 		}
 
-		git = new Tool('Git', cfgPath('git'), ['-v'], (v) -> v.replace('git version', '').trim());
 		neko = new Tool('Neko VM', cfgPath('neko'), ['-version'], true);
 		haxe = new Tool('Haxe Compiler', cfgPath('haxe'), ['--version'], true);
 		haxelib = new Tool('Haxelib', cfgPath('haxelib'), ['version'], true);

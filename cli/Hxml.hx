@@ -1,6 +1,5 @@
 package cli;
 
-import cli.common.CoreDeps.getCoreDeps;
 import cli.types.ResProjectConfig;
 import sys.io.File;
 
@@ -10,18 +9,10 @@ function createHaxeArgs(resCli:ResCli, cfg:ResProjectConfig, platform:PlatformId
 	result.push(['-cp', cfg.src.path]);
 	result.push(['-main', cfg.src.main]);
 
-	for (dep in cfg.libs[platform]) {
-		result.push(['-lib', dep.join(':')]);
-	}
+	final allDeps = cfg.libs[_all].concat(cfg.libs[platform]);
 
-	final coreDeps = getCoreDeps(resCli);
-
-	for (pl => deps in coreDeps) {
-		if ([_all, platform].indexOf(pl) != -1) {
-			for (dep in deps)
-				result.push(['-lib', dep[0]]);
-		}
-	}
+	for (dep in allDeps)
+		result.push(['-lib', dep[0]]);
 
 	result.push(switch (platform) {
 		case _all:

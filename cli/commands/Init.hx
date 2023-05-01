@@ -7,9 +7,8 @@ import cli.CLI.error;
 import cli.Hxml.writeHxmlFile;
 import cli.OS.copyTree;
 import cli.OS.relativizePath;
-import cli.ResCli.CLI_CONFIG_FILENAME;
 import cli.ResCli.PROJECT_CONFIG_FILENAME;
-import cli.common.CliConfig;
+import cli.common.CoreDeps.getCoreDeps;
 import cli.types.ResProjectConfig;
 import haxe.Json;
 import haxe.io.Path;
@@ -106,19 +105,13 @@ class Init extends Command {
 					path: './dist',
 					exeName: 'game'
 				},
-				libs: [_all => [], hl => [], js => []]
+				libs: getCoreDeps(resCli)
 			};
 
 			for (platform in [hl, js])
 				writeHxmlFile(resCli, projectConfig, platform);
 
 			File.saveContent(Path.join([dir, PROJECT_CONFIG_FILENAME]), Json.stringify(projectConfig, null, '  '));
-
-			final cliConfig:CliConfig = {
-				tools: {}
-			};
-
-			File.saveContent(CLI_CONFIG_FILENAME, Json.stringify(cliConfig, null, '  '));
 
 			resCli.commands['bootstrap'].run([]);
 

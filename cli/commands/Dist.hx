@@ -6,7 +6,6 @@ import cli.CLI.error;
 import cli.OS.appExt;
 import cli.OS.copyTree;
 import cli.OS.wipeDirectory;
-import cli.ResCli.RUNTIME_DIR;
 import cli.commands.common.PlatformArg.platformArg;
 import cli.common.ProjectConfig.getProjectConfig;
 import haxe.io.Path;
@@ -39,7 +38,7 @@ class Dist extends Command {
 				createDirectory(hlDistPath);
 
 				println('Copy runtime files...');
-				copyTree(Path.join([RUNTIME_DIR, 'hashlink']), hlDistPath);
+				copyTree(Path.join([resCli.runtimeDir, 'hashlink']), hlDistPath);
 				wipeDirectory(Path.join([hlDistPath, 'include']));
 
 				final exeName = appExt(Path.join([hlDistPath, projectConfig.dist.exeName]));

@@ -1,12 +1,11 @@
 package cli.common;
 
 import cli.CLI.error;
+import cli.ResCli.PROJECT_CONFIG_FILENAME;
 import cli.types.ResProjectConfig;
 import haxe.Json;
-import haxe.io.Path;
 import sys.FileSystem;
 import sys.io.File;
-import cli.ResCli.PROJECT_CONFIG_FILENAME;
 
 using Reflect;
 

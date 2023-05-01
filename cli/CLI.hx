@@ -151,6 +151,16 @@ function ask(arg:Argument):String {
 	return null;
 }
 
+function ask_yn(text:String, ?def:Bool = false):Bool {
+	return ask({
+		desc: text,
+		type: BOOL,
+		defaultValue: (?p) -> def ? 'y' : 'n',
+		requred: true,
+		interactive: true
+	}) == "true";
+}
+
 function getArguments(args:Array<String>, expect:Array<Argument>):Map<String, String> {
 	final result:Map<String, String> = [];
 

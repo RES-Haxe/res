@@ -4,14 +4,10 @@ import Sys.print;
 import Sys.println;
 import cli.CLI.Argument;
 import cli.CLI.error;
-import cli.Network.downloadFile;
-import cli.OS.extractArchive;
-import cli.ResCli.RUNTIME_DIR;
-import cli.common.CoreDeps.getCoreDeps;
 import cli.common.ProjectConfig.getProjectConfig;
 import haxe.Json;
-import sys.FileSystem;
 import sys.io.File;
+import sys.io.Process;
 
 using Reflect;
 using StringTools;
@@ -24,52 +20,22 @@ class Bootstrap extends Command {
 	public function expectedArgs(resCli):Array<Argument>
 		return [];
 
-	function downloadRuntime() {
-		if (FileSystem.exists(RUNTIME_DIR))
-			return;
-
-		final sys_name = Sys.systemName().toLowerCase();
-
-		final platform:String = switch sys_name {
-			case 'windows':
-				'win64.zip';
-			case 'linux':
-				'linux-amd64.tar.gz';
-			case 'mac':
-				'darwin.tar.gz';
-			default: throw 'Unsuppored platform';
-		}
-
-		FileSystem.createDirectory(RUNTIME_DIR);
-
-		print('Download hashlink...');
-		final hl_url = 'https://github.com/HaxeFoundation/hashlink/releases/download/latest/hashlink-2206f8c-${platform}';
-		final hl_archive = hl_url.withoutDirectory();
-
-		downloadFile(hl_url, hl_archive);
-		extractArchive(hl_archive, RUNTIME_DIR);
-		for (dir in FileSystem.readDirectory(RUNTIME_DIR)) {
-			if (dir.startsWith('hashlink'))
-				FileSystem.rename(Path.join([RUNTIME_DIR, dir]), Path.join([RUNTIME_DIR, 'hashlink']));
-		}
-		FileSystem.deleteFile(hl_archive);
-	}
-
 	public function run(args:Map<String, String>) {
 		final config = getProjectConfig(resCli);
+		final installed:Array<String> = [];
 
-		final dependencies = getCoreDeps(resCli);
+		final list = new Process('haxelib', ['list']).stdout.readAll().toString().split('\n');
 
-		for (platformId => deps in config.libs) {
-			for (item in deps)
-				dependencies[cast platformId].push(item);
+		for (lib in list) {
+			final parsed = lib.split(':');
+			installed.push(parsed[0]);
 		}
 
-		if (resCli.tools.haxelib.run(['newrepo']) != 0)
-			error('Filed to create a local repo');
-
-		for (platformId => deps in dependencies) {
+		for (platformId => deps in config.libs) {
 			for (dep in deps) {
+				if (installed.indexOf(dep[0]) != -1)
+					continue;
+
 				var retries = 1;
 				while (true) {
 					var args = ['install', dep[0]];
@@ -124,7 +90,5 @@ class Bootstrap extends Command {
 
 			File.saveContent('./package.json', Json.stringify(pkg, null, '  '));
 		}
-
-		downloadRuntime();
 	}
 }
