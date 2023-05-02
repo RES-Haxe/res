@@ -8,6 +8,7 @@ import cli.Hxml.writeHxmlFile;
 import cli.OS.copyTree;
 import cli.OS.relativizePath;
 import cli.ResCli.PROJECT_CONFIG_FILENAME;
+import cli.Templates.getTemplateList;
 import cli.common.CoreDeps.getCoreDeps;
 import cli.types.ResProjectConfig;
 import haxe.Json;
@@ -15,10 +16,15 @@ import haxe.io.Path;
 import sys.FileSystem;
 import sys.io.File;
 
-function templateList(resCli:ResCli)
-	return FileSystem.readDirectory(Path.join([resCli.baseDir, 'templates']));
-
 class Init extends Command {
+	final templateList:Array<String>;
+
+	override public function new(resCli:ResCli) {
+		super(resCli);
+
+		templateList = getTemplateList(resCli);
+	}
+
 	public function description():String
 		return 'Initialize a RES project';
 
@@ -44,8 +50,8 @@ class Init extends Command {
 			},
 			{
 				name: 'template',
-				type: ENUM(templateList(resCli)),
-				desc: 'The name of a template to use to initialize the project. Available templates: ${templateList(resCli).join(', ')}',
+				type: ENUM(templateList),
+				desc: 'The name of a template to use to initialize the project. Available templates: ${templateList.join(', ')}',
 				defaultValue: (?prev) -> 'default',
 				requred: false,
 				interactive: false,
@@ -77,9 +83,7 @@ class Init extends Command {
 
 		final template = args['template'];
 
-		final templatePath = Path.join([resCli.baseDir, 'templates', template]);
-
-		if (!FileSystem.exists(templatePath))
+		if (templateList.indexOf(template) == -1)
 			return error('Template <$template> not found');
 
 		final currentDir = Sys.getCwd();
@@ -89,7 +93,8 @@ class Init extends Command {
 		println('Initializing a RES project in: $dir...');
 
 		try {
-			copyTree(templatePath, dir);
+			copyTree(Path.join([resCli.baseDir, 'templates', '_common']), dir);
+			copyTree(Path.join([resCli.baseDir, 'templates', template]), dir);
 
 			final projectConfig:ResProjectConfig = {
 				name: args['name'],

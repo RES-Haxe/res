@@ -1,5 +1,6 @@
 package cli;
 
+import haxe.ds.Map;
 import Sys.print;
 import Sys.println;
 import haxe.Json;
@@ -164,7 +165,24 @@ function ask_yn(text:String, ?def:Bool = false):Bool {
 function getArguments(args:Array<String>, expect:Array<Argument>):Map<String, String> {
 	final result:Map<String, String> = [];
 
+	args = args.filter(arg -> {
+		if (arg.startsWith('--')) {
+			final parts = arg.split('=');
+			final paramName = parts[0].substr(2).trim();
+
+			if (paramName != '') {
+				result[paramName] = parts[1];
+			}
+
+			return false;
+		}
+		return true;
+	});
+
 	for (nArg in 0...expect.length) {
+		if (result.exists(expect[nArg].name))
+			continue;
+
 		result[expect[nArg].name] = if (nArg >= args.length) {
 			final arg = expect[nArg];
 			if (arg.requred) {
