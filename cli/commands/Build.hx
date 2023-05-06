@@ -1,6 +1,6 @@
 package cli.commands;
 
-import Sys.print;
+import Sys.command;
 import Sys.println;
 import cli.CLI.Argument;
 import cli.CLI.error;
@@ -29,15 +29,16 @@ class Build extends Command {
 	public function run(args:Map<String, String>) {
 		if (['hl', 'js'].indexOf(args['platform']) == -1)
 			error('Unsupported platform: "${args['platform']}" (available: hl, js)');
+
 		final platform:PlatformId = cast args['platform'];
 		final config = getProjectConfig(resCli);
 
 		final hxmlFile = writeHxmlFile(resCli, config, platform);
 
-		print('Build: ');
-		final exitCode = resCli.tools.haxe.run([hxmlFile], (s) -> {}, (err) -> {
-			Sys.stderr().writeString('$err\n');
-		}, true);
+		println('Build ${config.name}');
+
+		final exitCode = command('haxe', [hxmlFile]);
+
 		println('');
 
 		if (exitCode != 0)

@@ -1,6 +1,6 @@
 package cli.commands;
 
-import Sys.print;
+import Sys.command;
 import Sys.println;
 import cli.CLI.error;
 import cli.Command;
@@ -23,14 +23,18 @@ class Run extends Command {
 		final platform:PlatformId = cast args['platform'];
 		final config = getProjectConfig(resCli);
 
-		print('Run: ');
+		println('Run ${config.name}');
 
 		switch (platform) {
 			case hl:
 				if (!resCli.tools.hl.available)
 					return error('${resCli.tools.hl.name} is not available');
 
-				resCli.tools.hl.run(['${config.build.path}/hl/hlboot.dat'], true);
+				final exitCode = command('hl', ['${config.build.path}/hl/hlboot.dat']);
+
+				if (exitCode != 0)
+					return error('Run failed');
+
 			case js:
 				if (!resCli.tools.node.available)
 					return error('${resCli.tools.node.name} is not available');
