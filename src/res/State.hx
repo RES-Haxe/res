@@ -9,34 +9,11 @@ import res.input.MouseEvent;
 using Std;
 
 class State {
-	public var audioMixer:AudioMixer;
+	private final res:RES;
 
-	/** Color index to use to clear the screen (darkest color index by default) **/
-	public var clearColorIndex:Null<Int> = null;
+	public final audioMixer:AudioMixer;
 
-	private var _frameBuffer:FrameBuffer;
-
-	public var frameBuffer(get, never):FrameBuffer;
-
-	function get_frameBuffer():FrameBuffer
-		return _frameBuffer;
-
-	public var res(default, set):RES;
-
-	function set_res(_res:RES) {
-		if (res == null) {
-			res = _res;
-
-			audioMixer = res.bios.createAudioMixer();
-			audioMixer.audioBufferCache = res.audioBufferCache;
-
-			clearColorIndex = res.rom.palette.darkest;
-
-			_frameBuffer = new FrameBuffer(res.width, res.height);
-		}
-
-		return res;
-	}
+	public final frameBuffer:FrameBuffer;
 
 	/** A list of things to render. A "thing" must have a `render` method that accepts `FrameBuffer` as the only argument **/
 	final renderList:Array<{function render(fb:FrameBuffer):Void;}> = [];
@@ -44,7 +21,18 @@ class State {
 	/** A list of things to update. A "thing" must have a `update` method that accepts a `Float` as the only argument (for time delta) **/
 	final updateList:Array<{function update(dt:Float):Void;}> = [];
 
-	public function new() {}
+	/** Color index to use to clear the screen (darkest color index by default) **/
+	public var clearColorIndex:Null<Int> = null;
+
+	public function new(res:RES) {
+		this.res = res;
+		audioMixer = res.bios.createAudioMixer();
+		audioMixer.audioBufferCache = res.audioBufferCache;
+
+		clearColorIndex = res.rom.palette.darkest;
+
+		frameBuffer = new FrameBuffer(res.width, res.height);
+	}
 
 	/**
 		Add to updateList or renderList or both depending on the type of the parameter
@@ -72,8 +60,6 @@ class State {
 	}
 
 	public dynamic function enter() {}
-
-	public dynamic function init() {}
 
 	public dynamic function leave() {}
 

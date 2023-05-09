@@ -52,7 +52,7 @@ class ConsoleChip extends Chip {
 	}
 
 	override function reset() {
-		consoleState = new ConsoleState(console);
+		consoleState = new ConsoleState(res, console);
 		console.addCommand(new Clear(consoleState));
 	}
 }

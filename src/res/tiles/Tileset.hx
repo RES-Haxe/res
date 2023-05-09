@@ -1,8 +1,7 @@
 package res.tiles;
 
-import res.display.Bitmap;
-import res.display.FrameBuffer;
 import haxe.io.Bytes;
+import res.display.Bitmap;
 
 class Tileset {
 	public final tileWidth:Int;

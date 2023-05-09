@@ -24,12 +24,10 @@ class Splash extends State {
 
 	var bgMap:Tilemap;
 
-	public function new(stateFn:Void->State) {
-		super();
+	public function new(res, stateFn:Void->State) {
+		super(res);
 		this.stateFn = stateFn;
-	}
 
-	override public function init() {
 		timeline.after(TIME, (_) -> {
 			final state = stateFn();
 			if (state != null)

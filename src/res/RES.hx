@@ -33,11 +33,11 @@ class PseudoState extends State {
 		function update(dt:Float):Void;
 	};
 
-	public function new(pstate:{
+	public function new(res:RES, pstate:{
 		function render(fb:FrameBuffer):Void;
 		function update(dt:Float):Void;
 	}) {
-		super();
+		super(res);
 
 		this.pstate = pstate;
 	}
@@ -177,7 +177,7 @@ class RES {
 		if (Std.isOfType(pstate, State))
 			return cast pstate;
 
-		final wstate = new PseudoState(pstate);
+		final wstate = new PseudoState(this, pstate);
 
 		return wstate;
 	}
@@ -205,7 +205,7 @@ class RES {
 
 		#if !skipSplash
 		if (rom.sprites.exists('splash')) {
-			setState(new res.extra.Splash(() -> config.main != null ? ensureState(config.main(this)) : null));
+			setState(new res.extra.Splash(this, () -> config.main != null ? ensureState(config.main(this)) : null));
 		} else {
 			if (config.main != null)
 				setState(ensureState(config.main(this)));
@@ -280,11 +280,6 @@ class RES {
 		}
 
 		_state = newState;
-
-		if (_state.res == null) {
-			_state.res = this;
-			_state.init();
-		}
 
 		_state.enter();
 		_state.audioMixer.resume();

@@ -4,14 +4,16 @@ final RES_LABEL = 'R E S';
 final LABEL_SPEED = 50; // pixels per second
 
 class MainState extends State {
-  var pos:{x:Float, y:Float};
-  var labelSize:{width:Int, height:Int};
-  var move:{dx:Int, dy:Int};
+  final pos:{x:Float, y:Float};
+  final labelSize:{width:Int, height:Int};
+  final move:{dx:Int, dy:Int};
 
-  var xBound:Int;
-  var yBound:Int;
+  final xBound:Int;
+  final yBound:Int;
 
-  override function init() {
+  public function new(res) {
+    super(res);
+
     labelSize = res.defaultFont.measure(RES_LABEL);
 
     xBound = res.width - labelSize.width;
@@ -60,6 +62,6 @@ function main() {
   RES.boot(bios, {
     resolution: [128, 128],
     rom: Rom.embed('rom'),
-    main: (res) -> new MainState()
+    main: (res) -> new MainState(res)
   });
 }

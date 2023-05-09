@@ -33,11 +33,12 @@ class ConsoleState extends State {
 	final log:Array<String> = [];
 	final console:Console;
 
-	public function new(console:Console) {
-		super();
+	public function new(res, console:Console) {
+		super(res);
 
 		this.console = console;
 		this.console.println = println;
+		updateInput('');
 	}
 
 	public function isActive():Bool {
@@ -71,10 +72,6 @@ class ConsoleState extends State {
 				res.popState();
 			});
 		}
-	}
-
-	override function init() {
-		updateInput('');
 	}
 
 	function updateInput(?value:String) {
