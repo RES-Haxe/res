@@ -11,6 +11,8 @@ import cli.common.ProjectConfig.getProjectConfig;
 import haxe.io.Path;
 import sys.FileSystem.*;
 
+using StringTools;
+
 class Dist extends Command {
 	public function description():String
 		return 'Prepare a package for distribution';
@@ -30,15 +32,17 @@ class Dist extends Command {
 		switch (args['platform']) {
 			case 'hl':
 				final hlDistPath = Path.join([distPath, 'hl']);
-				final hlBuildPath = projectConfig.build.path;
+				final hlBuildPath = Path.join([projectConfig.build.path, 'hl']);
 
-				if (exists(hlDistPath))
+				if (exists(hlDistPath)) {
+					println('Build directory exists. Nuking it!');
 					wipeDirectory(hlDistPath);
+				}
 
 				createDirectory(hlDistPath);
 
 				println('Copy runtime files...');
-				copyTree(Path.join([resCli.runtimeDir, 'hashlink']), hlDistPath);
+				copyTree(Path.join([resCli.runtimeDir, 'hashlink']), hlDistPath, (path:String) -> path != 'include' && !path.toLowerCase().endsWith('.lib'));
 				wipeDirectory(Path.join([hlDistPath, 'include']));
 
 				final exeName = appExt(Path.join([hlDistPath, projectConfig.dist.exeName]));
@@ -49,7 +53,7 @@ class Dist extends Command {
 				if (Sys.systemName().toLowerCase() != 'windows')
 					Sys.command('chmod +x $exeName');
 
-				println('Copy bytecode');
+				println('Copy bytecode...');
 				copyTree(hlBuildPath, hlDistPath);
 
 				println('Done: $hlDistPath');

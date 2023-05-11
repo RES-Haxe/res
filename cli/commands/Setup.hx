@@ -70,6 +70,10 @@ class Setup extends Command {
 		if (!exists(runtimeDir)) {
 			createDirectory(runtimeDir);
 			downloadRuntime(runtimeDir);
+		} else {
+			if(ask_yn("Runtime directory isn't empty. Do you want to re-download the runtime?")) {
+				downloadRuntime(runtimeDir);
+			};
 		}
 
 		final installCmd = ask_yn('Do you want to install the "res" command?');

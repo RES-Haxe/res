@@ -29,18 +29,22 @@ function getTempDir() {
 /**
 	Copy file tree
 **/
-function copyTree(from:String, to:String, verbose:Bool = false) {
+function copyTree(from:String, to:String, verbose:Bool = false, ?filter:(path:String) -> Bool) {
+	if (filter != null && filter(from) == false)
+		return;
+
 	if (from.isDirectory()) {
 		if (verbose)
 			Sys.println('D $from -> $to');
 		to.createDirectory();
 
 		for (item in from.readDirectory()) {
-			copyTree(Path.join([from, item]), Path.join([to, item]));
+			copyTree(Path.join([from, item]), Path.join([to, item]), filter);
 		}
 	} else {
 		if (verbose)
 			Sys.println('F $from -> $to');
+
 		File.copy(from, to);
 	}
 }
@@ -56,7 +60,7 @@ function wipeDirectory(dirPath:String) {
 		return;
 
 	if (Sys.systemName() == 'Windows')
-		command('cmd', ['/c', 'rmdir', '/Q', '/S', dirPath]);
+		command('powershell', ['Remove-Item -Path "$dirPath" -Recurse -Force']);
 	else
 		command('rm', ['-rf', dirPath]);
 }
@@ -64,8 +68,12 @@ function wipeDirectory(dirPath:String) {
 /**
 	Extract archive
 **/
-function extractArchive(archive:String, dest:String)
-	command('tar', ['-xf', archive, '-C', dest]);
+function extractArchive(archive:String, dest:String) {
+	if (Sys.systemName().toLowerCase() == 'windows' && Path.extension(archive).toLowerCase() == 'zip')
+		command('powershell', ['Expand-Archive -Path "$archive" -DestinationPath "$dest"']);
+	else
+		command('tar', ['-xf', archive, '-C', dest, '--force-local']);
+}
 
 /**
 	Add ".exe" extension to the filename on Windows
