@@ -1,7 +1,7 @@
 package res.collisions;
 
 import Math.*;
-import res.geom.Vector2;
+import res.geom.Vec;
 import res.tools.MathTools.*;
 import res.types.Shape;
 
@@ -19,8 +19,7 @@ class Collider {
 					case CIRCLE(vcx, vcy, vr):
 						final dist = sqrt(pow(vcx - cx, 2) + pow(vcy - cy, 2));
 						if (dist < r + vr) {
-							final v = new Vector2(vcx - cx, vcy - cy);
-							v.normalize((r + vr) - dist);
+							final v = Vec.of({x: vcx - cx, y: vcy - cy}).normalize((r + vr) - dist);
 							return OFFSET(v.x, v.y);
 						}
 					case RECT(vrx, vry, vrw, vrh):
