@@ -4,6 +4,7 @@ import Sys.command;
 import Sys.println;
 import cli.CLI.Argument;
 import cli.CLI.ask_yn;
+import cli.CLI.error;
 import cli.Network.downloadFile;
 import cli.OS.extractArchive;
 import cli.OS.getTempDir;
@@ -12,6 +13,8 @@ import sys.FileSystem.deleteFile;
 import sys.FileSystem.exists;
 import sys.FileSystem.readDirectory;
 import sys.FileSystem.rename;
+import sys.FileSystem;
+import sys.io.File;
 
 using StringTools;
 using haxe.io.Path;
@@ -71,7 +74,7 @@ class Setup extends Command {
 			createDirectory(runtimeDir);
 			downloadRuntime(runtimeDir);
 		} else {
-			if(ask_yn("Runtime directory isn't empty. Do you want to re-download the runtime?")) {
+			if (ask_yn("Runtime directory isn't empty. Do you want to re-download the runtime?")) {
 				downloadRuntime(runtimeDir);
 			};
 		}
@@ -84,7 +87,32 @@ class Setup extends Command {
 		final sysname = Sys.systemName().toLowerCase();
 
 		if (sysname == 'windows') {
-			// ???
+			function failure() {
+				println('Unable to install the global command.');
+				println('Please add the following path to your PATH environmen variable:');
+				println(runtimeDir);
+			}
+
+			var haxePath = Sys.getEnv('HAXEPATH');
+
+			if (haxePath == null) {
+				haxePath = 'C:\\HaxeToolkit\\haxe';
+
+				if (!exists(haxePath)) {
+					failure();
+					return;
+				}
+			}
+			final scriptSrc = Path.join([resCli.baseDir, 'extra', 'res.bat']);
+			final scriptPath = Path.join([haxePath, 'res.bat']);
+
+			try {
+				File.copy(scriptSrc, scriptPath);
+				println('Script is created at: $scriptPath');
+			} catch (err) {
+				println(err.message);
+				failure();
+			}
 		} else {
 			final scriptPath = '/usr/local/bin/res';
 			final scriptSrc = Path.join([resCli.baseDir, 'extra', 'res']);
