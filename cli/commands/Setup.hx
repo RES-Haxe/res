@@ -4,7 +4,6 @@ import Sys.command;
 import Sys.println;
 import cli.CLI.Argument;
 import cli.CLI.ask_yn;
-import cli.CLI.error;
 import cli.Network.downloadFile;
 import cli.OS.extractArchive;
 import cli.OS.getTempDir;
@@ -13,7 +12,6 @@ import sys.FileSystem.deleteFile;
 import sys.FileSystem.exists;
 import sys.FileSystem.readDirectory;
 import sys.FileSystem.rename;
-import sys.FileSystem;
 import sys.io.File;
 
 using StringTools;
