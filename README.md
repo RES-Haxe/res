@@ -1,6 +1,18 @@
 # RES
 
-RES is a minimalist game engine focused on low-resolution paletted raster graphics. RES is written in Haxe and extremely portable.
+- [RES](#res)
+  - [Overview](#overview)
+  - [Installation](#installation)
+
+## Overview
+
+RES is a minimalist game engine designed for creating games with low-spec content. It is inspired by Pico-8 and other fantasy consoles.
+
+RES is written in Haxe and extremely portable.
+
+<img src="./readme/megatank.gif" height="250" />
+<img src="./readme/motorun.gif" height="250" />
+<img src="./readme/typingtrain.gif" height="250" />
 
 ## Installation
 
