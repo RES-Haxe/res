@@ -1,15 +1,13 @@
 import Bios.bios;
 
-using Std;
-
 function main() {
   RES.boot(bios, {
     resolution: [128, 128],
     rom: Rom.embed('rom'),
     main: (res) -> {
       return {
-        update: function(dt) {},
-        render: function(fb) {
+        update: (dt) -> {},
+        render: (fb) -> {
           fb.clear();
         }
       }
