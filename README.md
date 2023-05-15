@@ -10,27 +10,56 @@ RES is a minimalist game engine designed for creating games with low-spec conten
 
 RES is written in Haxe and extremely portable.
 
-<img src="./readme/megatank.gif" height="250" />
-<img src="./readme/motorun.gif" height="250" />
-<img src="./readme/typingtrain.gif" height="250" />
+<table>
+   <tbody>
+      <tr>
+         <td>
+            <img src="./readme/megatank.gif" height="250" /> 
+         </td>
+         <td>
+            <img src="./readme/motorun.gif" height="250" /> 
+         </td>
+         <td>
+            <img src="./readme/typingtrain.gif" height="250" /> 
+         </td>
+      </tr>
+   </tbody>
+</table>
 
 ## Installation
 
-1. Install Haxe following the instructinos on the [official website](https://haxe.org/download/version/4.2.5/)
-2. Using `haxelib` (library manager utility for haxe) install RES:
+1. Install Haxe following the instructinos on the [official website](https://haxe.org/)
+
+2. Using `haxelib` (library manager utility for haxe) install RES. It is recommended to use the Git version as it is the most up to date version:
+
+   ```
+   haxelib git res https://github.com/RES-Haxe/res.git
+   ```
+
+   or you can install the Haxelib version:
+
    ```
    haxelib install res
    ```
 
-   or use git if you want the bleeding edge version :
+3. Use the following command to setup the engine:
+
    ```
-   haxelib git res https://github.com/RES-Haxe/res.git
+   haxelib run res setup
    ```
-3. Now you can use RES cli:
-   ```
-   haxelib run res
-   ```
+
+   In the end, you will be asked to register a global `res` command in the system. If you choose to do so, you will be able to use the commands as described below. Otherwise, you will need to prefix all the following commands with `haxelib run`.
+
 4. To initialize a project use:
+
    ```
-   haxelib run res init MyProject project/directory
+   res init MyGame 
+   ```
+
+   This command will create a new directory called "MyGame" and initialize a project within it.
+
+5. To run the project, use the following command in the project directory:
+   
+   ```
+   res run
    ```
