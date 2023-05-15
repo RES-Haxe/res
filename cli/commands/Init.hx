@@ -110,7 +110,8 @@ class Init extends Command {
 					path: './dist',
 					exeName: 'game'
 				},
-				libs: getCoreDeps(resCli)
+				libs: getCoreDeps(resCli),
+				defs: [_all => [['no-deprecation-warnings']]] // Need to remove this one day
 			};
 
 			for (platform in [hl, js])

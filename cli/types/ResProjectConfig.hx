@@ -21,4 +21,5 @@ typedef ResProjectConfig = {
 		path:String, exeName:String
 	},
 	libs:Map<PlatformId, DependenciesList>,
+	defs:Map<PlatformId, Array<Array<String>>>
 };

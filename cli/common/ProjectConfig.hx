@@ -29,11 +29,17 @@ function getProjectConfig(resCli:ResCli):ResProjectConfig {
 				path: parsedData.field('dist').field('path'),
 				exeName: parsedData.field('dist').field('exeName'),
 			},
-			libs: [_all => [], js => [], hl => []]
+			libs: [_all => [], js => [], hl => []],
+			defs: [_all => [], js => [], hl => []]
 		};
 
-		for (platform in parsedData.field('libs').fields())
-			result.libs[cast platform] = parsedData.field('libs').field(platform);
+		if (parsedData.hasField('libs'))
+			for (platform in parsedData.field('libs').fields())
+				result.libs[cast platform] = parsedData.field('libs').field(platform);
+
+		if (parsedData.hasField('defs'))
+			for (platform in parsedData.field('defs').fields())
+				result.defs[cast platform] = parsedData.field('defs').field(platform);
 
 		return result;
 	} catch (err) {

@@ -14,6 +14,11 @@ function createHaxeArgs(resCli:ResCli, cfg:ResProjectConfig, platform:PlatformId
 	for (dep in allDeps)
 		result.push(['-lib', dep[0]]);
 
+	final allDefs = cfg.defs[_all].concat(cfg.defs[platform] ?? []);
+
+	for (def in allDefs)
+		result.push(['-D'].concat(def));
+
 	result.push(switch (platform) {
 		case _all:
 			[];
