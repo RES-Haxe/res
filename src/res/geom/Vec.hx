@@ -112,9 +112,7 @@ abstract Vec(TVec) {
 	 */
 	@:op(A - B)
 	public inline function sub(b:Vec) {
-		this.x -= b.x;
-		this.y -= b.y;
-		return new Vec(this);
+		return new Vec({x: this.x - b.x, y: this.y - b.y});
 	}
 
 	/**
@@ -130,14 +128,24 @@ abstract Vec(TVec) {
 	}
 
 	/**
-		Multiply the vectory by a scalar value
+		Multiply the vector by a scalar value
 
 		@param scalar Scalar value
 	 */
 	@:op(A * B)
 	public inline function mults(scalar:Float) {
-		this.x *= x;
-		this.y *= y;
+		return new Vec({x: x * scalar, y: y * scalar});
+	}
+
+	/**
+		Multiply the vector by a scalar value and change it in place
+
+		@param scalar Scalar value
+	 */
+	@:op(A *= B)
+	public inline function multsm(scalar:Float) {
+		this.x *= scalar;
+		this.y *= scalar;
 		return new Vec(this);
 	}
 
