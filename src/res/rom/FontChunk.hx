@@ -48,6 +48,7 @@ class FontChunk extends RomChunk {
 				final chars:Map<Int, Char> = [];
 				final tileWidth:Int = bi.readByte();
 				final tileHeight:Int = bi.readByte();
+				final spacing:Int = bi.readByte();
 				final utf8Len:Int = bi.readUInt16();
 				final charactersBytes = Bytes.alloc(utf8Len);
 				bi.readBytes(charactersBytes, 0, utf8Len);
@@ -64,7 +65,7 @@ class FontChunk extends RomChunk {
 							y: line * tileHeight,
 							xoffset: 0,
 							yoffset: 0,
-							xadvance: tileWidth,
+							xadvance: tileWidth + spacing,
 							width: tileWidth,
 							height: tileHeight
 						};

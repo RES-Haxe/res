@@ -120,6 +120,7 @@ If font type is `1`:
 ```
 BYTE         Character width
 BYTE         Character height
+BYTE         Spacing between characters
 WORD         Number of characters [n]
 STRING[n]    Characters
 ```

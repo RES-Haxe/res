@@ -12,6 +12,7 @@ typedef FontJson = {
 	bitmap:String,
 	tileWidth:Int,
 	tileHeight:Int,
+	?spacing:Int,
 	characters:String
 };
 
@@ -43,6 +44,7 @@ class Converter extends res.rom.converters.Converter {
 		bo.writeByte(FontType.FIXED);
 		bo.writeByte(json.tileWidth);
 		bo.writeByte(json.tileHeight);
+		bo.writeByte(json.spacing ?? 0);
 
 		final cbo = new BytesOutput();
 		cbo.writeString(json.characters, UTF8);

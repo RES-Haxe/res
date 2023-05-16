@@ -18,6 +18,7 @@ Example:
   "bitmap": "kernal.png",
   "tileWidth": 8,
   "tileHeight": 8,
+  "spacing": 1,
   "characters": " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]↑_✓abcdefghijklmnopqrstuvwxyz£|←▒▓"
 }
 ```
