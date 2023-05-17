@@ -9,6 +9,7 @@ import res.chips.Chip;
 import res.display.CRT;
 import res.display.FrameBuffer;
 import res.input.Controller;
+import res.input.ControllerButton;
 import res.input.ControllerEvent;
 import res.input.Keyboard;
 import res.input.Mouse;
@@ -58,36 +59,31 @@ class RES {
 
 	public final config:RESConfig;
 
-	/** Default controller used by the Player 1 **/
-	public final controller:Controller;
-
-	/** All connected controllers */
-	public final controllers:Array<Controller> = [];
-
 	public final keyboard:Keyboard;
 	public final mouse:Mouse;
 	public final bios:BIOS;
 	public final crt:CRT;
 	public final storage:Storage;
+
 	public final renderHooks:RenderHooks = {
 		before: [],
 		after: []
 	};
+
 	public var lastFrameTime:Float = 0;
-
 	public final rom:Rom;
-
 	public var defaultFont:Font;
 
 	@:allow(res)
 	private var audioBufferCache:AudioBufferCache;
 
+	/** All connected controllers */
+	private final controllers:Array<Controller> = [for (_ in 0...4)
+		new Controller()];
+
 	private var chips:Map<String, Chip> = [];
-
 	private var prevFrameTime:Null<Float> = null;
-
 	private final _stateHistory:Array<State> = [];
-
 	private var _state:State;
 	private var _stateResultCb:Array<Dynamic->Void> = [];
 
@@ -117,9 +113,6 @@ class RES {
 
 		if (config.resolution.length != 2)
 			throw 'Resolution must have exactly two elements for width and height';
-
-		controller = new Controller("player1");
-		connectController(controller);
 
 		keyboard = new Keyboard(this);
 		keyboard.listen((event) -> {
@@ -182,17 +175,8 @@ class RES {
 		return wstate;
 	}
 
-	public function connectController(ctrl:Controller) {
-		controllers.push(ctrl);
-		ctrl.listen(controllerEvent);
-		ctrl.connect();
-	}
-
-	public function disconnectController(ctrl:Controller) {
-		controllers.remove(ctrl);
-		ctrl.disconnect();
-		ctrl.disregard(controllerEvent);
-	}
+	public function ctrl(index:Int = 0)
+		return controllers[index];
 
 	private function controllerEvent(event:ControllerEvent) {
 		if (state != null)
@@ -205,7 +189,9 @@ class RES {
 
 		#if !skipSplash
 		if (rom.sprites.exists('splash')) {
-			setState(new res.extra.Splash(this, () -> config.main != null ? ensureState(config.main(this)) : null));
+			setState(new res.extra.Splash(this,
+				() ->
+					config.main != null ? ensureState(config.main(this)) : null));
 		} else {
 			if (config.main != null)
 				setState(ensureState(config.main(this)));
@@ -247,7 +233,8 @@ class RES {
 		return cast getChip(chipClass.getClassName());
 	}
 
-	public function hasChip(?chipClass:Class<Chip>, ?chipClassName:String):Bool {
+	public function hasChip(?chipClass:Class<Chip>,
+			?chipClassName:String):Bool {
 		if (chipClass != null)
 			chipClassName = chipClass.getClassName();
 
@@ -268,10 +255,12 @@ class RES {
 		Set current state
 
 		@param newState State to set
-		@param historyReplace Replace the current state in history, instead of adding a new entry
+		@param historyReplace Replace the current state in history, instead
+		of adding a new entry
 		@param onResult 
 	 */
-	public function setState(newState:State = null, ?historyReplace:Bool = false, ?onResult:Dynamic->Void):State {
+	public function setState(newState:State = null,
+			?historyReplace:Bool = false, ?onResult:Dynamic->Void):State {
 		if (_state != null) {
 			_state.leave();
 			_state.audioMixer.pause();
@@ -292,7 +281,8 @@ class RES {
 	/**
 		Get back to the previous state
 
-		@param result optional payload that will be passed to a callback (if any) given in the `setState method
+		@param result optional payload that will be passed to a callback
+		(if any) given in the `setState method
 	 */
 	public function popState(?result:Dynamic) {
 		var state = _stateHistory.pop();
@@ -353,11 +343,13 @@ class RES {
 		@param config RES Config
 		@param config.resolution Screen resolution
 		@param config.rom ROM
-		@param config.main Entry point function that should return an object that has a `render` and an `update` methods
+		@param config.main Entry point function that should return an object
+		that has a `render` and an `update` methods
 		@param config.chip An array of initial chips
 		@param onBooted will be called after the boot
 	 */
-	public static function boot(bios:BIOS, config:RESConfig, ?onBooted:RES->Void) {
+	public static function boot(bios:BIOS, config:RESConfig,
+			?onBooted:RES->Void) {
 		bios.ready(() -> {
 			final res = new RES(bios, config);
 			if (onBooted != null)

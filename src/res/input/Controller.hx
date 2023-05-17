@@ -1,62 +1,25 @@
 package res.input;
 
-import res.events.Emitter;
-import res.input.ControllerEvent;
+import res.geom.Vec;
 
-class Controller extends Emitter<ControllerEvent> {
-	var pressed:Map<ControllerButton, Bool> = [
-		for (button in Type.allEnums(ControllerButton))
-			button => false
-	];
-
-	var _direction:{x:Int, y:Int} = {x: 0, y: 0};
-
-	public var direction(get, never):{x:Int, y:Int};
-
-	inline function get_direction() {
-		return {
-			x: (pressed[ControllerButton.LEFT] ? -1 : 0) + (pressed[ControllerButton.RIGTH] ? 1 : 0),
-			y: (pressed[ControllerButton.UP] ? -1 : 0) + (pressed[ControllerButton.DOWN] ? 1 : 0)
-		};
-	}
-
-	public final name:String;
+@:build(res.input.ControllerBuildMacro.build())
+class Controller {
+	final pressed:Map<ControllerButton,
+		Bool> = [for (btn in Type.allEnums(ControllerButton)) btn => false];
 
 	@:allow(res)
-	private function new(?name:String) {
-		this.name = name;
+	function new() {}
+
+	public function axis():Vec {
+		return Vec.of({
+			x: (pressed.get(LEFT) ? -1 : 0) + (pressed.get(RIGTH) ? 1 : 0),
+			y: (pressed.get(UP) ? -1 : 0) + (pressed.get(DOWN) ? 1 : 0)
+		});
 	}
 
-	public function connect() {
-		emit(DISCONNECTED(this));
-	}
+	public function press(btn:ControllerButton)
+		pressed[btn] = true;
 
-	public function disconnect() {
-		emit(CONNECTED(this));
-	}
-
-	public function isPressed(button:ControllerButton) {
-		return pressed[button];
-	}
-
-	public function push(button:ControllerButton) {
-		if (!pressed[button]) {
-			emit(BUTTON_DOWN(this, button));
-			pressed[button] = true;
-		}
-	}
-
-	public function release(button:ControllerButton) {
-		if (pressed[button]) {
-			emit(BUTTON_UP(this, button));
-			pressed[button] = false;
-		}
-	}
-
-	public function buttonState(button:ControllerButton, state:Bool) {
-		if (pressed[button] && !state)
-			release(button);
-		else if (!pressed[button] && state)
-			push(button);
-	}
+	public function release(btn:ControllerButton)
+		pressed[btn] = false;
 }
