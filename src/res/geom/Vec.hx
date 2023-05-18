@@ -52,6 +52,14 @@ abstract Vec(TVec) {
 		return new Vec(xy);
 
 	/**
+		Convert radians to a Vector
+
+		@param rad Radians
+	**/
+	public inline static function ofRad(rad:Float):Vec
+		return xy(Math.cos(rad), Math.sin(rad));
+
+	/**
 		Sums two 2-component vectors
 
 		@param a
@@ -186,11 +194,13 @@ abstract Vec(TVec) {
 	 */
 	public function normalize(len:Float = 1) {
 		final l = length();
+
 		if (l != 0)
 			set(this.x / l * len, this.y / l * len);
 		else
 			set(0);
-		return this;
+
+		return Vec.of(this);
 	}
 
 	/**
@@ -198,7 +208,7 @@ abstract Vec(TVec) {
 	 */
 	public function set(x:Float, ?y:Float) {
 		this.x = x;
-		this.y = y == null ? x : y;
+		this.y = y ?? x;
 		return this;
 	}
 
