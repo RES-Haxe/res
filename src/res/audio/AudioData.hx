@@ -11,7 +11,7 @@ class AudioData {
 	public final rate:Int;
 
 	/** Bits per sample */
-	public final bps:Int;
+	public final bps:BPS;
 
 	/** Number of frames */
 	public final length:Int;
@@ -22,13 +22,13 @@ class AudioData {
 
 	private final _input:BytesInput;
 
-	public function new(channels:Int, rate:Int, bps:Int, data:Bytes) {
+	public function new(channels:Int, rate:Int, bps:BPS, data:Bytes) {
 		this.channels = channels;
 		this.rate = rate;
 		this.bps = bps;
 		this.data = data;
 
-		_bytesPerSample = Std.int(bps / 8);
+		_bytesPerSample = Std.int(cast(bps, Int) / 8);
 
 		this.length = Std.int(data.length / channels / _bytesPerSample);
 
@@ -42,18 +42,19 @@ class AudioData {
 		@param num Number of the sample
 	 */
 	public function getSampleInt(channel:Int, num:Int):Int {
-		final pos:Int = num * (_bytesPerSample * channels) + _bytesPerSample * channel;
+		final pos:Int = num * (_bytesPerSample * channels)
+			+ _bytesPerSample * channel;
 
 		_input.position = pos;
 
 		return switch (bps) {
-			case 8:
+			case BPS8:
 				_input.readInt8();
-			case 16:
+			case BPS16:
 				_input.readInt16();
-			case 24:
+			case BPS24:
 				_input.readInt24();
-			case 32:
+			case BPS32:
 				_input.readInt32();
 			case _:
 				0;
@@ -70,13 +71,13 @@ class AudioData {
 		final intSample = getSampleInt(channel, num);
 
 		return switch (bps) {
-			case 8:
+			case BPS8:
 				intSample / 128;
-			case 16:
+			case BPS16:
 				intSample / 32768;
-			case 24:
+			case BPS24:
 				intSample / 8388608;
-			case 32:
+			case BPS32:
 				intSample / 2147483648;
 			case _:
 				0;

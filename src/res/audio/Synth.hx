@@ -1,154 +1,187 @@
 package res.audio;
 
-import haxe.io.Bytes;
 import haxe.io.BytesOutput;
 import res.audio.osc.Oscillator;
-import res.tools.MathTools.lerp;
-import res.tools.MathTools.sum;
+import res.tools.MathTools.*;
 
-using res.tools.ReflectTools;
+enum EEnvelope {
+	ATTACK;
+	SUSTAIN;
+	DECAY;
+}
 
-typedef PCMParams = {
-	?channels:Int,
-	?oscillator:Oscillator,
-	?bps:Int,
-	?sampleRate:Int
-};
-
-typedef SynthParams = {
-	/** Envelope */
-	?attack:Int,
-	?decay:Int,
-	?sustain:Float,
-	?release:Int,
-	?sustainTime:Int,
-	/** frequency **/
-	?freq:Float,
-	?sweep:Float
-};
-
-/**
-	Sound effect generator
- */
 class Synth {
-	var pcm:PCMParams;
-	var params:SynthParams;
+	static final envelopeChain:Map<EEnvelope, EEnvelope> = [
+		ATTACK => SUSTAIN,
+		SUSTAIN => DECAY,
+		DECAY => null
+	];
 
-	public var totalTime(get, never):Int;
+	var _envPhaseTime:Map<EEnvelope, Float> = [];
 
-	function get_totalTime() {
-		return Std.int(sum([params.attack, params.decay + params.sustainTime + params.release]));
+	var _amp:Float = 0;
+
+	/** Oscillator **/
+	public var osc:Oscillator;
+
+	/** Synth start frequency **/
+	public var frequency:Float;
+
+	/** Frequency sweep (octaves per second) **/
+	public var frequencySweep:Float;
+
+	/** Min. frequency cutoff **/
+	public var frequencyCutoff:Float;
+
+	/** Attack time (ms) **/
+	public var attack(get, set):Float;
+
+	function set_attack(val:Float)
+		return _envPhaseTime[ATTACK] = val;
+
+	function get_attack()
+		return _envPhaseTime[ATTACK];
+
+	/** Decay (ms) **/
+	public var decay(get, set):Float;
+
+	function set_decay(val:Float)
+		return _envPhaseTime[DECAY] = val;
+
+	function get_decay()
+		return _envPhaseTime[DECAY];
+
+	/** Sustain volume (0...1) **/
+	public var susVolume:Float;
+
+	/** Sustain time (ms) **/
+	public var susTime(get, set):Float;
+
+	function set_susTime(val:Float)
+		return _envPhaseTime[SUSTAIN] = val;
+
+	function get_susTime()
+		return _envPhaseTime[SUSTAIN];
+
+	/** Current envelope phase **/
+	private var envelopePhase:EEnvelope = ATTACK;
+
+	/** Time of the current envelope phase **/
+	private var envelopeTime:Float = 0;
+
+	/** Total passed time **/
+	private var totalTime:Float = 0;
+
+	/**
+		@param osc Oscillator to synth the sound
+	**/
+	public function new(osc:Oscillator, params:{
+		?frequency:Float,
+		?frequencySweep:Float,
+		?frequencyCutoff:Float,
+		?attack:Float,
+		?decay:Float,
+		?susVolume:Float,
+		?susTime:Float
+	}) {
+		this.osc = osc;
+
+		this.osc.frequency = frequency = params.frequency ?? Note.G3;
+		frequencySweep = params.frequencySweep ?? 0.0;
+		frequencyCutoff = params.frequencyCutoff ?? 20.0;
+		attack = params.attack ?? 0.0;
+		decay = params.decay ?? 100.0;
+		susVolume = params.susVolume ?? 0.8;
+		susTime = params.susTime ?? 500.0;
 	}
 
-	public var totalSamples(get, never):Int;
+	/**
+		Get the current amplitude (-1...1)
+	**/
+	public function amp():Float
+		return _amp;
 
-	function get_totalSamples() {
-		return samplesPerTime(totalTime);
+	/**
+		Advance time by amount of milliseconds
+
+		@param ms the amount of milliseconds to advance
+
+		@returns the amplitued after advancing the time
+	 */
+	public function advance(ms:Float):Null<Float> {
+		totalTime += ms;
+		envelopeTime += ms;
+
+		if (envelopeTime > _envPhaseTime[envelopePhase]) {
+			envelopeTime -= _envPhaseTime[envelopePhase];
+			envelopePhase = envelopeChain[envelopePhase];
+		}
+
+		if (envelopePhase == null)
+			return null; // Finished
+
+		final t = param(0, _envPhaseTime[envelopePhase], envelopeTime);
+
+		final volume = switch (envelopePhase) {
+			case ATTACK:
+				lerp(0, susVolume, t);
+			case SUSTAIN:
+				susVolume;
+			case DECAY:
+				lerp(susVolume, 0, t);
+		}
+
+		if (frequencySweep != 0) {
+			osc.frequency *= Math.pow(2, frequencySweep * (ms / 1000));
+
+			if (osc.frequency < frequencyCutoff)
+				return null;
+		}
+
+		final osc_amp = osc.advance(ms);
+
+		return _amp = osc_amp * volume;
 	}
 
-	function samplesPerTime(ms:Int):Int {
-		return Math.floor(pcm.sampleRate * (ms / 1000));
-	}
+	public function audioData(sampleRate:Int, bps:BPS):AudioData
+		return new AudioData(1, sampleRate, bps, PCM(sampleRate, bps));
 
-	function createPCM():Bytes {
+	public function buffer(sampleRate:Int = 22500, bps:BPS = BPS8, res:RES)
+		return res.bios.createAudioBuffer(audioData(sampleRate,
+			bps).iterator());
+
+	public function PCM(sampleRate:Int, bps:BPS) {
+		final adv = 1000 / sampleRate;
 		final bo = new BytesOutput();
 
-		pcm.oscillator.reset();
-		pcm.oscillator.frequency = params.freq;
+		while (true) {
+			final a = amp();
 
-		/**
-			Get current oscilator amplitude quantized
-		 */
-		inline function amp(vol:Float = 1):Int
-			return Tools.quantize(pcm.oscillator.amplitude * vol, pcm.bps);
+			final sample = Tools.quantize(a, bps);
 
-		final wr:Int->Void = switch (pcm.bps) {
-			case 8: (s) -> bo.writeInt8(s);
-			case 16: (s) -> bo.writeInt16(s);
-			case 32: (s) -> bo.writeInt32(s);
-			case _: (s) -> null;
-		};
-
-		final chunks:Array<{nSamples:Int, volStart:Float, volEnd:Float}> = [
-			{nSamples: samplesPerTime(params.attack), volStart: 0, volEnd: 1},
-			{nSamples: samplesPerTime(params.decay), volStart: 1, volEnd: params.sustain},
-			{nSamples: samplesPerTime(params.sustainTime), volStart: params.sustain, volEnd: params.sustain},
-			{nSamples: samplesPerTime(params.release), volStart: params.sustain, volEnd: 0},
-		];
-
-		for (chunk in chunks) {
-			for (s in 0...chunk.nSamples) {
-				final vol = lerp(chunk.volStart, chunk.volEnd, s / chunk.nSamples);
-				wr(amp(vol));
-
-				final msAdvance = 1000 / pcm.sampleRate;
-
-				pcm.oscillator.frequency += params.sweep * (1 / pcm.sampleRate);
-
-				pcm.oscillator.advance(msAdvance);
+			switch bps {
+				case BPS8:
+					bo.writeInt8(sample);
+				case BPS16:
+					bo.writeInt16(sample);
+				case BPS24:
+					bo.writeInt24(sample);
+				case BPS32:
+					bo.writeInt32(sample);
 			}
+
+			if (advance(adv) == null)
+				break;
 		}
 
 		return bo.getBytes();
 	}
 
-	public function set(params:SynthParams) {
-		this.params.setValues(params);
-		return this;
-	}
-
-	/**
-		Generate `AudioData`
-	 */
-	public function data():AudioData {
-		return new AudioData(pcm.channels, pcm.sampleRate, pcm.bps, createPCM());
-	}
-
-	static function defaultPCM():PCMParams {
-		return {
-			channels: 1,
-			oscillator: Oscillator.triangle(),
-			sampleRate: 22050,
-			bps: 16
-		};
-	}
-
-	static function defaultParams():SynthParams {
-		return {
-			attack: 200,
-			decay: 100,
-			sustain: 0.8,
-			sustainTime: 500,
-			release: 1000,
-			freq: Note.G3,
-			sweep: 0
-		};
-	}
-
-	/**
-		Create a new sound effect generator
-
-		@param pcm PCM parameters
-		@param params Sound effect params
-	 */
-	public static function create(?pcm:PCMParams, ?params:SynthParams) {
-		final pcmParams = defaultPCM();
-		final createParams = defaultParams();
-
-		if (pcm != null)
-			pcmParams.setValues(pcm);
-
-		if (params != null)
-			createParams.setValues(params);
-
-		return new Synth(pcmParams, createParams);
-	}
-
-	private function new(pcm:PCMParams, params:SynthParams) {
-		if ([8, 16, 32].indexOf(pcm.bps) == -1)
-			throw 'Unsupported bit depth: ${pcm.bps}';
-
-		this.pcm = pcm;
-		this.params = params;
+	public function reset() {
+		osc.frequency = frequency;
+		osc.reset();
+		totalTime = 0;
+		envelopeTime = 0;
+		envelopePhase = ATTACK;
 	}
 }
