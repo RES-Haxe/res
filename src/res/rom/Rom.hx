@@ -1,5 +1,6 @@
 package res.rom;
 
+import haxe.Exception;
 import haxe.Int32;
 import haxe.io.Bytes;
 import haxe.io.BytesInput;
@@ -9,6 +10,8 @@ import res.display.Sprite;
 import res.text.Font;
 import res.tiles.Tilemap;
 import res.tiles.Tileset;
+
+using StringTools;
 
 inline function et<T>(a:Map<String, T>):Map<String, T>
 	return a == null ? [] : a;
@@ -62,17 +65,21 @@ class Rom {
 		final bytesInput = new BytesInput(compressed ? InflateImpl.run(new BytesInput(bytes)) : bytes);
 
 		if (bytesInput.readInt32() != MAGIC_NUMBER)
-			throw 'Invalid magic number';
+			throw new Exception('Invalid magic number');
 
-		// Read number of colors
-		final numColors = bytesInput.readByte();
-		final palette:Palette = new Palette([for (_ in 0...numColors) Color32.ofRGB8(bytesInput.readUInt24())]);
 		final audio:Map<String, AudioData> = add != null ? et(add.audio) : [];
 		final sprites:Map<String, Sprite> = add != null ? et(add.sprites) : [];
 		final tilesets:Map<String, Tileset> = add != null ? et(add.tilesets) : [];
 		final tilemaps:Map<String, Tilemap> = add != null ? et(add.tilemaps) : [];
 		final fonts:Map<String, Font> = add != null ? et(add.fonts) : [];
 		final data:Map<String, Bytes> = add != null ? et(add.data) : [];
+
+		final paletteChunk:PaletteChunk = cast RomChunk.read(bytesInput);
+
+		if (paletteChunk.chunkType != PALETTE)
+			throw new Exception('First chunk in the ROM must be Palette (0x00). Got: 0x${paletteChunk.chunkType.hex(2)}');
+
+		final palette = paletteChunk.getPalette();
 
 		while (bytesInput.position < bytesInput.length) {
 			final chunk = RomChunk.read(bytesInput);
@@ -90,6 +97,7 @@ class Rom {
 					fonts[chunk.name] = cast(chunk, FontChunk).getFont(sprites['font:${chunk.name}']);
 				case DATA:
 					data[chunk.name] = cast(chunk, DataChunk).getBytes();
+				case PALETTE: // Ignore PALETTE chunk
 			}
 		}
 
@@ -130,6 +138,16 @@ class Rom {
 		final romBytesFinal = compressed ? haxe.zip.Compress.run(romBytes, 9) : romBytes;
 		final romBase64 = haxe.crypto.Base64.encode(romBytesFinal);
 		return macro res.rom.Rom.fromBytes(haxe.crypto.Base64.decode($v{romBase64}), $v{compressed}, ${add});
+	}
+
+	/**
+		Create and embed a ROM only containing firmware data
+	 */
+	public static macro function firmware(?compressed:Bool = true) {
+		final romBytes = RomCreator.create(RomCreator.getFirmwarePath(), false);
+		final romBytesFinal = compressed ? haxe.zip.Compress.run(romBytes, 9) : romBytes;
+		final romBase64 = haxe.crypto.Base64.encode(romBytesFinal);
+		return macro res.rom.Rom.fromBytes(haxe.crypto.Base64.decode($v{romBase64}), $v{compressed});
 	}
 
 	/**

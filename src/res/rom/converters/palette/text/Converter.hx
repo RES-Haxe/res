@@ -7,9 +7,15 @@ class Converter extends PaletteConverter {
 		final file = File.read(fileName, false);
 
 		while (colors.length < 256 && !file.eof()) {
-			var colStr:String = file.readLine();
+			var colStr:String;
 
-			if (colStr.substr(0, 2) == '--') // comment
+			try {
+				colStr = file.readLine();
+			} catch (err) {
+				break;
+			}
+
+			if (colStr.charAt(0) == ';' || colStr.substr(0, 2) == '--') // comment
 				continue;
 
 			if (colStr.charAt(0) == '#')

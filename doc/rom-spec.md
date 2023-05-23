@@ -4,6 +4,7 @@
   - [Reference](#reference)
   - [Header](#header)
   - [Chunks](#chunks)
+    - [Palette (`0x00`)](#palette-0x00)
     - [Tileset (`0x01`)](#tileset-0x01)
     - [Tilemap (`0x02`)](#tilemap-0x02)
     - [Sprite (`0x03`)](#sprite-0x03)
@@ -24,11 +25,6 @@
 
 ```
 LONG        Magic Number `0x52524f4d` (`'RROM'` string)
-BYTE        Number of colors in the Palette
-+ For each color
-  BYTE      BLUE color component
-  BYTE      GREEN color component
-  BYTE      RED color component
 ```
 
 ## Chunks
@@ -43,7 +39,19 @@ DWORD       Chunk data length (l)
 BYTE[l]     Chunk data
 ```
 
-Depending on chunk's type its data can have one of the following formats:
+Depending on chunk's type its data can have one of the following formats.
+
+The first chunk the data **must** be `Palette` chunk (`0x00`):
+
+### Palette (`0x00`)
+
+```
+BYTE        Number of colors in the Palette
++ For each color
+  BYTE      BLUE color component
+  BYTE      GREEN color component
+  BYTE      RED color component
+```
 
 ### Tileset (`0x01`)
 

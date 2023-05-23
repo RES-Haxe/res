@@ -24,7 +24,11 @@ class RomChunk {
 		var data = Bytes.alloc(dataLen);
 		input.readBytes(data, 0, dataLen);
 
+		trace(StringTools.hex(chunkType, 2), name);
+
 		switch (chunkType) {
+			case PALETTE:
+				return new PaletteChunk(name, data);
 			case AUDIO:
 				return new AudioChunk(name, data);
 			case SPRITE:

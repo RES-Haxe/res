@@ -3,7 +3,6 @@
     "character": "tab"
   },
   "wrapping": {
-    "maxLineLength": 80,
     "arrayWrap": {
       "defaultWrap": "keep"
     }

@@ -25,4 +25,8 @@ class PaletteConverter extends Converter {
 
 		return bo.getBytes();
 	}
+
+	override public function getChunks():Array<RomChunk> {
+		return [new PaletteChunk('palette', getBytes())];
+	}
 }
