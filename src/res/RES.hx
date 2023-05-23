@@ -78,8 +78,16 @@ class RES {
 	private var audioBufferCache:AudioBufferCache;
 
 	/** All connected controllers */
-	private final controllers:Array<Controller> = [for (_ in 0...4)
-		new Controller()];
+	private final controllers:Array<Controller> = [for (index in 0...4)
+		new Controller(index)];
+
+	/**
+		Number of connected controllers
+	**/
+	public var ctrlNum(get, never):Int;
+
+	function get_ctrlNum()
+		return controllers.length;
 
 	private var chips:Map<String, Chip> = [];
 	private var prevFrameTime:Null<Float> = null;
@@ -125,6 +133,13 @@ class RES {
 			if (state != null)
 				state.mouseEvent(event);
 		});
+
+		for (ctrl in controllers) {
+			ctrl.listen((event) -> {
+				if (state != null)
+					state.controllerEvent(event);
+			});
+		}
 
 		this.rom = config.rom;
 

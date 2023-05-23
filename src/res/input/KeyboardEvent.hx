@@ -1,7 +1,9 @@
 package res.input;
 
+import res.input.Key;
+
 enum KeyboardEvent {
-	KEY_DOWN(keyCode:Int);
+	KEY_DOWN(keyCode:Key);
 	INPUT(text:String);
-	KEY_UP(keyCode:Int);
+	KEY_UP(keyCode:Key);
 }

@@ -19,7 +19,8 @@ class Font {
 	public final lineHeight:Int;
 	public final characters:Map<Int, Char>;
 
-	public inline function new(sprite:Sprite, base:Int, lineHeight:Int, characters:Map<Int, Char>) {
+	public inline function new(sprite:Sprite, base:Int, lineHeight:Int,
+			characters:Map<Int, Char>) {
 		this.base = base;
 		this.lineHeight = lineHeight;
 		this.sprite = sprite;
@@ -48,7 +49,8 @@ class Font {
 		return result;
 	}
 
-	public function draw(surface:Bitmap, text:String, x:Int, y:Int, ?colorMap:IndexMap) {
+	public function draw(surface:Bitmap, text:String, x:Int, y:Int,
+			?colorMap:IndexMap) {
 		var tx = x;
 		var ty = y;
 		for (cn in 0...text.length) {
@@ -61,24 +63,40 @@ class Font {
 				final c = characters.exists(char) ? characters[char] : characters[' '.charCodeAt(0)];
 
 				if (c != null) {
-					Sprite.spriteRegion(surface, sprite, c.x, c.y, c.width, c.height, tx + c.xoffset, ty + c.yoffset);
+					Sprite.spriteRegion(surface, sprite, c.x, c.y, c.width,
+						c.height, tx + c.xoffset, ty + c.yoffset, colorMap);
 					tx += c.xadvance;
 				}
 			}
 		}
 	}
 
-	public function drawPivot(surface:Bitmap, text:String, x:Int, y:Int, px:Float = 0.5, py:Float = 0.5, ?colorMap:IndexMap) {
+	/**
+		Draw text around a given point
+
+		@param surface Butmap do draw to 
+		@param text Text to draw
+		@param x Center position X
+		@param y Center position Y
+		@param px 
+		@param py
+		@param colorMap
+	**/
+	public function drawPivot(surface:Bitmap, text:String, x:Int, y:Int,
+			px:Float = 0.5, py:Float = 0.5, ?colorMap:IndexMap) {
 		final m = measure(text);
-		draw(surface, text, Std.int(x - m.width * px), Std.int(y - m.height * py), colorMap);
+		draw(surface, text, Std.int(x - m.width * px),
+			Std.int(y - m.height * py), colorMap);
 	}
 
-	public static function text(surface:Bitmap, font:Font, text:String, x:Int, y:Int, ?colorMap:IndexMap) {
+	public static function text(surface:Bitmap, font:Font, text:String, x:Int,
+			y:Int, ?colorMap:IndexMap) {
 		font.draw(surface, text, x, y, colorMap);
 		return surface;
 	}
 
-	public static function textPivot(surface:Bitmap, font:Font, text:String, x:Int, y:Int, px:Float = 0.5, py:Float = 0.5, ?colorMap:IndexMap) {
+	public static function textPivot(surface:Bitmap, font:Font, text:String,
+			x:Int, y:Int, px:Float = 0.5, py:Float = 0.5, ?colorMap:IndexMap) {
 		font.drawPivot(surface, text, x, y, px, py, colorMap);
 		return surface;
 	}
