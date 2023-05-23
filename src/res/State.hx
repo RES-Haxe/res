@@ -11,7 +11,7 @@ using Std;
 class State {
 	private final res:RES;
 
-	public final audioMixer:AudioMixer;
+	public final audio:AudioMixer;
 
 	public final frameBuffer:FrameBuffer;
 
@@ -26,8 +26,9 @@ class State {
 
 	public function new(res:RES) {
 		this.res = res;
-		audioMixer = res.bios.createAudioMixer();
-		audioMixer.audioBufferCache = res.audioBufferCache;
+
+		audio = res.bios.createAudioMixer();
+		audio.audioBufferCache = res.audioBufferCache;
 
 		clearColorIndex = res.rom.palette.darkest;
 

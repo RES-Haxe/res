@@ -55,7 +55,7 @@ class PseudoState extends State {
 class RES {
 	public static final VERSION:String = '0.1.1';
 
-	public final audioMixer:AudioMixer;
+	public final audio:AudioMixer;
 
 	public final config:RESConfig;
 
@@ -148,9 +148,9 @@ class RES {
 
 		this.bios = bios;
 		this.bios.connect(this);
-		this.audioMixer = bios.createAudioMixer();
+		this.audio = bios.createAudioMixer();
 		audioBufferCache = new AudioBufferCache(this);
-		this.audioMixer.audioBufferCache = audioBufferCache;
+		this.audio.audioBufferCache = audioBufferCache;
 		this.storage = bios.createStorage();
 		this.storage.restore();
 		this.crt = bios.createCRT(_width, _height);
@@ -278,7 +278,7 @@ class RES {
 			?historyReplace:Bool = false, ?onResult:Dynamic->Void):State {
 		if (_state != null) {
 			_state.leave();
-			_state.audioMixer.pause();
+			_state.audio.pause();
 			if (historyReplace == false)
 				_stateHistory.push(_state);
 		}
@@ -286,7 +286,7 @@ class RES {
 		_state = newState;
 
 		_state.enter();
-		_state.audioMixer.resume();
+		_state.audio.resume();
 
 		_stateResultCb.push(onResult);
 
@@ -305,7 +305,7 @@ class RES {
 		if (state != null) {
 			_state = state;
 			_state.enter();
-			_state.audioMixer.resume();
+			_state.audio.resume();
 
 			var cb = _stateResultCb.pop();
 
