@@ -129,7 +129,7 @@ class RomCreator {
 
 		if (firmware) {
 			final firmwarePath = getFirmwarePath();
-			sourceDirs.push(firmwarePath);
+			sourceDirs.unshift(firmwarePath);
 		}
 
 		var palette:Palette;
@@ -138,11 +138,9 @@ class RomCreator {
 			final chunks = createChunks(dir, palette);
 
 			for (chunk in chunks) {
-				if (palette == null && chunk.chunkType == PALETTE) {
+				if (palette == null && chunk.chunkType == PALETTE)
 					palette = cast(chunk, PaletteChunk).getPalette();
-				}
 
-				trace('write chunk', StringTools.hex(chunk.chunkType, 2), chunk.name);
 				chunk.write(byteOutput);
 			}
 		}

@@ -74,10 +74,14 @@ class Rom {
 		final fonts:Map<String, Font> = add != null ? et(add.fonts) : [];
 		final data:Map<String, Bytes> = add != null ? et(add.data) : [];
 
-		final paletteChunk:PaletteChunk = cast RomChunk.read(bytesInput);
+		final firstRomChunkId = bytesInput.readByte();
 
-		if (paletteChunk.chunkType != PALETTE)
-			throw new Exception('First chunk in the ROM must be Palette (0x00). Got: 0x${paletteChunk.chunkType.hex(2)}');
+		if (firstRomChunkId != 0x0)
+			throw new Exception('First chunk in the ROM must be Palette (0x00). Got: 0x${firstRomChunkId.hex(2)}');
+
+		bytesInput.position -= 1;
+
+		final paletteChunk:PaletteChunk = cast RomChunk.read(bytesInput);
 
 		final palette = paletteChunk.getPalette();
 
