@@ -12,26 +12,32 @@ abstract Vec(TVec) {
 	public var x(get, set):Float;
 	public var y(get, set):Float;
 
-	inline function get_x()
+	inline function get_x() {
 		return this.x;
+	}
 
-	inline function set_x(v:Float)
+	inline function set_x(v:Float) {
 		return this.x = v;
+	}
 
-	inline function get_y()
+	inline function get_y() {
 		return this.y;
+	}
 
-	inline function set_y(v:Float)
+	inline function set_y(v:Float) {
 		return this.y = v;
+	}
 
-	private function new(newV:TVec)
+	private function new(newV:TVec) {
 		this = newV;
+	}
 
 	/**
 		Clone this vector
 	**/
-	public inline function clone():Vec
+	public inline function clone():Vec {
 		return new Vec({x: this.x, y: this.y});
+	}
 
 	/**
 		Create a vector from `x` and `y` values
@@ -39,8 +45,9 @@ abstract Vec(TVec) {
 		@param x
 		@param y
 	**/
-	public inline static function xy(?x:Float = 0, ?y:Float = 0)
+	public inline static function xy(?x:Float = 0, ?y:Float = 0) {
 		return new Vec({x: x, y: y});
+	}
 
 	/**
 		Wrap an object that matches a TVec ({x: Float, y:Float})
@@ -48,16 +55,18 @@ abstract Vec(TVec) {
 
 		@param xy
 	 */
-	public inline static function of(xy:TVec):Vec
+	public inline static function of(xy:TVec):Vec {
 		return new Vec(xy);
+	}
 
 	/**
 		Convert radians to a Vector
 
 		@param rad Radians
 	**/
-	public inline static function ofRad(rad:Float):Vec
+	public inline static function ofRad(rad:Float):Vec {
 		return xy(Math.cos(rad), Math.sin(rad));
+	}
 
 	/**
 		Sums two 2-component vectors
@@ -65,11 +74,12 @@ abstract Vec(TVec) {
 		@param a
 		@param b
 	 */
-	public inline static function sum(a:TVec, b:TVec)
+	public inline static function sum(a:TVec, b:TVec) {
 		return new Vec({
 			x: a.x + b.x,
 			y: a.y + b.y
 		});
+	}
 
 	/**
 		Convert an array of Floats to a Vector
@@ -77,11 +87,12 @@ abstract Vec(TVec) {
 
 		@param a Array
 	 */
-	public inline static function arr(a:Array<Float>)
+	public inline static function arr(a:Array<Float>) {
 		return new Vec({
 			x: a[0],
 			y: a[1]
 		});
+	}
 
 	/**
 		Create a Vector from a difference of two vectors (`b - a`)
@@ -89,8 +100,17 @@ abstract Vec(TVec) {
 		@param a Vector
 		@param b Vector
 	 */
-	public static function diff(a:TVec, b:TVec)
+	public static function diff(a:TVec, b:TVec) {
 		return xy(b.x - a.x, b.y - a.y);
+	}
+
+	/**
+		Returns `true` if the vectors are equal
+	 */
+	@:op(A == B)
+	public inline function equal(b:Vec) {
+		return this.x == b.x && this.y == b.y;
+	}
 
 	/**
 		Add two vectors
@@ -98,8 +118,9 @@ abstract Vec(TVec) {
 		@param b Vector
 	 */
 	@:op(A + B)
-	public inline function add(b:Vec)
+	public inline function add(b:Vec) {
 		return new Vec({x: this.x + b.x, y: this.y + b.y});
+	}
 
 	/**
 		Add vector and modify this vector in place
@@ -163,8 +184,9 @@ abstract Vec(TVec) {
 		@param v Vector
 	 */
 	@:op(A || B)
-	public inline function cross(v:Vec):Vec
+	public inline function cross(v:Vec):Vec {
 		return Vec.of({x: this.x * v.y, y: v.x * this.y});
+	}
 
 	/**
 		Hadamard-product of two vectors
@@ -172,20 +194,23 @@ abstract Vec(TVec) {
 		@param v Vector
 	 */
 	@:op(A * B)
-	public inline function hadamard(v:Vec):Vec
+	public inline function hadamard(v:Vec):Vec {
 		return Vec.of({x: this.x * v.y, y: v.x * this.y});
+	}
 
 	/**
 		Calculates the length of the vector
 	 */
-	public inline function length()
+	public inline function length() {
 		return Math.sqrt(length2());
+	}
 
 	/**
 		Calculates the squared length of the vector
 	 */
-	public inline function length2()
+	public inline function length2() {
 		return this.x * this.x + this.y * this.y;
+	}
 
 	/**
 		Set the length of the vector
@@ -215,9 +240,11 @@ abstract Vec(TVec) {
 	/**
 		Convert vector to radians
 	 */
-	public inline function rad():Float
+	public inline function rad():Float {
 		return Math.atan2(this.y, this.x);
+	}
 
-	public inline function toString():String
+	public inline function toString():String {
 		return '(${this.x}, ${this.y})';
+	}
 }
