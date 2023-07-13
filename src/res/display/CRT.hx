@@ -34,6 +34,12 @@ abstract class CRT {
 	function vblank() {}
 
 	/**
+		Vertical syncing.
+		Called after the last line
+	**/
+	function vsync() {}
+
+	/**
 		Rester the image from a FrameBuffer
 
 		@param frameBuffer
@@ -50,5 +56,7 @@ abstract class CRT {
 
 			frontPorch(line);
 		}
+
+		vsync();
 	}
 }

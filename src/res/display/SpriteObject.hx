@@ -6,7 +6,7 @@ import res.display.Sprite.SpriteFrame;
 using Math;
 using res.tools.BytesTools;
 
-@:enum abstract ObjectAnimDirection(Int) from Int to Int {
+enum abstract ObjectAnimDirection(Int) from Int to Int {
 	var Forward = 0;
 	var Backwards = 1;
 	var PingPong = 2;

@@ -5,7 +5,7 @@ import haxe.io.BytesInput;
 import res.display.Sprite;
 import res.text.Font;
 
-@:enum abstract FontType(Int) from Int to Int {
+enum abstract FontType(Int) from Int to Int {
 	var VARIABLE = 0;
 	var FIXED = 1;
 }
