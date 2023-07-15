@@ -125,11 +125,11 @@ class RomCreator {
 		// Write magic number
 		byteOutput.writeInt32(Rom.MAGIC_NUMBER);
 
-		final sourceDirs = [src];
+		final sourceDirs = [Path.normalize(src)];
 
 		if (firmware) {
 			final firmwarePath = getFirmwarePath();
-			sourceDirs.unshift(firmwarePath);
+			sourceDirs.push(firmwarePath);
 		}
 
 		var palette:Palette;
