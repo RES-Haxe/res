@@ -8,6 +8,11 @@ class Palette {
 	final _indecies:Array<Int>;
 
 	/**
+		Maps colors to their indecies
+	 */
+	final _indexMap:Map<Int, Int>;
+
+	/**
 		Array of all color indexes of the palette
 	 */
 	public var indecies(get, never):Array<Int>;
@@ -95,8 +100,27 @@ class Palette {
 
 		@param index 1-based color index
 	 */
-	public function get(index:Int):Color32
+	public inline function get(index:Int):Color32
 		return colors[index - 1];
+
+	/**
+		Get the index of a given Color32
+
+		This function will only use RGB components of
+		the color to match the existing color independently
+		of how the color actually stored in memory
+
+		@param color
+			   Color to find index for
+		@param useClosest
+			   if `true` will use `closest()` function
+				to find the index of the closest color in the palette
+	 */
+	public inline function getIndex(color:Color32, ?useClosest:Bool = false):Int {
+		if (!_indexMap.exists(color.hash))
+			return useClosest ? closest(color) : 0;
+		return _indexMap[color.hash];
+	}
 
 	/**
 		Create a palette with default colors
@@ -137,6 +161,12 @@ class Palette {
 	@:allow(res)
 	private function new(colors:Array<Color32>) {
 		this.colors = colors;
+
+		_indexMap = [];
+
+		for (idx in 0...colors.length) {
+			_indexMap[colors[idx].hash] = idx + 1;
+		}
 
 		_indecies = [for (i in 1...numColors + 1) i];
 

@@ -13,11 +13,17 @@ class Color32 {
 
 	public final input:Int;
 
+	/**
+		R,G and B components of the Color combined in a single integer. 
+		Useful as the color's identifier
+	 */
+	public final hash:Int;
+
 	var _output:Int;
 
 	public var output(get, never):Int;
 
-	function get_output()
+	inline function get_output()
 		return _output;
 
 	public final r:Int;
@@ -97,6 +103,8 @@ class Color32 {
 
 		b = bytes.get(3 - inFormat.indexOf(B));
 		bf = b / 255;
+
+		hash = r << 16 | g << 8 | b;
 
 		a = alpha == null ? bytes.get(3 - inFormat.indexOf(A)) : alpha;
 		af = a / 255;

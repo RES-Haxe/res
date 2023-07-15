@@ -47,13 +47,13 @@ class Converter extends res.rom.converters.Converter {
 				var index:Int = 0;
 
 				if (pixel != 0x0) {
-					final color:Color32 = new Color32(pixel, [A, B, G, R], [A, R, G, B]);
+					final color:Color32 = new Color32(pixel, [A, R, G, B], [A, B, G, R]);
 
 					if (color.a != 0) {
 						if (colorMap[color.input] != null) {
 							index = colorMap[color.input];
 						} else {
-							index = palette.closest(color);
+							index = palette.getIndex(color, true);
 							colorMap[color.input] = index;
 						}
 					}

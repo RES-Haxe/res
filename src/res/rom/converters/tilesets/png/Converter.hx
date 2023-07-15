@@ -38,9 +38,9 @@ class Converter extends res.rom.converters.Converter {
 						final color = pixels.getInt32((srcy * pngHeader.width + srcx) * 4);
 
 						if (color != 0x0) {
-							final pixel:Color32 = new Color32(color, [B, G, R, A]);
+							final pixel:Color32 = new Color32(color, [A, R, G, B], [A, B, G, R]);
 
-							final index = palette.closest(pixel);
+							final index = palette.getIndex(pixel, true);
 
 							tileBytes.set(line * tileWidth + col, index);
 						} else {
