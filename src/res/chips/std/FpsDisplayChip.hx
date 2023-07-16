@@ -8,6 +8,7 @@ import res.chips.std.console.ConsoleCommand;
 import res.text.Text;
 
 using Type;
+using res.display.Painter;
 
 class FpsDisplaCommand extends ConsoleCommand {
 	final fpsDisplay:FpsDisplayChip;
@@ -42,6 +43,7 @@ class FpsDisplayChip extends Chip {
 	public var showFPS:Bool = true;
 	public var method:FpsDisplayMethod;
 	public var position:FpsDisplayPosition;
+	public var background:Bool;
 
 	var res:RES;
 
@@ -51,9 +53,24 @@ class FpsDisplayChip extends Chip {
 
 	var text:Text;
 
-	public function new(?position:FpsDisplayPosition = TOP_LEFT, ?method:FpsDisplayMethod = PER_SECOND) {
+	/**
+		FPS Chip
+
+		@param position
+			   FPS label display position. Options: `TOP_LEFT`, `TOP_RIGHT`, `BOTTOM_LEFT`, `BOTTOM_RIGHT`
+
+		@param method
+			   FPS measurement method.
+			   - `PER_SECOND` - Count the amount of frames for the previous second
+			   - `DELTA_EXTRAPOLATION` - Use the last time delta to approximate the FPS
+
+		@param background
+			   Whether a backdrop should be used
+	 */
+	public function new(?position:FpsDisplayPosition = TOP_LEFT, ?method:FpsDisplayMethod = PER_SECOND, ?background:Bool) {
 		this.position = position;
 		this.method = method;
+		this.background = background;
 	}
 
 	public function enable(res:RES) {
@@ -96,6 +113,8 @@ class FpsDisplayChip extends Chip {
 						text.y = frameBuffer.height - text.height;
 				}
 
+				if (background)
+					frameBuffer.rect(Std.int(text.x), Std.int(text.y), text.width, text.height, res.rom.palette.darkest, res.rom.palette.darkest);
 				text.render(frameBuffer);
 			}
 		});
