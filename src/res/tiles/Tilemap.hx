@@ -1,5 +1,6 @@
 package res.tiles;
 
+import format.abc.Data.Index;
 import res.display.Bitmap;
 import res.tools.MathTools.wrap;
 import res.types.InterruptFunc;
@@ -28,9 +29,9 @@ class Tilemap {
 	/** Number of Vertical tiles **/
 	public var vTiles:Int;
 
-	public var colorMap:IndexMap;
+	public final colorMap:IndexMap;
 
-	public var indexMap:Array<Int> = null;
+	public final indexMap:IndexMap;
 
 	/**
 		Width of the tilemap in pixels
@@ -77,11 +78,12 @@ class Tilemap {
 		return tilemap;
 	}
 
-	public function new(?tileset:Tileset, hTiles:Int, vTiles:Int, ?width:Int = 100, ?height:Int = 100, ?colorMap:IndexMap) {
+	public function new(?tileset:Tileset, hTiles:Int, vTiles:Int, ?width:Int = 100, ?height:Int = 100, ?colorMap:IndexMap, ?indexMap:IndexMap) {
 		this.tileset = tileset;
 		this.width = width;
 		this.height = height;
 		this.colorMap = colorMap == null ? new IndexMap([]) : colorMap;
+		this.indexMap = indexMap == null ? new IndexMap([]) : indexMap;
 
 		resize(hTiles, vTiles);
 	}
@@ -207,7 +209,7 @@ class Tilemap {
 		final ffx = tile.flipX ? tileset.tileWidth - 1 - rfx : rfx;
 		final ffy = tile.flipY ? tileset.tileHeight - 1 - rfy : rfy;
 
-		final tileIndex = indexMap == null ? tile.index : indexMap[tile.index];
+		final tileIndex = indexMap[tile.index];
 
 		return tileset.getIndex(tileIndex, ffx, ffy);
 	}

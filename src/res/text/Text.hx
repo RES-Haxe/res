@@ -9,6 +9,8 @@ class Text {
 	public var colorMap:IndexMap;
 	public var x:Float = 0;
 	public var y:Float = 0;
+	public var hAlign:Float = 0; // 0 - left, 1 - right, 0.5 center
+	public var vAlign:Float = 0; // 0 - left, 1 - right, 0.5 center
 
 	private var _width:Int = 0;
 	private var _height:Int = 0;
@@ -40,14 +42,16 @@ class Text {
 	function get_height():Int
 		return _height;
 
-	public function new(font:Font, text:String = '', ?x:Float = 0, ?y:Float = 0, ?colorMap:IndexMap) {
+	public function new(font:Font, text:String = '', ?x:Float = 0, ?y:Float = 0, ?hAlight:Float, ?vAlign:Float, ?colorMap:IndexMap) {
 		this.font = font;
 		this.text = text;
 		this.colorMap = colorMap;
 		this.x = x;
 		this.y = y;
+		this.hAlign = hAlight;
+		this.vAlign = vAlign;
 	}
 
 	public function render(surface:Bitmap)
-		font.draw(surface, text, x.floor(), y.floor(), colorMap);
+		font.drawPivot(surface, text, x.floor(), y.floor(), hAlign, vAlign, colorMap);
 }

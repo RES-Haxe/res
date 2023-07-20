@@ -46,7 +46,7 @@ class Timeline {
 
 		@param time
 	 */
-	public function forWhile(time:Float, callback:(Float, Float) -> Void, ?done:() -> Void) {
+	public function forWhile(time:Float, callback:(time:Float, totalTime:Float) -> Void, ?done:() -> Void) {
 		forWhileItems.push({
 			totalTime: time,
 			time: 0,
