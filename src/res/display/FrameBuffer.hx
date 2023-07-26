@@ -7,6 +7,7 @@ class FrameBuffer extends Bitmap {
 	public var scrollY:Int = 0;
 	public var wrapX:Bool = false;
 	public var wrapY:Bool = false;
+	public var mask:Bitmap = null;
 
 	inline function checkBounds(x:Int, y:Int):Bool {
 		return x >= 0 && y >= 0 && x < width && y < height;
@@ -25,8 +26,8 @@ class FrameBuffer extends Bitmap {
 		@param y Y coordinate
 		@param index color index
 	 */
-	override public function set(x:Int, y:Int, index:Int) {
-		if (index == 0)
+	override public function set(x:Int, y:Int, index:Int, transparency:Bool = true) {
+		if (transparency && index == 0)
 			return;
 
 		x += scrollX;
@@ -38,7 +39,12 @@ class FrameBuffer extends Bitmap {
 		if (wrapY)
 			y = wrap(y, height);
 
-		if (checkBounds(x, y))
-			super.set(x, y, index);
+		if (checkBounds(x, y)) {
+			if (mask != null && x < mask.width && y < mask.height) {
+				if (mask.get(x, y) == 0)
+					return;
+			}
+			super.set(x, y, index, transparency);
+		}
 	}
 }

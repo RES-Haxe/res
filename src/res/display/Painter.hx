@@ -80,14 +80,14 @@ class Painter {
 				for (px in fx...tx + 1) {
 					final index = px == fx || px == tx ? strokeIndex : fillIndex;
 
-					surface.set(px, (y + cy).int(), index);
-					surface.set(px, (-y + cy).int(), index);
+					surface.set(px, (y + cy).int(), index, false);
+					surface.set(px, (-y + cy).int(), index, false);
 				}
 			} else {
-				surface.set((x + cx).int(), (y + cy).int(), strokeIndex);
-				surface.set((-x + cx).int(), (y + cy).int(), strokeIndex);
-				surface.set((x + cx).int(), (-y + cy).int(), strokeIndex);
-				surface.set((-x + cx).int(), (-y + cy).int(), strokeIndex);
+				surface.set((x + cx).int(), (y + cy).int(), strokeIndex, false);
+				surface.set((-x + cx).int(), (y + cy).int(), strokeIndex, false);
+				surface.set((x + cx).int(), (-y + cy).int(), strokeIndex, false);
+				surface.set((-x + cx).int(), (-y + cy).int(), strokeIndex, false);
 			}
 		};
 
@@ -153,7 +153,7 @@ class Painter {
 		var error:Float = 0;
 
 		do {
-			surface.set(x, y, colorIndex);
+			surface.set(x, y, colorIndex, false);
 
 			if (dx > dy) {
 				x += ox;
@@ -200,9 +200,9 @@ class Painter {
 				for (line in fy...ty) {
 					for (col in fx...tx) {
 						if (line == fy || line == ty - 1 || col == fx || col == tx - 1)
-							surface.set(col, line, strokeIndex);
+							surface.set(col, line, strokeIndex, false);
 						else if (fillIndex != null)
-							surface.set(col, line, fillIndex);
+							surface.set(col, line, fillIndex, false);
 					}
 				}
 			}

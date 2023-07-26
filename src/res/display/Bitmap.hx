@@ -16,6 +16,31 @@ class Bitmap {
 	}
 
 	/**
+		Copy pixels from a source Bitmap
+	 */
+	public function copy(src:Bitmap, dstX:Int = 0, dstY:Int = 0, transparency:Bool = true) {
+		if (dstX >= width)
+			return;
+		if (dstY >= height)
+			return;
+		if (dstX + src.width < 0)
+			return;
+		if (dstY + src.height < 0)
+			return;
+
+		for (line in 0...src.height) {
+			if (dstY + line >= height)
+				break;
+			for (col in 0...src.width) {
+				if (dstX + col >= width)
+					break;
+
+				set(dstX + col, dstY + line, src.get(col, line), transparency);
+			}
+		}
+	}
+
+	/**
 		Get color index at given position
 
 		@param x X coordinate
@@ -31,9 +56,10 @@ class Bitmap {
 		@param x X coordinate
 		@param y Y coordinate
 		@param index color index
+		@param transparency whether transparency index should be skipped or set
 	 */
-	public function set(x:Int, y:Int, index:Int) {
-		if (index == 0)
+	public function set(x:Int, y:Int, index:Int, transparency:Bool = true) {
+		if (transparency && index == 0)
 			return;
 		data.set(y * width + x, index);
 	}

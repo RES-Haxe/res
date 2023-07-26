@@ -42,7 +42,7 @@ class Text {
 	function get_height():Int
 		return _height;
 
-	public function new(font:Font, text:String = '', ?x:Float = 0, ?y:Float = 0, ?hAlight:Float, ?vAlign:Float, ?colorMap:IndexMap) {
+	public function new(font:Font, text:String = '', ?x:Float = 0, ?y:Float = 0, ?hAlight:Float = 0, ?vAlign:Float = 0, ?colorMap:IndexMap) {
 		this.font = font;
 		this.text = text;
 		this.colorMap = colorMap;
