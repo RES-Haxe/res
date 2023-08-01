@@ -1,6 +1,5 @@
 package res.tiles;
 
-import format.abc.Data.Index;
 import res.display.Bitmap;
 import res.tools.MathTools.wrap;
 import res.types.InterruptFunc;

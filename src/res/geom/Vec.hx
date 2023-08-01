@@ -231,9 +231,15 @@ abstract Vec(TVec) {
 	/**
 		Set `x` and `y` of the vector
 	 */
-	public function set(x:Float, ?y:Float) {
+	public inline function set(x:Float, ?y:Float) {
 		this.x = x;
 		this.y = y ?? x;
+		return this;
+	}
+
+	public inline function setv(v:Vec) {
+		this.x = v.x;
+		this.y = v.y;
 		return this;
 	}
 

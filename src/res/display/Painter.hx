@@ -2,10 +2,9 @@ package res.display;
 
 import Math.abs;
 import res.geom.Rect;
+import res.geom.Vec;
 import res.tools.MathTools.*;
 import res.types.Shape;
-
-using Std;
 
 /**
 	Tool class for drawing shapes on a `Bitmap`
@@ -41,8 +40,9 @@ class Painter {
 		@param strokeIndex Stroke color index
 		@param fillIndex Fill color index
 	 */
-	public static function circle(surface:Bitmap, cx:Int, cy:Int, r:Int, strokeIndex:Int, ?fillIndex:Int)
+	public static function circle(surface:Bitmap, cx:Float, cy:Float, r:Float, strokeIndex:Int, ?fillIndex:Int) {
 		return ellipse(surface, cx, cy, r, r, strokeIndex, fillIndex);
+	}
 
 	/**
 		Draw an ellipse
@@ -57,7 +57,7 @@ class Painter {
 
 		@see https://www.geeksforgeeks.org/midpoint-ellipse-drawing-algorithm/
 	 */
-	public static function ellipse(surface:Bitmap, cx:Int, cy:Int, rx:Int, ry:Int, strokeIndex:Int, ?fillIndex:Int) {
+	public static function ellipse(surface:Bitmap, cx:Float, cy:Float, rx:Float, ry:Float, strokeIndex:Int, ?fillIndex:Int) {
 		var dx:Float;
 		var dy:Float;
 		var d1:Float;
@@ -72,24 +72,24 @@ class Painter {
 		dx = 2 * ry * ry * x;
 		dy = 2 * rx * rx * y;
 
-		final plot = () -> {
+		function plot() {
 			if (fillIndex != null) {
-				final fx = (-x + cx).int();
-				final tx = (x + cx).int();
+				final fx = surface.round(-x + cx);
+				final tx = surface.round(x + cx);
 
 				for (px in fx...tx + 1) {
 					final index = px == fx || px == tx ? strokeIndex : fillIndex;
 
-					surface.set(px, (y + cy).int(), index, false);
-					surface.set(px, (-y + cy).int(), index, false);
+					surface.set(px, y + cy, index, false);
+					surface.set(px, -y + cy, index, false);
 				}
 			} else {
-				surface.set((x + cx).int(), (y + cy).int(), strokeIndex, false);
-				surface.set((-x + cx).int(), (y + cy).int(), strokeIndex, false);
-				surface.set((x + cx).int(), (-y + cy).int(), strokeIndex, false);
-				surface.set((-x + cx).int(), (-y + cy).int(), strokeIndex, false);
+				surface.set(x + cx, y + cy, strokeIndex, false);
+				surface.set(-x + cx, y + cy, strokeIndex, false);
+				surface.set(x + cx, -y + cy, strokeIndex, false);
+				surface.set(-x + cx, -y + cy, strokeIndex, false);
 			}
-		};
+		}
 
 		while (dx < dy) {
 			plot();
@@ -137,9 +137,9 @@ class Painter {
 		@param y1 Destination Y
 		@param colorIndex
 	 */
-	public static function line(surface:Bitmap, x0:Int, y0:Int, x1:Int, y1:Int, colorIndex:Int) {
-		final dx:Int = abs(x1 - x0).int();
-		final dy:Int = abs(y1 - y0).int();
+	public static function linei(surface:Bitmap, x0:Int, y0:Int, x1:Int, y1:Int, colorIndex:Int) {
+		final dx:Int = surface.round(abs(x1 - x0));
+		final dy:Int = surface.round(abs(y1 - y0));
 
 		if (dx == 0 && dy == 0)
 			return surface;
@@ -178,6 +178,20 @@ class Painter {
 	}
 
 	/**
+		Draw a Line 
+
+		@param surface
+		@param x0 Origin X
+		@param y0 Origin Y
+		@param x1 Destination X
+		@param y1 Destination Y
+		@param colorIndex
+	 */
+	public static function line(surface:Bitmap, x0:Float, y0:Float, x1:Float, y1:Float, colorIndex:Int) {
+		return linei(surface, surface.round(x0), surface.round(y0), surface.round(x1), surface.round(y1), colorIndex);
+	}
+
+	/**
 		Draw a Rectangle
 
 		@param surface
@@ -188,27 +202,58 @@ class Painter {
 		@param strokeIndex Stroke color index 
 		@param fillIndex Fill color index
 	 */
-	public static function rect(surface:Bitmap, x:Int, y:Int, w:Int, h:Int, strokeIndex:Int, ?fillIndex:Int) {
-		if (Rect.intersect(0, 0, surface.width, surface.height, x, y, w, h)) {
-			final fx = min(x, x + w);
-			final fy = min(y, y + h);
+	public static function recti(surface:Bitmap, x:Int, y:Int, w:Int, h:Int, strokeIndex:Int, ?fillIndex:Int) {
+		if (!Rect.intersect(0, 0, surface.width, surface.height, x, y, w, h))
+			return surface;
 
-			final tx = max(x, x + w) + 1;
-			final ty = max(y, y + h) + 1;
+		if (fillIndex == null)
+			fillIndex = strokeIndex;
 
-			if (tx - fx > 0 && ty - fy > 0) {
-				for (line in fy...ty) {
-					for (col in fx...tx) {
-						if (line == fy || line == ty - 1 || col == fx || col == tx - 1)
-							surface.set(col, line, strokeIndex, false);
-						else if (fillIndex != null)
-							surface.set(col, line, fillIndex, false);
-					}
+		final fx = min(x, x + w);
+		final fy = min(y, y + h);
+
+		final tx = max(x, x + w) + 1;
+		final ty = max(y, y + h) + 1;
+
+		if (tx - fx > 0 && ty - fy > 0) {
+			for (line in fy...ty) {
+				for (col in fx...tx) {
+					if (line == fy || line == ty - 1 || col == fx || col == tx - 1)
+						surface.set(col, line, strokeIndex, false);
+					else if (fillIndex != null)
+						surface.set(col, line, fillIndex, false);
 				}
 			}
 		}
 
 		return surface;
+	}
+
+	/**
+		Draw a Rectangle
+
+		@param surface
+		@param x X screen coordinate
+		@param y Y screen coordinate
+		@param w Width
+		@param h Height
+		@param strokeIndex Stroke color index 
+		@param fillIndex Fill color index
+	 */
+	public static inline function rect(surface:Bitmap, x:Float, y:Float, w:Float, h:Float, strokeIndex:Int, ?fillIndex:Int) {
+		return recti(surface, surface.round(x), surface.round(y), surface.round(w), surface.round(h), strokeIndex, fillIndex);
+	}
+
+	public static inline function rectv(surface:Bitmap, v:Vec, w:Float, h:Float, strokeIndex:Int, ?fillIndex:Int) {
+		return rect(surface, v.x, v.y, w, h, strokeIndex, fillIndex);
+	}
+
+	public static inline function crect(surface:Bitmap, x:Float, y:Float, w:Float, h:Float, strokeIndex:Int, ?fillIndex:Int) {
+		return rect(surface, x - w / 2, y - h / 2, w, h, strokeIndex, fillIndex);
+	}
+
+	public static inline function crectv(surface:Bitmap, v:Vec, w:Float, h:Float, strokeIndex:Int, ?fillIndex:Int) {
+		return rect(surface, v.x - w / 2, v.y - h / 2, w, h, strokeIndex, fillIndex);
 	}
 
 	/**
@@ -222,10 +267,11 @@ class Painter {
 	public static function shape(surface:Bitmap, shape:Shape, strokeIndex:Int, ?fillIndex:Int) {
 		switch (shape) {
 			case CIRCLE(cx, cy, r):
-				circle(surface, cx.int(), cy.int(), r.int(), strokeIndex, fillIndex);
+				circle(surface, cx, cy, r, strokeIndex, fillIndex);
 			case RECT(cx, cy, w, h):
-				rect(surface, (cx - w / 2).int(), (cy - h / 2).int(), w.int(), h.int(), strokeIndex, fillIndex);
+				rect(surface, cx - w / 2, cy - h / 2, w, h, strokeIndex, fillIndex);
 		}
+
 		return surface;
 	}
 }

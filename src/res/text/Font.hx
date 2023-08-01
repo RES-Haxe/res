@@ -19,8 +19,7 @@ class Font {
 	public final lineHeight:Int;
 	public final characters:Map<Int, Char>;
 
-	public inline function new(sprite:Sprite, base:Int, lineHeight:Int,
-			characters:Map<Int, Char>) {
+	public inline function new(sprite:Sprite, base:Int, lineHeight:Int, characters:Map<Int, Char>) {
 		this.base = base;
 		this.lineHeight = lineHeight;
 		this.sprite = sprite;
@@ -49,8 +48,7 @@ class Font {
 		return result;
 	}
 
-	public function draw(surface:Bitmap, text:String, x:Int, y:Int,
-			?colorMap:IndexMap) {
+	public function drawi(surface:Bitmap, text:String, x:Int, y:Int, ?colorMap:IndexMap) {
 		var tx = x;
 		var ty = y;
 		for (cn in 0...text.length) {
@@ -63,12 +61,17 @@ class Font {
 				final c = characters.exists(char) ? characters[char] : characters[' '.charCodeAt(0)];
 
 				if (c != null) {
-					Sprite.spriteRegion(surface, sprite, c.x, c.y, c.width,
-						c.height, tx + c.xoffset, ty + c.yoffset, colorMap);
+					Sprite.spriteRegion(surface, sprite, c.x, c.y, c.width, c.height, tx + c.xoffset, ty + c.yoffset, colorMap);
 					tx += c.xadvance;
 				}
 			}
 		}
+
+		return surface;
+	}
+
+	public inline function draw(surface:Bitmap, text:String, x:Float, y:Float, ?colorMap:IndexMap) {
+		return drawi(surface, text, surface.round(x), surface.round(y), colorMap);
 	}
 
 	/**
@@ -82,22 +85,16 @@ class Font {
 		@param py
 		@param colorMap
 	**/
-	public function drawPivot(surface:Bitmap, text:String, x:Int, y:Int,
-			px:Float = 0.5, py:Float = 0.5, ?colorMap:IndexMap) {
-		final m = measure(text);
-		draw(surface, text, Std.int(x - m.width * px),
-			Std.int(y - m.height * py), colorMap);
+	public function drawPivot(surface:Bitmap, text:String, x:Float, y:Float, px:Float = 0.5, py:Float = 0.5, ?colorMap:IndexMap) {
+		final m = measure(text); // TODO: Doing this on each frame... not good. Should this only be allowed on Text class?
+		draw(surface, text, x - m.width * px, y - m.height * py, colorMap);
 	}
 
-	public static function text(surface:Bitmap, font:Font, text:String, x:Int,
-			y:Int, ?colorMap:IndexMap) {
-		font.draw(surface, text, x, y, colorMap);
-		return surface;
+	public static inline function text(surface:Bitmap, font:Font, text:String, x:Float, y:Float, ?colorMap:IndexMap) {
+		return font.draw(surface, text, x, y, colorMap);
 	}
 
-	public static function textPivot(surface:Bitmap, font:Font, text:String,
-			x:Int, y:Int, px:Float = 0.5, py:Float = 0.5, ?colorMap:IndexMap) {
-		font.drawPivot(surface, text, x, y, px, py, colorMap);
-		return surface;
+	public static inline function textPivot(surface:Bitmap, font:Font, text:String, x:Float, y:Float, px:Float = 0.5, py:Float = 0.5, ?colorMap:IndexMap) {
+		return font.drawPivot(surface, text, x, y, px, py, colorMap);
 	}
 }

@@ -15,10 +15,10 @@ typedef SpriteAnimation = {
 }
 
 typedef DrawSpriteOptions = {
-	var ?width:Int;
-	var ?height:Int;
-	var ?scrollX:Int;
-	var ?scrollY:Int;
+	var ?width:Float;
+	var ?height:Float;
+	var ?scrollX:Float;
+	var ?scrollY:Float;
 	var ?frame:Int;
 	var ?flipX:Bool;
 	var ?flipY:Bool;
@@ -51,9 +51,11 @@ class Sprite {
 		this.frames = frames != null ? frames : [];
 		this.animations = animations != null ? animations : [];
 
-		for (frame in frames)
-			if (frame.data.length != width * height)
-				throw 'Invalid frame size';
+		for (frame in frames) {
+			if (frame.data.length != width * height) {
+				throw "Invalid frame size";
+			}
+		}
 	}
 
 	public function addAnimation(name:String, from:Int, to:Int, direction:Int) {
@@ -67,7 +69,7 @@ class Sprite {
 
 	public function addFrame(data:Bytes, duration:Int) {
 		if (data.length != width * height)
-			throw 'Invalid frame size';
+			throw "Invalid frame size";
 
 		frames.push(new SpriteFrame(data, duration));
 	}
@@ -108,15 +110,15 @@ class Sprite {
 		@param opts.wrap
 		@param colorMap
 	 */
-	public static function sprite(surface:Bitmap, sprite:Sprite, ?x:Int = 0, ?y:Int = 0, ?opts:DrawSpriteOptions, ?colorMap:IndexMap) {
+	public static function spritei(surface:Bitmap, sprite:Sprite, ?x:Int = 0, ?y:Int = 0, ?opts:DrawSpriteOptions, ?colorMap:IndexMap) {
 		opts = opts == null ? {} : opts;
 
 		final frameIndex = opts.frame == null ? 0 : opts.frame;
 
 		final frame = sprite.frames[frameIndex];
 
-		final lines:Int = opts.height == null ? sprite.height : opts.height;
-		final cols:Int = opts.width == null ? sprite.width : opts.width;
+		final lines:Int = opts.height == null ? sprite.height : surface.round(opts.height);
+		final cols:Int = opts.width == null ? sprite.width : surface.round(opts.width);
 
 		final flipX = opts.flipX == null ? false : opts.flipX;
 		final flipY = opts.flipY == null ? false : opts.flipY;
@@ -132,8 +134,8 @@ class Sprite {
 		for (scanline in 0...lines) {
 			if (!((!_wrap && (scanline < 0 || scanline >= surface.height)))) {
 				for (col in 0...cols) {
-					final spriteCol = wrap((flipX ? sprite.width - 1 - col : col) + scrollX, sprite.width);
-					final spriteLine = wrap((flipY ? sprite.height - 1 - scanline : scanline) + scrollY, sprite.height);
+					final spriteCol = wrap((flipX ? sprite.width - 1 - col : col) + surface.round(scrollX), sprite.width);
+					final spriteLine = wrap((flipY ? sprite.height - 1 - scanline : scanline) + surface.round(scrollY), sprite.height);
 
 					final sampleIndex:Int = frame.data.getxy(sprite.width, spriteCol, spriteLine);
 
@@ -153,6 +155,28 @@ class Sprite {
 	}
 
 	/**
+		Draw a sprite
+
+		@param surface
+		@param sprite
+		@param x
+		@param y
+		@param opts Draw sprite options:
+		@param opts.width Width of the area to draw sprite to
+		@param opts.height Height of the area to draw sprite to 
+		@param opts.scrollX X Scrolling
+		@param opts.scrollY Y Scrolling
+		@param opts.frame Animation frame index
+		@param opts.flipX
+		@param opts.flipY
+		@param opts.wrap
+		@param colorMap
+	 */
+	public static function sprite(surface:Bitmap, sprite:Sprite, ?x:Float = 0, ?y:Float = 0, ?opts:DrawSpriteOptions, ?colorMap:IndexMap) {
+		return spritei(surface, sprite, surface.round(x), surface.round(y), opts, colorMap);
+	}
+
+	/**
 		Draw a sprite into a rectangle with arbitrary width and height
 
 		@param surface Surface to draw sprite to
@@ -162,7 +186,7 @@ class Sprite {
 		@param width The width of the rectangle to draw to 
 		@param height The height of the rectangle to draw to 
 	**/
-	public static function spriteRect(surface:Bitmap, sprite:Sprite, x:Int, y:Int, width:Int, height:Int, ?frame:Int = 0) {
+	public static function spriteRecti(surface:Bitmap, sprite:Sprite, x:Int, y:Int, width:Int, height:Int, ?frame:Int = 0) {
 		for (line in 0...height) {
 			for (col in 0...width) {
 				final sprite_x = Math.floor(lerp(0, sprite.width, param(0, width, col)));
@@ -171,7 +195,22 @@ class Sprite {
 				surface.set(x + col, y + line, px);
 			}
 		}
+
 		return surface;
+	}
+
+	/**
+		Draw a sprite into a rectangle with arbitrary width and height
+
+		@param surface Surface to draw sprite to
+		@param sprite Sprite to draw
+		@param x X of the rectangle to draw to
+		@param y Y of the rectangle to draw to
+		@param width The width of the rectangle to draw to 
+		@param height The height of the rectangle to draw to 
+	**/
+	public static function spriteRect(surface:Bitmap, sprite:Sprite, x:Float, y:Float, width:Float, height:Float, ?frame:Int = 0) {
+		return spriteRecti(surface, sprite, surface.round(x), surface.round(y), surface.round(width), surface.round(height), frame);
 	}
 
 	/**
@@ -199,6 +238,7 @@ class Sprite {
 				surface.set(atx + col, aty + line, index);
 			}
 		}
+
 		return surface;
 	}
 
@@ -238,8 +278,9 @@ class Sprite {
 		@param opts.wrap
 		@param colorMap
 	 */
-	public static function spritePivot(surface:Bitmap, sprite:Sprite, x:Int, y:Int, ?px:Float = 0.5, ?py:Float = 0.5, ?opts, ?colorMap)
-		return Sprite.sprite(surface, sprite, Math.floor(x - sprite.width * px), Math.floor(y - sprite.height * py), opts, colorMap);
+	public static function spritePivot(surface:Bitmap, sprite:Sprite, x:Float, y:Float, ?px:Float = 0.5, ?py:Float = 0.5, ?opts, ?colorMap) {
+		return Sprite.sprite(surface, sprite, x - sprite.width * px, y - sprite.height * py, opts, colorMap);
+	}
 
 	/**
 		Draw a sprite using an Anchor - a point inside the sprite to use as it's origin
@@ -251,6 +292,7 @@ class Sprite {
 		@param ax X position inside the sprite to use as it's origin
 		@param ay Y position inside the sprite to use as it's origin
 	 */
-	public static function spriteAnchor(surface:Bitmap, sprite:Sprite, x:Int, y:Int, ax:Int = 0, ay:Int = 0, ?opts, ?colorMap)
+	public static function spriteAnchor(surface:Bitmap, sprite:Sprite, x:Float, y:Float, ax:Float = 0, ay:Float = 0, ?opts, ?colorMap) {
 		return Sprite.sprite(surface, sprite, x - ax, y - ay, opts, colorMap);
+	}
 }

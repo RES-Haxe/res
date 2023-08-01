@@ -15,6 +15,14 @@ class Bitmap {
 		data = Bytes.alloc(width * height);
 	}
 
+	public inline function isInBounds(x:Int, y:Int):Bool {
+		return x >= 0 && y >= 0 && x < width && y < height;
+	}
+
+	public dynamic function round(x:Float) {
+		return Std.int(x);
+	}
+
 	/**
 		Copy pixels from a source Bitmap
 	 */
@@ -35,7 +43,7 @@ class Bitmap {
 				if (dstX + col >= width)
 					break;
 
-				set(dstX + col, dstY + line, src.get(col, line), transparency);
+				seti(dstX + col, dstY + line, src.get(col, line), transparency);
 			}
 		}
 	}
@@ -53,15 +61,31 @@ class Bitmap {
 	/**
 		Set color index at given frame buffer position
 
+		@param x X coordinate (integer)
+		@param y Y coordinate (integer)
+		@param index color index
+		@param transparency whether transparency index should be skipped or set
+	 */
+	public function seti(x:Int, y:Int, index:Int, transparency:Bool = true) {
+		if (!isInBounds(x, y))
+			return;
+
+		if (transparency && index == 0)
+			return;
+
+		data.set(y * width + x, index);
+	}
+
+	/**
+		Set color index at given frame buffer position
+
 		@param x X coordinate
 		@param y Y coordinate
 		@param index color index
 		@param transparency whether transparency index should be skipped or set
 	 */
-	public function set(x:Int, y:Int, index:Int, transparency:Bool = true) {
-		if (transparency && index == 0)
-			return;
-		data.set(y * width + x, index);
+	inline public function set(x:Float, y:Float, index:Int, transparency:Bool = true) {
+		seti(round(x), round(y), index, transparency);
 	}
 
 	/**
@@ -94,7 +118,7 @@ class Bitmap {
 			final dataIndex = data.get(idxPos);
 			final index = colorMap == null ? dataIndex : colorMap[dataIndex];
 
-			set(x + col, y + line, index);
+			seti(x + col, y + line, index);
 
 			col++;
 
