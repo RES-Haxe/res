@@ -1,4 +1,4 @@
-package res.display;
+package res;
 
 import haxe.io.Bytes;
 import res.tools.MathTools.lerp;

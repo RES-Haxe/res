@@ -1,8 +1,8 @@
 package res.ui;
 
-import res.display.Bitmap;
+import res.Bitmap;
 
-using res.display.Painter;
+using res.Painter;
 
 typedef UIUpdateResult = {mouseIn:Bool, mouseDown:Bool, mouseUp:Bool};
 typedef UIMouseData = {x:Int, y:Int, isDown:Bool};

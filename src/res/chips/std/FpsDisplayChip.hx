@@ -8,7 +8,7 @@ import res.chips.std.console.ConsoleCommand;
 import res.text.Text;
 
 using Type;
-using res.display.Painter;
+using res.Painter;
 
 class FpsDisplaCommand extends ConsoleCommand {
 	final fpsDisplay:FpsDisplayChip;

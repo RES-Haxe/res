@@ -1,7 +1,6 @@
 package res;
 
 import res.audio.AudioMixer;
-import res.display.FrameBuffer;
 import res.input.ControllerEvent;
 import res.input.KeyboardEvent;
 import res.input.MouseEvent;

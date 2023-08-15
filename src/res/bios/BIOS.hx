@@ -3,7 +3,6 @@ package res.bios;
 import res.audio.AudioMixer;
 import res.audio.IAudioBuffer;
 import res.audio.IAudioStream;
-import res.display.CRT;
 import res.storage.Storage;
 
 abstract class BIOS {

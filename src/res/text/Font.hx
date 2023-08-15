@@ -1,8 +1,5 @@
 package res.text;
 
-import res.display.Bitmap;
-import res.display.Sprite;
-
 typedef Char = {
 	x:Int,
 	y:Int,

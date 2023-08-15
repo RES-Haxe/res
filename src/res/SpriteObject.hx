@@ -1,8 +1,8 @@
-package res.display;
+package res;
 
-import res.display.Sprite.DrawSpriteOptions;
-import res.display.Sprite.SpriteAnimation;
-import res.display.Sprite.SpriteFrame;
+import res.Sprite.DrawSpriteOptions;
+import res.Sprite.SpriteAnimation;
+import res.Sprite.SpriteFrame;
 
 using Math;
 using res.tools.BytesTools;

@@ -1,8 +1,8 @@
 package res.chips.std.console;
 
 import res.State;
-import res.display.FrameBuffer;
-import res.display.Painter.rect;
+import res.FrameBuffer;
+import res.Painter.rect;
 import res.input.KeyboardEvent;
 import res.timeline.Timeline;
 import res.tools.MathTools.lerp;
@@ -123,8 +123,7 @@ class ConsoleState extends State {
 
 		final f = res.defaultFont;
 
-		f.draw(fb, '$PROMPT$commandInput${blink ? CURSOR : ''}', 0,
-			rollBottom - f.lineHeight);
+		f.draw(fb, '$PROMPT$commandInput${blink ? CURSOR : ''}', 0, rollBottom - f.lineHeight);
 
 		var l = log.length - 1;
 		var ly = rollBottom - f.lineHeight * 2;

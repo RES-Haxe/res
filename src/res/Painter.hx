@@ -1,4 +1,4 @@
-package res.display;
+package res;
 
 import Math.abs;
 import res.geom.Rect;
@@ -14,7 +14,7 @@ import res.types.Shape;
 	e.g.:
 
 	```haxe
-	using res.display.Painter;
+	using res.Painter;
 
 	final bitmap:Bitmap = new Bitmap(128, 128);
 

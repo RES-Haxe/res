@@ -2,7 +2,7 @@ package res.types;
 
 import res.RES;
 import res.chips.Chip;
-import res.display.FrameBuffer;
+import res.FrameBuffer;
 import res.rom.Rom;
 
 typedef RESConfig = {

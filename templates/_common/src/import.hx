@@ -1,9 +1,9 @@
 import res.*;
 import res.audio.*;
 import res.collisions.*;
-import res.display.*;
-import res.display.Painter.*;
-import res.display.Sprite.*;
+import res.*;
+import res.Painter.*;
+import res.Sprite.*;
 import res.geom.*;
 import res.input.*;
 import res.rom.Rom;
@@ -15,9 +15,9 @@ import res.tools.RNG.*;
 import res.ui.*;
 
 using Std;
-using res.display.Painter;
-using res.display.Sprite;
-using res.display.SpriteObject;
+using res.Painter;
+using res.Sprite;
+using res.SpriteObject;
 using res.text.Font;
 using res.text.Text;
 using res.text.Textmap;

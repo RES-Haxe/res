@@ -1,6 +1,6 @@
 package res.tiles;
 
-import res.display.Bitmap;
+import res.Bitmap;
 import res.tools.MathTools.wrap;
 import res.types.InterruptFunc;
 import res.types.InterruptResult;

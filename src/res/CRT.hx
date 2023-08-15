@@ -1,4 +1,4 @@
-package res.display;
+package res;
 
 import res.types.ColorComponent;
 

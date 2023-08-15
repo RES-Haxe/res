@@ -6,7 +6,7 @@ import haxe.io.Bytes;
 import haxe.io.BytesInput;
 import haxe.zip.InflateImpl;
 import res.audio.AudioData;
-import res.display.Sprite;
+import res.Sprite;
 import res.text.Font;
 import res.tiles.Tilemap;
 import res.tiles.Tileset;

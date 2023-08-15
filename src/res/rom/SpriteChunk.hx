@@ -2,7 +2,7 @@ package res.rom;
 
 import haxe.io.Bytes;
 import haxe.io.BytesInput;
-import res.display.Sprite;
+import res.Sprite;
 
 class SpriteChunk extends RomChunk {
 	public function new(name:String, data:Bytes) {

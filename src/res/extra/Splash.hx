@@ -1,7 +1,7 @@
 package res.extra;
 
 import haxe.io.BytesOutput;
-import res.display.FrameBuffer;
+import res.FrameBuffer;
 import res.text.Font;
 import res.tiles.Tilemap;
 import res.tiles.Tileset;
@@ -9,8 +9,8 @@ import res.timeline.Timeline;
 import res.tools.MathTools.wrap;
 
 using Std;
-using res.display.Painter;
-using res.display.Sprite;
+using res.Painter;
+using res.Sprite;
 
 class Splash extends State {
 	static final TIME:Int = 1;

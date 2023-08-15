@@ -2,7 +2,7 @@ package res.rom;
 
 import haxe.io.Bytes;
 import res.text.Font;
-import res.display.Sprite;
+import res.Sprite;
 import res.tiles.Tilemap;
 import res.tiles.Tileset;
 import res.audio.AudioData;

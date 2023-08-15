@@ -1,6 +1,6 @@
 package res.text;
 
-import res.display.Bitmap;
+import res.Bitmap;
 
 using Math;
 
