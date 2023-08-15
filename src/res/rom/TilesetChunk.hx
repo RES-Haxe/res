@@ -2,7 +2,7 @@ package res.rom;
 
 import haxe.io.Bytes;
 import haxe.io.BytesInput;
-import res.tiles.Tileset;
+import res.Tileset;
 
 typedef TilesetJson = {
 	size:Int

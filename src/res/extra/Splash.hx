@@ -2,9 +2,9 @@ package res.extra;
 
 import haxe.io.BytesOutput;
 import res.FrameBuffer;
+import res.Tilemap;
+import res.Tileset;
 import res.text.Font;
-import res.tiles.Tilemap;
-import res.tiles.Tileset;
 import res.timeline.Timeline;
 import res.tools.MathTools.wrap;
 

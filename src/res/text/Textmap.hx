@@ -1,7 +1,7 @@
 package res.text;
 
-import res.tiles.Tilemap;
-import res.tiles.Tileset;
+import res.Tilemap;
+import res.Tileset;
 import res.tools.MathTools.wrap;
 
 class Textmap extends Tilemap {

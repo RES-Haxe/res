@@ -5,11 +5,11 @@ import haxe.Int32;
 import haxe.io.Bytes;
 import haxe.io.BytesInput;
 import haxe.zip.InflateImpl;
-import res.audio.AudioData;
 import res.Sprite;
+import res.Tilemap;
+import res.Tileset;
+import res.audio.AudioData;
 import res.text.Font;
-import res.tiles.Tilemap;
-import res.tiles.Tileset;
 
 using StringTools;
 

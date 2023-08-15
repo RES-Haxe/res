@@ -1,11 +1,11 @@
 package res.rom;
 
 import haxe.io.Bytes;
-import res.text.Font;
 import res.Sprite;
-import res.tiles.Tilemap;
-import res.tiles.Tileset;
+import res.Tilemap;
+import res.Tileset;
 import res.audio.AudioData;
+import res.text.Font;
 
 typedef RomContent = {
 	?audio:Map<String, AudioData>,

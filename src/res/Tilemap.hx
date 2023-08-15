@@ -1,6 +1,5 @@
-package res.tiles;
+package res;
 
-import res.Bitmap;
 import res.tools.MathTools.wrap;
 import res.types.InterruptFunc;
 import res.types.InterruptResult;
@@ -8,6 +7,15 @@ import res.types.InterruptResult;
 using Math;
 
 final noneInterruptFunc:InterruptFunc = (_, _) -> NONE;
+
+typedef TilePlace = {
+	index:Int,
+	?flipX:Bool,
+	?flipY:Bool,
+	?rot90cw:Bool,
+	?colorMap:IndexMap,
+	?data:Dynamic
+}
 
 typedef TilemapOptions = {
 	?rasterInterrupt:InterruptFunc,

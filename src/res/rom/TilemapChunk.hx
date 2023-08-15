@@ -2,8 +2,8 @@ package res.rom;
 
 import haxe.io.Bytes;
 import haxe.io.BytesInput;
-import res.tiles.Tilemap;
-import res.tiles.Tileset;
+import res.Tilemap;
+import res.Tileset;
 
 class TilemapChunk extends RomChunk {
 	public function new(name:String, data:Bytes) {
