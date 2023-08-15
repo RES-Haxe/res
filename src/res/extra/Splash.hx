@@ -5,7 +5,7 @@ import res.FrameBuffer;
 import res.Tilemap;
 import res.Tileset;
 import res.Font;
-import res.timeline.Timeline;
+import res.Timeline;
 import res.tools.MathTools.wrap;
 
 using Std;

@@ -4,7 +4,7 @@ import res.State;
 import res.FrameBuffer;
 import res.Paint.rect;
 import res.input.KeyboardEvent;
-import res.timeline.Timeline;
+import res.Timeline;
 import res.tools.MathTools.lerp;
 
 using String;
