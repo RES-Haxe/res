@@ -4,7 +4,7 @@ import Std.parseInt;
 import haxe.io.BytesOutput;
 import haxe.io.Path;
 import res.rom.FontChunk.FontType;
-import res.text.Font.Char;
+import res.Font.Char;
 import sys.io.File;
 
 using StringTools;

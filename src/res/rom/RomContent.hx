@@ -5,7 +5,7 @@ import res.Sprite;
 import res.Tilemap;
 import res.Tileset;
 import res.audio.AudioData;
-import res.text.Font;
+import res.Font;
 
 typedef RomContent = {
 	?audio:Map<String, AudioData>,

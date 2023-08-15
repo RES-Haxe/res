@@ -1,4 +1,4 @@
-package res.text;
+package res;
 
 typedef Char = {
 	x:Int,

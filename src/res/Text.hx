@@ -1,6 +1,4 @@
-package res.text;
-
-import res.Bitmap;
+package res;
 
 using Math;
 

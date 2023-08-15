@@ -5,7 +5,7 @@ import res.chips.Chip;
 import res.chips.std.console.Console;
 import res.chips.std.console.ConsoleChip;
 import res.chips.std.console.ConsoleCommand;
-import res.text.Text;
+import res.Text;
 
 using Type;
 using res.Paint;

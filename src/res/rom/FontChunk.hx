@@ -3,7 +3,7 @@ package res.rom;
 import haxe.io.Bytes;
 import haxe.io.BytesInput;
 import res.Sprite;
-import res.text.Font;
+import res.Font;
 
 enum abstract FontType(Int) from Int to Int {
 	var VARIABLE = 0;

@@ -12,7 +12,7 @@ import res.input.Keyboard;
 import res.input.Mouse;
 import res.rom.Rom;
 import res.storage.Storage;
-import res.text.Font;
+import res.Font;
 import res.types.RESConfig;
 
 using Math;
