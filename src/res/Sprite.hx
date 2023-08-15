@@ -79,8 +79,8 @@ class Sprite {
 		frames.push(new SpriteFrame(data, duration));
 	}
 
-	public function createObject(?x:Float = 0, ?y:Float = 0, ?colorMap:IndexMap):SpriteObject {
-		var obj = new SpriteObject(this, colorMap);
+	public function createEntity(?x:Float = 0, ?y:Float = 0, ?colorMap:IndexMap):Entity {
+		var obj = new Entity(this, colorMap);
 		obj.x = x ?? this.x;
 		obj.y = y ?? this.y;
 		return obj;

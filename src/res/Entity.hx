@@ -7,7 +7,7 @@ import res.Sprite.SpriteFrame;
 using Math;
 using res.tools.BytesTools;
 
-enum abstract ObjectAnimDirection(Int) from Int to Int {
+enum abstract EntityAnimDirection(Int) from Int to Int {
 	var Forward = 0;
 	var Backwards = 1;
 	var PingPong = 2;
@@ -18,16 +18,16 @@ enum PingPongCycle {
 	B;
 }
 
-enum SpriteObjectOffsetMode {
+enum EntityOffsetMode {
 	NONE;
 	PIVOT(px:Float, py:Float);
 	ANCHOR(ax:Int, ay:Int);
 }
 
 /**
-	Stateful Sprite Object
+	Stateful Entity based on a Sprite
  */
-class SpriteObject {
+class Entity {
 	public final sprite:Sprite;
 
 	/** Animation speed scale */
@@ -61,7 +61,7 @@ class SpriteObject {
 	public var scrollX:Int = 0;
 	public var scrollY:Int = 0;
 
-	public var offset:SpriteObjectOffsetMode = NONE;
+	public var offset:EntityOffsetMode = NONE;
 
 	public var currentFrame(get, never):SpriteFrame;
 
@@ -199,39 +199,39 @@ class SpriteObject {
 	}
 
 	/**
-		Draw a sprite object
+		Draw an Entity
 
 		@param surface Frame buffer
-		@param obj Sprite object
+		@param ety Entity
 		@param x Override x
 		@param y Override y
 	 */
-	public static function spriteObject(surface:Bitmap, obj:SpriteObject, ?x:Float, ?y:Float) {
-		x = x ?? obj.x;
-		y = y ?? obj.y;
+	public static function entity(surface:Bitmap, ety:Entity, ?x:Float, ?y:Float) {
+		x = x ?? ety.x;
+		y = y ?? ety.y;
 
 		final opts:DrawSpriteOptions = {
-			width: obj.width,
-			height: obj.height,
-			frame: obj.currentFrameIndex,
-			flipX: obj.flipX,
-			flipY: obj.flipY,
-			scrollX: obj.scrollX,
-			scrollY: obj.scrollY,
-			wrap: obj.wrap
+			width: ety.width,
+			height: ety.height,
+			frame: ety.currentFrameIndex,
+			flipX: ety.flipX,
+			flipY: ety.flipY,
+			scrollX: ety.scrollX,
+			scrollY: ety.scrollY,
+			wrap: ety.wrap
 		};
 
-		switch (obj.offset) {
+		switch (ety.offset) {
 			case NONE:
-				Sprite.sprite(surface, obj.sprite, x, y, opts, obj.colorMap);
+				Sprite.sprite(surface, ety.sprite, x, y, opts, ety.colorMap);
 			case PIVOT(px, py):
-				Sprite.spritePivot(surface, obj.sprite, x, y, px, py, opts, obj.colorMap);
+				Sprite.spritePivot(surface, ety.sprite, x, y, px, py, opts, ety.colorMap);
 			case ANCHOR(ax, ay):
-				Sprite.spriteAnchor(surface, obj.sprite, x, y, ax, ay, opts, obj.colorMap);
+				Sprite.spriteAnchor(surface, ety.sprite, x, y, ax, ay, opts, ety.colorMap);
 		}
 	}
 
 	public function render(surface:FrameBuffer) {
-		spriteObject(surface, this);
+		entity(surface, this);
 	}
 }

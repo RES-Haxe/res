@@ -14,7 +14,7 @@ import res.tools.RNG.*;
 using Std;
 using res.Paint;
 using res.Sprite;
-using res.SpriteObject;
+using res.Entity;
 using res.Font;
 using res.Text;
 using res.Textmap;
