@@ -14,7 +14,7 @@ import res.types.Shape;
 	e.g.:
 
 	```haxe
-	using res.Painter;
+	using res.Paint;
 
 	final bitmap:Bitmap = new Bitmap(128, 128);
 
@@ -29,7 +29,7 @@ import res.types.Shape;
 
 	```
  */
-class Painter {
+class Paint {
 	/**
 		Draw a circle
 

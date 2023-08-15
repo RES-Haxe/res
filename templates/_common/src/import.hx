@@ -2,7 +2,7 @@ import res.*;
 import res.audio.*;
 import res.collisions.*;
 import res.*;
-import res.Painter.*;
+import res.Paint.*;
 import res.Sprite.*;
 import res.geom.*;
 import res.input.*;
@@ -15,7 +15,7 @@ import res.tools.RNG.*;
 import res.ui.*;
 
 using Std;
-using res.Painter;
+using res.Paint;
 using res.Sprite;
 using res.SpriteObject;
 using res.text.Font;

@@ -2,7 +2,7 @@ package res.chips.std.console;
 
 import res.State;
 import res.FrameBuffer;
-import res.Painter.rect;
+import res.Paint.rect;
 import res.input.KeyboardEvent;
 import res.timeline.Timeline;
 import res.tools.MathTools.lerp;

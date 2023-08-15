@@ -9,7 +9,7 @@ import res.timeline.Timeline;
 import res.tools.MathTools.wrap;
 
 using Std;
-using res.Painter;
+using res.Paint;
 using res.Sprite;
 
 class Splash extends State {
