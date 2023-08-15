@@ -1,4 +1,4 @@
-package res.types;
+package res;
 
 enum Shape {
 	CIRCLE(cx:Float, cy:Float, r:Float);

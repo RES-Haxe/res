@@ -1,6 +1,6 @@
 package res;
 
-import res.types.ColorComponent;
+import res.Color32.ColorComponent;
 
 class Palette {
 	public final colors:Array<Color32>;

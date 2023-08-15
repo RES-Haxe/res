@@ -3,7 +3,6 @@ package res.collisions;
 import Math.*;
 import res.geom.Vec;
 import res.tools.MathTools.*;
-import res.types.Shape;
 
 class Collider {
 	/**

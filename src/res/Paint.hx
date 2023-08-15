@@ -4,7 +4,6 @@ import Math.abs;
 import res.geom.Rect;
 import res.geom.Vec;
 import res.tools.MathTools.*;
-import res.types.Shape;
 
 /**
 	Tool class for drawing shapes on a `Bitmap`

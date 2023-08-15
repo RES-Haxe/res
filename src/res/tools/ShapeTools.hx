@@ -1,7 +1,5 @@
 package res.tools;
 
-import res.types.Shape;
-
 class ShapeTools {
 	public static function pos(shape:Shape):{x:Float, y:Float} {
 		switch shape {

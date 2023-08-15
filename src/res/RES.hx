@@ -12,11 +12,19 @@ import res.input.Keyboard;
 import res.input.Mouse;
 import res.rom.Rom;
 import res.storage.Storage;
-import res.Font;
-import res.types.RESConfig;
 
 using Math;
 using Type;
+
+typedef Config = {
+	resolution:Array<Int>,
+	rom:Rom,
+	?main:RES -> {
+		function render(fb:FrameBuffer):Void;
+		function update(dt:Float):Void;
+	},
+	?chips:Array<Chip>
+};
 
 typedef RenderHookFunction = RES->FrameBuffer->Void;
 
@@ -54,7 +62,7 @@ class RES {
 
 	public final audio:AudioMixer;
 
-	public final config:RESConfig;
+	public final config:Config;
 
 	public final keyboard:Keyboard;
 	public final mouse:Mouse;
@@ -113,7 +121,7 @@ class RES {
 	function get_state():State
 		return _state;
 
-	private function new(bios:BIOS, config:RESConfig) {
+	private function new(bios:BIOS, config:Config) {
 		this.config = config;
 
 		if (config.resolution.length != 2)
@@ -364,7 +372,7 @@ class RES {
 		@param config.chip An array of initial chips
 		@param onBooted will be called after the boot
 	 */
-	public static function boot(bios:BIOS, config:RESConfig, ?onBooted:RES->Void) {
+	public static function boot(bios:BIOS, config:Config, ?onBooted:RES->Void) {
 		bios.ready(() -> {
 			final res = new RES(bios, config);
 			if (onBooted != null)

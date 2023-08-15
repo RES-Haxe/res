@@ -1,10 +1,21 @@
 package res;
 
 import res.tools.MathTools.wrap;
-import res.types.InterruptFunc;
-import res.types.InterruptResult;
 
 using Math;
+
+typedef InterruptFunc = (screenLine:Int, tilemapLine:Int) -> InterruptResult;
+
+enum InterruptResult {
+	/** Do nothing */
+	NONE;
+
+	/** Drop line but continue rendering */
+	DROP;
+
+	/** Stop the rendering **/
+	HALT;
+}
 
 final noneInterruptFunc:InterruptFunc = (_, _) -> NONE;
 
