@@ -267,25 +267,32 @@ class RES {
 	/**
 		Set current state
 
-		@param newState State to set
-		@param historyReplace Replace the current state in history, instead
-		of adding a new entry
+		@param newState
+			   State to set
+
+		@param historyReplace
+			   Replace the current state in history, instead of adding a new entry
+
 		@param onResult 
+			   Result callback
 	 */
-	public function setState(newState:State = null, ?historyReplace:Bool = false, ?onResult:Dynamic->Void):State {
+	public function setState(newState:State = null, ?historyReplace:Bool = true, ?onResult:Dynamic->Void):State {
 		if (_state != null) {
 			_state.leave();
 			_state.audio.pause();
-			if (historyReplace == false)
+			if (!historyReplace) {
 				_stateHistory.push(_state);
+			}
 		}
 
 		_state = newState;
 
-		_state.enter();
-		_state.audio.resume();
+		if (_state != null) {
+			_state.enter();
+			_state.audio.resume();
 
-		_stateResultCb.push(onResult);
+			_stateResultCb.push(onResult);
+		}
 
 		return _state;
 	}

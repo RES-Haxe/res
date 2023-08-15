@@ -11,6 +11,10 @@ class SpriteChunk extends RomChunk {
 
 	public function getSprite():Sprite {
 		final bi = new BytesInput(data);
+
+		final x = 0;
+		final y = 0;
+
 		final width = bi.readByte();
 		final height = bi.readByte();
 
@@ -41,6 +45,6 @@ class SpriteChunk extends RomChunk {
 			};
 		}
 
-		return new Sprite(name, width, height, frames, animations);
+		return new Sprite(name, width, height, x, y, frames, animations);
 	}
 }

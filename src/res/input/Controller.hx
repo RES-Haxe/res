@@ -5,10 +5,12 @@ import res.geom.Vec;
 
 @:build(res.input.ControllerBuildMacro.build())
 class Controller extends Emitter<ControllerEvent> {
+	/** Whether mapping keyboard key presses should be mapped to this controller */
+	public var keyboardMap:Bool = true;
+
 	public final index:Int;
 
-	final pressed:Map<ControllerButton,
-		Bool> = [for (btn in Type.allEnums(ControllerButton)) btn => false];
+	final pressed:Map<ControllerButton, Bool> = [for (btn in Type.allEnums(ControllerButton)) btn => false];
 
 	@:allow(res)
 	function new(index:Int) {

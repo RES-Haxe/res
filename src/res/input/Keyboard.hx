@@ -29,13 +29,13 @@ class Keyboard extends Emitter<KeyboardEvent> {
 
 	public function keyDown(keyCode:Key) {
 		keysDown[keyCode] = true;
+		emit(KEY_DOWN(keyCode));
 
 		if (ctrlMap[keyCode] != null) {
 			final bnd = ctrlMap[keyCode];
-			res.ctrl(bnd.index).press(bnd.btn);
+			if (res.ctrl(bnd.index).keyboardMap)
+				res.ctrl(bnd.index).press(bnd.btn);
 		}
-
-		emit(KEY_DOWN(keyCode));
 	}
 
 	public function input(text:String) {
@@ -44,13 +44,13 @@ class Keyboard extends Emitter<KeyboardEvent> {
 
 	public function keyUp(keyCode:Key) {
 		keysDown[keyCode] = false;
+		emit(KEY_UP(keyCode));
 
 		if (ctrlMap[keyCode] != null) {
 			final bnd = ctrlMap[keyCode];
-			res.ctrl(bnd.index).release(bnd.btn);
+			if (res.ctrl(bnd.index).keyboardMap)
+				res.ctrl(bnd.index).release(bnd.btn);
 		}
-
-		emit(KEY_UP(keyCode));
 	}
 
 	/**
@@ -88,12 +88,21 @@ class Keyboard extends Emitter<KeyboardEvent> {
 	}
 
 	/**
+		Returns the mapping assigned to the given key (if any)
+
+		@param key Keyboard key to get mapping for
+	**/
+	public function whichMap(key:Key) {
+		return ctrlMap[key];
+	}
+
+	/**
 		Returns the key used mapped to a controller button
 
 		@param ctrlIndex Index of the controller
 		@param button Mapped button
 	**/
-	public function whichKey(ctrlIndex:Int, button:ControllerButton)
+	public function whichKey(?ctrlIndex:Int = 0, button:ControllerButton)
 		return keyMap[ctrlIndex][button];
 
 	public function defaultControllerMapping() {
@@ -106,7 +115,7 @@ class Keyboard extends Emitter<KeyboardEvent> {
 		map(K, B);
 		map(U, X);
 		map(I, Y);
-		map(LSHIFT, SELECT);
+		map(ESCAPE, SELECT);
 		map(SPACE, START);
 
 		// Player 2

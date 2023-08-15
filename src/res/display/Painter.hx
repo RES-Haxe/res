@@ -40,8 +40,12 @@ class Painter {
 		@param strokeIndex Stroke color index
 		@param fillIndex Fill color index
 	 */
-	public static function circle(surface:Bitmap, cx:Float, cy:Float, r:Float, strokeIndex:Int, ?fillIndex:Int) {
+	public static inline function circle(surface:Bitmap, cx:Float, cy:Float, r:Float, strokeIndex:Int, ?fillIndex:Int) {
 		return ellipse(surface, cx, cy, r, r, strokeIndex, fillIndex);
+	}
+
+	public static inline function circlev(surface:Bitmap, v:Vec, r:Float, strokeIndex:Int, ?fillIndex:Int) {
+		return circle(surface, v.x, v.y, r, strokeIndex, fillIndex);
 	}
 
 	/**
@@ -57,7 +61,12 @@ class Painter {
 
 		@see https://www.geeksforgeeks.org/midpoint-ellipse-drawing-algorithm/
 	 */
-	public static function ellipse(surface:Bitmap, cx:Float, cy:Float, rx:Float, ry:Float, strokeIndex:Int, ?fillIndex:Int) {
+	public static function ellipsei(surface:Bitmap, cx:Int, cy:Int, rx:Int, ry:Int, strokeIndex:Int, ?fillIndex:Int) {
+		if (cx == 0 || cy == 0)
+			return surface;
+
+		fillIndex = fillIndex ?? strokeIndex;
+
 		var dx:Float;
 		var dy:Float;
 		var d1:Float;
@@ -124,7 +133,12 @@ class Painter {
 				d2 = d2 + dx - dy + (rx * rx);
 			}
 		}
+
 		return surface;
+	}
+
+	public static inline function ellipse(surface:Bitmap, cx:Float, cy:Float, rx:Float, ry:Float, strokeIndex:Int, ?fillIndex:Int) {
+		return ellipsei(surface, surface.round(cx), surface.round(cy), surface.round(rx), surface.round(ry), strokeIndex, fillIndex);
 	}
 
 	/**
@@ -187,7 +201,7 @@ class Painter {
 		@param y1 Destination Y
 		@param colorIndex
 	 */
-	public static function line(surface:Bitmap, x0:Float, y0:Float, x1:Float, y1:Float, colorIndex:Int) {
+	public static inline function line(surface:Bitmap, x0:Float, y0:Float, x1:Float, y1:Float, colorIndex:Int) {
 		return linei(surface, surface.round(x0), surface.round(y0), surface.round(x1), surface.round(y1), colorIndex);
 	}
 

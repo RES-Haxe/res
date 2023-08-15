@@ -1,5 +1,6 @@
 package res.display;
 
+import res.display.Sprite.DrawSpriteOptions;
 import res.display.Sprite.SpriteAnimation;
 import res.display.Sprite.SpriteFrame;
 
@@ -15,6 +16,12 @@ enum abstract ObjectAnimDirection(Int) from Int to Int {
 enum PingPongCycle {
 	F;
 	B;
+}
+
+enum SpriteObjectOffsetMode {
+	NONE;
+	PIVOT(px:Float, py:Float);
+	ANCHOR(ax:Int, ay:Int);
 }
 
 /**
@@ -54,10 +61,13 @@ class SpriteObject {
 	public var scrollX:Int = 0;
 	public var scrollY:Int = 0;
 
+	public var offset:SpriteObjectOffsetMode = NONE;
+
 	public var currentFrame(get, never):SpriteFrame;
 
-	function get_currentFrame():SpriteFrame
+	function get_currentFrame():SpriteFrame {
 		return sprite.frames[currentFrameIndex];
+	}
 
 	public var currentFrameIndex:Int = 0;
 
@@ -68,8 +78,9 @@ class SpriteObject {
 
 	public var currentAnimaionName(get, never):String;
 
-	function get_currentAnimaionName()
+	function get_currentAnimaionName() {
 		return _currentAnimationName;
+	}
 
 	/** Total current animation time in seconds **/
 	public var totalAnimationTime(get, never):Float;
@@ -195,18 +206,32 @@ class SpriteObject {
 		@param x Override x
 		@param y Override y
 	 */
-	public static function spriteObject(surface:Bitmap, obj:SpriteObject, ?x:Float, ?y:Float)
-		Sprite.sprite(surface, obj.sprite, (x == null ? obj.x : x).floor(), (y == null ? obj.y : y).floor(), {
-			width: obj.width.floor(),
-			height: obj.height.floor(),
+	public static function spriteObject(surface:Bitmap, obj:SpriteObject, ?x:Float, ?y:Float) {
+		x = x ?? obj.x;
+		y = y ?? obj.y;
+
+		final opts:DrawSpriteOptions = {
+			width: obj.width,
+			height: obj.height,
 			frame: obj.currentFrameIndex,
 			flipX: obj.flipX,
 			flipY: obj.flipY,
 			scrollX: obj.scrollX,
 			scrollY: obj.scrollY,
 			wrap: obj.wrap
-		}, obj.colorMap);
+		};
 
-	public function render(surface:FrameBuffer)
+		switch (obj.offset) {
+			case NONE:
+				Sprite.sprite(surface, obj.sprite, x, y, opts, obj.colorMap);
+			case PIVOT(px, py):
+				Sprite.spritePivot(surface, obj.sprite, x, y, px, py, opts, obj.colorMap);
+			case ANCHOR(ax, ay):
+				Sprite.spriteAnchor(surface, obj.sprite, x, y, ax, ay, opts, obj.colorMap);
+		}
+	}
+
+	public function render(surface:FrameBuffer) {
 		spriteObject(surface, this);
+	}
 }

@@ -21,6 +21,8 @@ typedef Animation = {
 
 typedef SpriteDesc = {
 	name:String,
+	x:Int,
+	y:Int,
 	width:Int,
 	height:Int,
 	frames:Array<{
@@ -75,6 +77,8 @@ class Converter extends res.rom.converters.Converter {
 				for (key in sliceChunk.sliceKeys) {
 					sprites.push({
 						name: '${spriteName}_${sliceChunk.name}',
+						x: key.xOrigin,
+						y: key.yOrigin,
 						width: key.width,
 						height: key.height,
 						frames: [
@@ -91,6 +95,8 @@ class Converter extends res.rom.converters.Converter {
 		} else {
 			sprites.push({
 				name: makeName(fileName),
+				x: 0,
+				y: 0,
 				width: aseprite.width,
 				height: aseprite.height,
 				frames: [
@@ -112,6 +118,7 @@ class Converter extends res.rom.converters.Converter {
 
 			bytesOutput.writeByte(sprite.width);
 			bytesOutput.writeByte(sprite.height);
+
 			bytesOutput.writeInt32(sprite.frames.length);
 
 			for (frame_num in 0...sprite.frames.length) {

@@ -309,7 +309,7 @@ class Tilemap {
 							final tileColorIndex:Int = tilemap.readTilePixel(tileColIndex, tileLineIndex, inTileCol, inTileScanline);
 							final paletteColorIndex:Int = tilePlace.colorMap != null ? tilePlace.colorMap.get(tileColorIndex) : colorMap == null ? tileColorIndex : colorMap[tileColorIndex];
 
-							surface.set(screenCol, screenScanline, paletteColorIndex);
+							surface.seti(screenCol, screenScanline, paletteColorIndex);
 						}
 					}
 				}

@@ -41,11 +41,16 @@ class Sprite {
 	public final frames:Array<SpriteFrame>;
 	public final animations:Map<String, SpriteAnimation>;
 
+	public var x:Float = 0;
+	public var y:Float = 0;
+
 	public final width:Int;
 	public final height:Int;
 
-	public function new(?name:String = null, width:Int, height:Int, ?frames:Array<SpriteFrame>, ?animations:Map<String, SpriteAnimation>) {
+	public function new(?name:String = null, width:Int, height:Int, ?x:Int, ?y:Int, ?frames:Array<SpriteFrame>, ?animations:Map<String, SpriteAnimation>) {
 		this.name = name;
+		this.x = x ?? 0;
+		this.y = y ?? 0;
 		this.width = width;
 		this.height = height;
 		this.frames = frames != null ? frames : [];
@@ -76,8 +81,8 @@ class Sprite {
 
 	public function createObject(?x:Float = 0, ?y:Float = 0, ?colorMap:IndexMap):SpriteObject {
 		var obj = new SpriteObject(this, colorMap);
-		obj.x = x;
-		obj.y = y;
+		obj.x = x ?? this.x;
+		obj.y = y ?? this.y;
 		return obj;
 	}
 
@@ -145,7 +150,7 @@ class Sprite {
 
 						if (_wrap || (screenX >= 0 && screenY >= 0 && screenX < surface.width && screenY < surface.height)) {
 							final colorIndex = colorMap == null ? sampleIndex : colorMap.get(sampleIndex);
-							surface.set(screenX, screenY, colorIndex);
+							surface.seti(screenX, screenY, colorIndex);
 						}
 					}
 				}
@@ -192,7 +197,7 @@ class Sprite {
 				final sprite_x = Math.floor(lerp(0, sprite.width, param(0, width, col)));
 				final sprite_y = Math.floor(lerp(0, sprite.height, param(0, height, line)));
 				final px = sprite.get(frame, sprite_x, sprite_y);
-				surface.set(x + col, y + line, px);
+				surface.seti(x + col, y + line, px);
 			}
 		}
 
@@ -235,7 +240,7 @@ class Sprite {
 			for (col in 0...width) {
 				final oidx = frameData.getxy(sprite.width, fx + col, fy + line);
 				final index = colorMap == null ? oidx : colorMap[oidx];
-				surface.set(atx + col, aty + line, index);
+				surface.seti(atx + col, aty + line, index);
 			}
 		}
 

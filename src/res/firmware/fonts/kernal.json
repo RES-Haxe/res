@@ -2,5 +2,5 @@
   "bitmap": "kernal.png",
   "tileWidth": 8,
   "tileHeight": 8,
-  "characters": " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]↑_✓abcdefghijklmnopqrstuvwxyz£|←▒▓"
+  "characters": " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]_✓abcdefghijklmnopqrstuvwxyz£|←→↑↓"
 }
