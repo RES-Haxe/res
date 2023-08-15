@@ -1,18 +1,15 @@
 import res.*;
 import res.audio.*;
 import res.collisions.*;
-import res.*;
 import res.Paint.*;
 import res.Sprite.*;
 import res.geom.*;
 import res.input.*;
 import res.rom.Rom;
 import res.storage.*;
-import res.*;
 import res.tools.*;
 import res.tools.MathTools.*;
 import res.tools.RNG.*;
-import res.ui.*;
 
 using Std;
 using res.Paint;

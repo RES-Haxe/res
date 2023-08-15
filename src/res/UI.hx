@@ -1,6 +1,4 @@
-package res.ui;
-
-import res.Bitmap;
+package res;
 
 using res.Paint;
 
