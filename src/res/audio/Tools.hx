@@ -1,7 +1,7 @@
 package res.audio;
 
-import res.tools.MathTools.lerp;
-import res.tools.MathTools.param;
+import res.Mth.lerp;
+import res.Mth.param;
 
 class Tools {
 	public static function quantize(amp:Float, bps:BPS):Int {

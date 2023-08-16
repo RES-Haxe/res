@@ -40,15 +40,6 @@ class Init extends Command {
 				example: 'My Game'
 			},
 			{
-				name: 'dir',
-				type: STRING,
-				desc: 'Directory to initialize the project in. Use "." to initialize the project in the current directory',
-				defaultValue: (?prev) -> Path.join([Sys.getCwd(), prev != null ? prev['name'] : '{name}']),
-				requred: false,
-				interactive: false,
-				example: './my_game'
-			},
-			{
 				name: 'template',
 				type: ENUM(templateList),
 				desc: 'The name of a template to use to initialize the project. Available templates: ${templateList.join(', ')}',
@@ -60,7 +51,7 @@ class Init extends Command {
 		];
 
 	public function run(args:Map<String, String>) {
-		final dir = Path.normalize(Path.isAbsolute(args['dir']) ? args['dir'] : Path.join([args['dir']]));
+		final dir = Path.normalize(Path.join([Sys.getCwd(), args['name']]));
 
 		if (!FileSystem.exists(dir)) {
 			try {

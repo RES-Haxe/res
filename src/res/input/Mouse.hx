@@ -1,7 +1,7 @@
 package res.input;
 
+import res.Mth.wrap;
 import res.events.Emitter;
-import res.tools.MathTools.wrap;
 
 class Mouse extends Emitter<MouseEvent> {
 	public var enabled:Bool = true;

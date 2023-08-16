@@ -1,8 +1,8 @@
 package res.collisions;
 
 import Math.*;
+import res.Mth.sign;
 import res.geom.Vec;
-import res.tools.MathTools.*;
 
 class Collider {
 	/**

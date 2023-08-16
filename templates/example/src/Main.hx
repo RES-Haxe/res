@@ -1,4 +1,10 @@
 import Bios.bios;
+import res.RES;
+import res.State;
+import res.FrameBuffer;
+import res.RNG;
+import res.rom.Rom;
+import res.Mth.*;
 
 final RES_LABEL = 'R E S';
 final LABEL_SPEED = 50; // pixels per second
@@ -20,8 +26,8 @@ class MainState extends State {
     yBound = res.height - labelSize.height;
 
     pos = {
-      x: rangef(0, xBound),
-      y: rangef(0, yBound)
+      x: RNG.rangef(0, xBound),
+      y: RNG.rangef(0, yBound)
     };
 
     move = {
@@ -49,12 +55,12 @@ class MainState extends State {
     }
 
     if (hasHit)
-      audioMixer.play('hitHurt');
+      audio.play('hitHurt');
   }
 
   override function render(fb:FrameBuffer) {
     fb.clear();
-    res.defaultFont.draw(fb, RES_LABEL, pos.x.int(), pos.y.int());
+    res.defaultFont.draw(fb, RES_LABEL, pos.x, pos.y);
   }
 }
 

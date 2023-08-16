@@ -1,6 +1,6 @@
 package res;
 
-import res.tools.MathTools.wrap;
+import res.Mth.wrap;
 
 class Textmap extends Tilemap {
 	private final _charMap:Map<Int, Int> = [];

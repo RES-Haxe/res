@@ -1,6 +1,6 @@
-package res.tools;
+package res;
 
-class MathTools {
+class Mth {
 	/**
 		Calculate average
 	**/

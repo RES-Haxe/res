@@ -1,4 +1,4 @@
-package res.tools;
+package res;
 
 /**
 	Random Number Generator
@@ -39,7 +39,7 @@ class RNG {
 		Returns a random `Float` number between `from` and `to`
 	 */
 	public static function rangef(from:Float, to:Float):Float
-		return MathTools.lerp(from, to, rnd());
+		return Mth.lerp(from, to, rnd());
 
 	/**
 		Returns a random `Int` number between `from` and `to`

@@ -1,7 +1,7 @@
 package res.audio.osc;
 
-import res.tools.MathTools.clamp;
-import res.tools.MathTools.wrap;
+import res.Mth.clamp;
+import res.Mth.wrap;
 
 abstract class Oscillator {
 	public static function noise()

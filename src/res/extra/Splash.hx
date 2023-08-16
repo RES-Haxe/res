@@ -1,12 +1,12 @@
 package res.extra;
 
 import haxe.io.BytesOutput;
+import res.Font;
 import res.FrameBuffer;
+import res.Mth.wrap;
 import res.Tilemap;
 import res.Tileset;
-import res.Font;
 import res.Timeline;
-import res.tools.MathTools.wrap;
 
 using Std;
 using res.Paint;

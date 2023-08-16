@@ -1,9 +1,9 @@
 package res;
 
 import haxe.io.Bytes;
-import res.tools.MathTools.lerp;
-import res.tools.MathTools.param;
-import res.tools.MathTools.wrap;
+import res.Mth.lerp;
+import res.Mth.param;
+import res.Mth.wrap;
 
 using res.tools.BytesTools;
 

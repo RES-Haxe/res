@@ -1,9 +1,10 @@
 package res;
 
 import Math.abs;
+import res.Mth.max;
+import res.Mth.min;
 import res.geom.Rect;
 import res.geom.Vec;
-import res.tools.MathTools.*;
 
 /**
 	Tool class for drawing shapes on a `Bitmap`

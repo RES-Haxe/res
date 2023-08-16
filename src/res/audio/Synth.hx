@@ -1,8 +1,9 @@
 package res.audio;
 
 import haxe.io.BytesOutput;
+import res.Mth.lerp;
+import res.Mth.param;
 import res.audio.osc.Oscillator;
-import res.tools.MathTools.*;
 
 enum EEnvelope {
 	ATTACK;
@@ -147,8 +148,7 @@ class Synth {
 		return new AudioData(1, sampleRate, bps, PCM(sampleRate, bps));
 
 	public function buffer(sampleRate:Int = 22500, bps:BPS = BPS8, res:RES)
-		return res.bios.createAudioBuffer(audioData(sampleRate,
-			bps).iterator());
+		return res.bios.createAudioBuffer(audioData(sampleRate, bps).iterator());
 
 	public function PCM(sampleRate:Int, bps:BPS) {
 		final adv = 1000 / sampleRate;

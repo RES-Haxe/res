@@ -5,7 +5,7 @@ import res.FrameBuffer;
 import res.Paint.rect;
 import res.input.KeyboardEvent;
 import res.Timeline;
-import res.tools.MathTools.lerp;
+import res.Mth.lerp;
 
 using String;
 using StringTools;
