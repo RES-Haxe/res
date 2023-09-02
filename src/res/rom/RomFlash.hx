@@ -5,55 +5,21 @@ import haxe.Int32;
 import haxe.io.Bytes;
 import haxe.io.BytesInput;
 import haxe.zip.InflateImpl;
-import res.Sprite;
-import res.Tilemap;
-import res.Tileset;
+import res.Rom.RomContent;
 import res.audio.AudioData;
-import res.Font;
 
 using StringTools;
 
 inline function et<T>(a:Map<String, T>):Map<String, T>
 	return a == null ? [] : a;
 
-class Rom {
+/**
+	ROM "Flashing" tool
+
+	Used to create ROM data from different sources
+ */
+class RomFlash {
 	public static inline var MAGIC_NUMBER:Int32 = 0x52524f4d; // RROM
-
-	public final palette:Palette;
-	public final audio:Map<String, AudioData>;
-	public final data:Map<String, Bytes>;
-	public final fonts:Map<String, Font>;
-	public final sprites:Map<String, Sprite>;
-	public final tilemaps:Map<String, Tilemap>;
-	public final tilesets:Map<String, Tileset>;
-
-	private function new(palette:Palette, audio:Map<String, AudioData>, tilesets:Map<String, Tileset>, tilemaps:Map<String, Tilemap>,
-			sprites:Map<String, Sprite>, fonts:Map<String, Font>, data:Map<String, Bytes>) {
-		this.palette = palette;
-		this.audio = audio;
-		this.tilesets = tilesets;
-		this.tilemaps = tilemaps;
-		this.sprites = sprites;
-		this.fonts = fonts;
-		this.data = data;
-	}
-
-	/**
-		Create a rom
-
-		@param palette Palette to use
-		@param content
-		@param content.audio Audio data
-		@param content.tilesets Tilsets
-		@param content.tilemaps Tilemaps
-		@param content.sprites Sprites
-		@param content.fonts Fonts
-		@param content.data Data
-	 */
-	public static function create(?palette:Palette, content:RomContent) {
-		return new Rom(palette == null ? Palette.createDefault() : palette, et(content.audio), et(content.tilesets), et(content.tilemaps),
-			et(content.sprites), et(content.fonts), et(content.data));
-	}
 
 	/**
 		Load rom from bytes
@@ -105,7 +71,30 @@ class Rom {
 			}
 		}
 
-		return new Rom(palette, audio, tilesets, tilemaps, sprites, fonts, data);
+		return new Rom(palette, {
+			audio: audio,
+			tilesets: tilesets,
+			tilemaps: tilemaps,
+			sprites: sprites,
+			fonts: fonts,
+			data: data
+		});
+	}
+
+	/**
+		Create a rom
+
+		@param palette Palette to use
+		@param content
+		@param content.audio Audio data
+		@param content.tilesets Tilsets
+		@param content.tilemaps Tilemaps
+		@param content.sprites Sprites
+		@param content.fonts Fonts
+		@param content.data Data
+	 */
+	public static function create(?palette:Palette, content:RomContent) {
+		return new Rom(palette == null ? Palette.createDefault() : palette, content);
 	}
 
 	/**
@@ -159,7 +148,7 @@ class Rom {
 
 		@param palette optional palette
 	 */
-	public static function empty(?palette:Palette) {
-		return new Rom(palette == null ? Palette.createDefault() : palette, [], [], [], [], [], []);
+	public static inline function empty(?palette:Palette) {
+		return new Rom(palette == null ? Palette.createDefault() : palette, {});
 	}
 }

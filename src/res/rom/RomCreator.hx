@@ -123,7 +123,7 @@ class RomCreator {
 		final byteOutput = new BytesOutput();
 
 		// Write magic number
-		byteOutput.writeInt32(Rom.MAGIC_NUMBER);
+		byteOutput.writeInt32(RomFlash.MAGIC_NUMBER);
 
 		final sourceDirs = [Path.normalize(src)];
 

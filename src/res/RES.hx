@@ -10,7 +10,6 @@ import res.input.Controller;
 import res.input.ControllerEvent;
 import res.input.Keyboard;
 import res.input.Mouse;
-import res.rom.Rom;
 import res.storage.Storage;
 
 using Math;
