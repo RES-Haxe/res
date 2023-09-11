@@ -130,7 +130,7 @@ class RomFlash {
 		final romBytes = RomCreator.create(src);
 		final romBytesFinal = compressed ? haxe.zip.Compress.run(romBytes, 9) : romBytes;
 		final romBase64 = haxe.crypto.Base64.encode(romBytesFinal);
-		return macro res.rom.Rom.fromBytes(haxe.crypto.Base64.decode($v{romBase64}), $v{compressed}, ${add});
+		return macro res.rom.RomFlash.fromBytes(haxe.crypto.Base64.decode($v{romBase64}), $v{compressed}, ${add});
 	}
 
 	/**

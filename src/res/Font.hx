@@ -82,16 +82,17 @@ class Font {
 		@param py
 		@param colorMap
 	**/
-	public function drawPivot(surface:Bitmap, text:String, x:Float, y:Float, px:Float = 0.5, py:Float = 0.5, ?colorMap:IndexMap) {
+	public function drawPivot(surface:Bitmap, text:String, x:Float = 0, y:Float = 0, px:Float = 0.5, py:Float = 0.5, ?colorMap:IndexMap) {
 		final m = measure(text); // TODO: Doing this on each frame... not good. Should this only be allowed on Text class?
 		draw(surface, text, x - m.width * px, y - m.height * py, colorMap);
 	}
 
-	public static inline function text(surface:Bitmap, font:Font, text:String, x:Float, y:Float, ?colorMap:IndexMap) {
+	public static inline function text(surface:Bitmap, font:Font, text:String, x:Float = 0, y:Float = 0, ?colorMap:IndexMap) {
 		return font.draw(surface, text, x, y, colorMap);
 	}
 
-	public static inline function textPivot(surface:Bitmap, font:Font, text:String, x:Float, y:Float, px:Float = 0.5, py:Float = 0.5, ?colorMap:IndexMap) {
+	public static inline function textPivot(surface:Bitmap, font:Font, text:String, x:Float = 0, y:Float = 0, px:Float = 0.5, py:Float = 0.5,
+			?colorMap:IndexMap) {
 		return font.drawPivot(surface, text, x, y, px, py, colorMap);
 	}
 }
