@@ -3,7 +3,7 @@ import res.RES;
 import res.State;
 import res.FrameBuffer;
 import res.RNG;
-import res.rom.Rom;
+import res.rom.RomFlash;
 import res.Mth.*;
 
 final RES_LABEL = 'R E S';
@@ -67,7 +67,7 @@ class MainState extends State {
 function main() {
   RES.boot(bios, {
     resolution: [128, 128],
-    rom: Rom.embed('rom'),
+    rom: RomFlash.embed('rom'),
     main: (res) -> new MainState(res)
   });
 }

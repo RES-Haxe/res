@@ -1,6 +1,5 @@
 package cli;
 
-import haxe.ds.Map;
 import Sys.print;
 import Sys.println;
 import haxe.Json;

@@ -42,6 +42,13 @@ class Help extends Command {
 		println('');
 		println('  Usage: res [command] [arguments]');
 		println('');
+		println('CONFIGURATION:');
+		println('  RES Base : ${resCli.baseDir}');
+		println('      Where RES code is located)');
+		println('');
+		println('  RES Home : ${resCli.resHomeDir}');
+		println('      Where RES keeps the configuration and runtime files');
+		println('');
 		println('COMMANDS:');
 		println('');
 

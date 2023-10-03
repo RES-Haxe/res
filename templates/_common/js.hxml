@@ -1,0 +1,8 @@
+-cp ./src
+-main Main
+-lib res
+-lib ase
+-lib format
+-lib res-html5
+-D no-deprecation-warnings
+--js ./build/js/game.js

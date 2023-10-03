@@ -6,8 +6,7 @@ import cli.CLI.error;
 import cli.OS.appExt;
 import cli.OS.copyTree;
 import cli.OS.wipeDirectory;
-import cli.commands.common.PlatformArg.platformArg;
-import cli.common.ProjectConfig.getProjectConfig;
+import cli.commands.Build.buildArgument;
 import haxe.io.Path;
 import sys.FileSystem.*;
 
@@ -18,49 +17,57 @@ class Dist extends Command {
 		return 'Prepare a package for distribution';
 
 	public function expectedArgs(resCli):Array<Argument>
-		return [platformArg];
+		return [buildArgument];
 
 	public function run(args:Map<String, String>) {
-		resCli.commands['build'].run(args);
+		final buildCmd:Build = cast resCli.commands['build'];
 
-		final projectConfig = getProjectConfig(resCli);
+		buildCmd.run(args);
+
+		if (!buildCmd.success)
+			return;
+
+		final hxml = buildCmd.hxml;
+
+		final cfgName = Path.withoutExtension(hxml.name);
 
 		final distPath = 'dist';
 
 		createDirectory(distPath);
 
-		switch (args['platform']) {
-			case 'hl':
-				final hlDistPath = Path.join([distPath, 'hl']);
-				final hlBuildPath = Path.join([projectConfig.build.path, 'hl']);
+		final hl = hxml.getSwitch('hl');
 
-				if (exists(hlDistPath)) {
-					println('Build directory exists. Nuking it!');
-					wipeDirectory(hlDistPath);
-				}
+		if (hl.length > 0) {
+			final hlDistPath = Path.join([distPath, cfgName]);
+			final hlBuildPath = Path.directory(hl[0]);
 
-				createDirectory(hlDistPath);
+			if (exists(hlDistPath)) {
+				println('Build directory exists. Nuking it!');
+				wipeDirectory(hlDistPath);
+			}
 
-				println('Copy runtime files...');
-				copyTree(Path.join([resCli.runtimeDir, 'hashlink']), hlDistPath, (path:String) -> path != 'include' && !path.toLowerCase().endsWith('.lib'));
-				wipeDirectory(Path.join([hlDistPath, 'include']));
+			createDirectory(hlDistPath);
 
-				final exeName = appExt(Path.join([hlDistPath, projectConfig.dist.exeName]));
-				final origExePath = appExt(Path.join([hlDistPath, 'hl']));
+			println('Copy runtime files...');
+			copyTree(Path.join([resCli.runtimeDir, 'hashlink']), hlDistPath, (path:String) -> path != 'include' && !path.toLowerCase().endsWith('.lib'));
+			wipeDirectory(Path.join([hlDistPath, 'include']));
 
-				rename(origExePath, exeName);
+			final exeName = appExt(Path.join([hlDistPath, 'game']));
+			final origExePath = appExt(Path.join([hlDistPath, 'hl']));
 
-				if (Sys.systemName().toLowerCase() != 'windows')
-					Sys.command('chmod +x $exeName');
+			rename(origExePath, exeName);
 
-				println('Copy bytecode...');
-				copyTree(hlBuildPath, hlDistPath);
+			if (Sys.systemName().toLowerCase() != 'windows')
+				Sys.command('chmod +x $exeName');
 
-				println('Done: $hlDistPath');
-			case 'js':
-				println('Not implemented yet');
-			default:
-				return error('Unknown platform ${args['platform']}');
+			println('Copy bytecode...');
+			copyTree(hlBuildPath, hlDistPath);
+
+			println('Done: $hlDistPath');
+
+			return;
 		}
+
+		return error("No supported targets found");
 	}
 }

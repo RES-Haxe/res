@@ -8,7 +8,7 @@ import res.input.MouseEvent;
 using Std;
 
 class State {
-	private final res:RES;
+	public final res:RES;
 
 	public final audio:AudioMixer;
 

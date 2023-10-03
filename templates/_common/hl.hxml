@@ -1,0 +1,10 @@
+-cp ./src
+-main Main
+-lib res
+-lib ase
+-lib format
+-lib res-hl
+-lib hlsdl
+-lib hlopenal
+-D no-deprecation-warnings
+--hl ./build/hl/hlboot.dat

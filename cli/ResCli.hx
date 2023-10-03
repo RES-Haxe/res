@@ -14,7 +14,6 @@ import cli.commands.Tools;
 import haxe.io.Path;
 import sys.FileSystem;
 
-final PROJECT_CONFIG_FILENAME = 'res.json';
 final CLI_CONFIG_FILENAME:String = '.res-cli.json';
 
 class ResCli {

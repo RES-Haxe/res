@@ -6,11 +6,11 @@ class Rect {
 	public var width:Float;
 	public var height:Float;
 
-	public function new(x:Float, y:Float, width:Float, height:Float) {
+	public inline function new(x:Float, y:Float, width:Float, height:Float) {
 		set(x, y, width, height);
 	}
 
-	public function set(x:Float, y:Float, width:Float, height:Float) {
+	public inline function set(x:Float, y:Float, width:Float, height:Float) {
 		this.x = x;
 		this.y = y;
 		this.width = width;

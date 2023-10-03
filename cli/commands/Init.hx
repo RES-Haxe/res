@@ -4,17 +4,11 @@ import Sys.println;
 import cli.CLI.Argument;
 import cli.CLI.ask;
 import cli.CLI.error;
-import cli.Hxml.writeHxmlFile;
 import cli.OS.copyTree;
 import cli.OS.relativizePath;
-import cli.ResCli.PROJECT_CONFIG_FILENAME;
 import cli.Templates.getTemplateList;
-import cli.common.CoreDeps.getCoreDeps;
-import cli.types.ResProjectConfig;
-import haxe.Json;
 import haxe.io.Path;
 import sys.FileSystem;
-import sys.io.File;
 
 class Init extends Command {
 	final templateList:Array<String>;
@@ -87,34 +81,13 @@ class Init extends Command {
 			copyTree(Path.join([resCli.baseDir, 'templates', '_common']), dir);
 			copyTree(Path.join([resCli.baseDir, 'templates', template]), dir);
 
-			final projectConfig:ResProjectConfig = {
-				name: args['name'],
-				version: '0.1.0',
-				src: {
-					path: './src',
-					main: 'Main'
-				},
-				build: {
-					path: './build'
-				},
-				dist: {
-					path: './dist',
-					exeName: 'game'
-				},
-				libs: getCoreDeps(resCli),
-				defs: [_all => [['no-deprecation-warnings']]] // Need to remove this one day
-			};
-
-			for (platform in [hl, js])
-				writeHxmlFile(resCli, projectConfig, platform);
-
-			File.saveContent(Path.join([dir, PROJECT_CONFIG_FILENAME]), Json.stringify(projectConfig, null, '  '));
-
 			resCli.commands['bootstrap'].run([]);
 
 			println('Done! Now you can test the newly created project by running:');
+
 			if (currentDir != dir)
 				println('  cd ${relativizePath(currentDir, dir)}');
+
 			println('  res run');
 		} catch (error) {
 			return CLI.error('ERROR: ${error.message}');

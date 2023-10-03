@@ -119,7 +119,7 @@ class RomFlash {
 
 
 		```haxe
-		res.rom.Rom.fromBytes(haxe.crypto.Base64.decode('eNrtWTdvFUEQHgtsIdAUdAgBIuc<...>'), true);
+		res.rom.RomFlash.fromBytes(haxe.crypto.Base64.decode('eNrtWTdvFUEQHgtsIdAUdAgBIuc<...>'), true);
 		```
 
 		@param src Source directory that contains the files for the ROM
