@@ -226,8 +226,8 @@ class Paint {
 		final fx = min(x, x + w);
 		final fy = min(y, y + h);
 
-		final tx = max(x, x + w) + 1;
-		final ty = max(y, y + h) + 1;
+		final tx = max(x, x + w);
+		final ty = max(y, y + h);
 
 		if (tx - fx > 0 && ty - fy > 0) {
 			for (line in fy...ty) {

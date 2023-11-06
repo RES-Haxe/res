@@ -6,6 +6,7 @@ class TimelineEvent {
 	public var interval:Float;
 	public var repeats:Int;
 	public var callback:TimelineCallback;
+	public var doneCallback:Void->Void;
 	public var runAt:Float;
 
 	@:allow(res.Timeline)
@@ -32,9 +33,10 @@ class Timeline {
 
 	public function new() {}
 
-	public function add(interval:Float, repeats:Int, callback:TimelineCallback):TimelineEvent {
+	public function add(interval:Float, repeats:Int, callback:TimelineCallback, ?done:Void->Void):TimelineEvent {
 		var event = new TimelineEvent(interval, repeats, callback);
 		event.runAt = totalTime + interval;
+		event.doneCallback = done;
 		events.push(event);
 		return event;
 	}
@@ -48,12 +50,12 @@ class Timeline {
 		events.remove(event);
 	}
 
-	public function every(time:Float, callback:TimelineCallback, ?repeats:Int = -1, ?startImmediately:Bool = false) {
+	public function every(time:Float, callback:TimelineCallback, ?repeats:Int = -1, ?startImmediately:Bool = false, ?done:Void->Void) {
 		if (startImmediately) {
 			callback(0);
 			repeats--;
 		}
-		var event = add(time, repeats, callback);
+		var event = add(time, repeats, callback, done);
 		return event;
 	}
 
@@ -62,7 +64,7 @@ class Timeline {
 
 		@param time
 	 */
-	public function forWhile(time:Float, callback:(time:Float, totalTime:Float) -> Void, ?done:() -> Void) {
+	public function forWhile(time:Float, callback:(time:Float, totalTime:Float) -> Void, ?done:Void->Void) {
 		forWhileItems.push({
 			totalTime: time,
 			time: 0,
@@ -80,6 +82,8 @@ class Timeline {
 				if (event.repeats < 0 || --event.repeats > 0) {
 					event.runAt = totalTime + event.interval - late;
 				} else {
+					if (event.doneCallback != null)
+						event.doneCallback();
 					events.remove(event);
 				}
 			}

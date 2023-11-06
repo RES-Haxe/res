@@ -124,10 +124,11 @@ class RomFlash {
 
 		@param src Source directory that contains the files for the ROM
 		@param compressed Whether the rom data should be compressed or not
+		@param firmware Whether the rom data should include firmware or not
 		@param add Additional content
 	 */
-	public static macro function embed(src:String = 'rom', ?compressed:Bool = true, ?add:haxe.macro.Expr.ExprOf<RomContent>) {
-		final romBytes = RomCreator.create(src);
+	public static macro function embed(src:String = 'rom', ?compressed:Bool = true, ?firmware:Bool = true, ?add:haxe.macro.Expr.ExprOf<RomContent>) {
+		final romBytes = RomCreator.create(src, firmware);
 		final romBytesFinal = compressed ? haxe.zip.Compress.run(romBytes, 9) : romBytes;
 		final romBase64 = haxe.crypto.Base64.encode(romBytesFinal);
 		return macro res.rom.RomFlash.fromBytes(haxe.crypto.Base64.decode($v{romBase64}), $v{compressed}, ${add});

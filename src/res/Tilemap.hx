@@ -96,10 +96,10 @@ class Tilemap {
 		return tilemap;
 	}
 
-	public function new(?tileset:Tileset, hTiles:Int, vTiles:Int, ?width:Int = 100, ?height:Int = 100, ?colorMap:IndexMap, ?indexMap:IndexMap) {
+	public function new(?tileset:Tileset, hTiles:Int, vTiles:Int, ?width:Int, ?height:Int, ?colorMap:IndexMap, ?indexMap:IndexMap) {
 		this.tileset = tileset;
-		this.width = width;
-		this.height = height;
+		this.width = width != null ? width : tileset != null ? tileset.tileWidth * hTiles : 100;
+		this.height = height != null ? height : tileset != null ? tileset.tileHeight * vTiles : 100;
 		this.colorMap = colorMap == null ? new IndexMap([]) : colorMap;
 		this.indexMap = indexMap == null ? new IndexMap([]) : indexMap;
 
@@ -131,9 +131,11 @@ class Tilemap {
 	}
 
 	public function fill(tileIndex:Int) {
-		for (line in map)
-			for (index in 0...line.length)
-				line[index].index = tileIndex;
+		for (line in 0...vTiles) {
+			for (col in 0...hTiles) {
+				set(col, line, tileIndex);
+			}
+		}
 	}
 
 	/**
@@ -191,6 +193,7 @@ class Tilemap {
 			colorMap: colorMap,
 			data: data
 		});
+		return map[tileLine][tileCol];
 	}
 
 	/**
@@ -257,8 +260,7 @@ class Tilemap {
 		@param more.scrollX
 		@param more.scrollY
 	**/
-	public static function tilemap(surface:Bitmap, tilemap:Tilemap, ?x:Int = 0, ?y:Int = 0, ?width:Int, ?height:Int, ?colorMap:IndexMap,
-			?more:TilemapOptions) {
+	public static function tilemap(surface:Bitmap, tilemap:Tilemap, ?x:Int = 0, ?y:Int = 0, ?width:Int, ?height:Int, ?colorMap:IndexMap, ?more:TilemapOptions) {
 		final tileset = tilemap.tileset;
 
 		if (tileset == null)
