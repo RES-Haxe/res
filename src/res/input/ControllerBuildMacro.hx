@@ -11,7 +11,7 @@ class ControllerBuildMacro {
 		for (btn in Type.allEnums(ControllerButton).map(v -> v.getName())) {
 			var getFunc:Function = {
 				args: [],
-				expr: Context.parse('return this.pressed[ControllerButton.${btn}];', Context.currentPos()),
+				expr: Context.parse('return this.pressed[ControllerButton.${btn}]', Context.currentPos()),
 				ret: (macro :Bool)
 			};
 
