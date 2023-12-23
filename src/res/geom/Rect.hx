@@ -40,8 +40,18 @@ class Rect {
 
 		Center point defined by a 2d vector
 	**/
-	public static inline function centerv(c:TVec, width:Float, height:Float) {
-		return new Rect(c.x - width / 2, c.y - height / 2, width, height);
+	public static inline function centerv(center:TVec, width:Float, height:Float) {
+		return Rect.center(center.x, center.y, width, height);
+	}
+
+	/**
+		Define a rectangle by its center point and size.
+
+		Center point defined by a 2d vector, size defined 
+		by an object having `width` and `height` properties
+	**/
+	public static inline function centervs(center:TVec, size:{width:Float, height:Float}) {
+		return Rect.centerv(center, size.width, size.height);
 	}
 
 	/**
