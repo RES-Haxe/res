@@ -38,13 +38,34 @@ class Build extends Command {
 		if (args['config'] == null) {
 			final listFiles = FileSystem.readDirectory('.').filter(f -> f.toLowerCase().endsWith('.hxml'));
 
+			listFiles.sort((a, b) -> a < b ? -1 : 1);
+
 			if (listFiles.length == 0)
 				return error('Config name is not specified and no hxml files found in the directory');
 
 			if (listFiles.length == 1)
 				hxmlFile = listFiles[0];
-			else
-				return error('More than one hxml file found. Please provide one of those:\n${listFiles.map(s -> '- ${s.substr(0, -5)}').join('\n')}');
+			else {
+				println('Ambiguous configuration file:');
+				for (file in listFiles) {
+					println(' - ${file}');
+				}
+
+				var hlFound = false;
+				for (file in listFiles) {
+					if (Hxml.parseFile(file).getSwitch('hl').length > 0) {
+						println('Picking the first configuration file with HL target: $file');
+						hlFound = true;
+						hxmlFile = file;
+						break;
+					}
+				}
+
+				if (!hlFound) {
+					println('Picking the first file in list: ${listFiles[0]}');
+					hxmlFile = listFiles[0];
+				}
+			}
 		} else
 			hxmlFile = '${args['config']}.hxml';
 
