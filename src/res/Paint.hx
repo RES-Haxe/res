@@ -258,16 +258,20 @@ class Paint {
 		return recti(surface, surface.round(x), surface.round(y), surface.round(w), surface.round(h), strokeIndex, fillIndex);
 	}
 
-	public static inline function rectv(surface:Bitmap, v:Vec, w:Float, h:Float, strokeIndex:Int, ?fillIndex:Int) {
+	public static inline function rect_v(surface:Bitmap, v:Vec, w:Float, h:Float, strokeIndex:Int, ?fillIndex:Int) {
 		return rect(surface, v.x, v.y, w, h, strokeIndex, fillIndex);
 	}
 
-	public static inline function crect(surface:Bitmap, x:Float, y:Float, w:Float, h:Float, strokeIndex:Int, ?fillIndex:Int) {
+	public static inline function rect_c(surface:Bitmap, x:Float, y:Float, w:Float, h:Float, strokeIndex:Int, ?fillIndex:Int) {
 		return rect(surface, x - w / 2, y - h / 2, w, h, strokeIndex, fillIndex);
 	}
 
-	public static inline function crectv(surface:Bitmap, v:Vec, w:Float, h:Float, strokeIndex:Int, ?fillIndex:Int) {
+	public static inline function rect_cv(surface:Bitmap, v:Vec, w:Float, h:Float, strokeIndex:Int, ?fillIndex:Int) {
 		return rect(surface, v.x - w / 2, v.y - h / 2, w, h, strokeIndex, fillIndex);
+	}
+
+	public static inline function rect_r(surface:Bitmap, rect:Rect, strokeIndex:Int, ?fillIndex:Int) {
+		return Paint.rect(surface, rect.x, rect.y, rect.width, rect.height, strokeIndex, fillIndex);
 	}
 
 	/**

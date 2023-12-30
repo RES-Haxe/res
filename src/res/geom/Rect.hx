@@ -40,7 +40,7 @@ class Rect {
 
 		Center point defined by a 2d vector
 	**/
-	public static inline function centerv(center:TVec, width:Float, height:Float) {
+	public static inline function center_v(center:TVec, width:Float, height:Float) {
 		return Rect.center(center.x, center.y, width, height);
 	}
 
@@ -50,8 +50,8 @@ class Rect {
 		Center point defined by a 2d vector, size defined 
 		by an object having `width` and `height` properties
 	**/
-	public static inline function centervs(center:TVec, size:{width:Float, height:Float}) {
-		return Rect.centerv(center, size.width, size.height);
+	public static inline function center_vs(center:TVec, size:{width:Float, height:Float}) {
+		return Rect.center_v(center, size.width, size.height);
 	}
 
 	/**
@@ -60,7 +60,7 @@ class Rect {
 		Center point and the size are defined by an
 		object having x, y, width and height properties
 	**/
-	public static inline function centerr(r:TRect) {
+	public static inline function center_r(r:TRect) {
 		return new Rect(r.x - r.width / 2, r.y - r.height / 2, r.width, r.height);
 	}
 
@@ -71,7 +71,7 @@ class Rect {
 	/**
 		Determines if a point is inside this rectangle
 	**/
-	public function pointInside(point:TVec):Bool {
+	public function point_inside(point:TVec):Bool {
 		return inside(x, y, width, height, point.x, point.y);
 	}
 

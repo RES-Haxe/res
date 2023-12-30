@@ -15,8 +15,14 @@ typedef SpriteAnimation = {
 }
 
 typedef DrawSpriteOptions = {
+	var ?x:Float;
+	var ?y:Float;
 	var ?width:Float;
 	var ?height:Float;
+	var ?anchorX:Int;
+	var ?anchorY:Int;
+	var ?pivotX:Float;
+	var ?pivotY:Float;
 	var ?scrollX:Float;
 	var ?scrollY:Float;
 	var ?frame:Int;
@@ -63,7 +69,7 @@ class Sprite {
 		}
 	}
 
-	public function addAnimation(name:String, from:Int, to:Int, direction:Int) {
+	public function add_animation(name:String, from:Int, to:Int, direction:Int) {
 		animations[name] = {
 			name: name,
 			from: from,
@@ -72,14 +78,17 @@ class Sprite {
 		};
 	}
 
-	public function addFrame(data:Bytes, duration:Int) {
+	public function add_frame(data:Bytes, duration:Int) {
 		if (data.length != width * height)
 			throw "Invalid frame size";
 
 		frames.push(new SpriteFrame(data, duration));
 	}
 
-	public function createEntity(?x:Float = 0, ?y:Float = 0, ?colorMap:IndexMap):Entity {
+	/**
+		Create a new entity from this Sprite
+	**/
+	public function entity(?x:Float = 0, ?y:Float = 0, ?colorMap:IndexMap):Entity {
 		var obj = new Entity(this, colorMap);
 		obj.x = x ?? this.x;
 		obj.y = y ?? this.y;
@@ -102,9 +111,9 @@ class Sprite {
 
 		@param surface
 		@param sprite
-		@param x
-		@param y
 		@param opts Draw sprite options:
+		@param opts.x Sprite `x` position
+		@param opts.y Sprite `y` position
 		@param opts.width Width of the area to draw sprite to
 		@param opts.height Height of the area to draw sprite to 
 		@param opts.scrollX X Scrolling
@@ -115,26 +124,27 @@ class Sprite {
 		@param opts.wrap
 		@param colorMap
 	 */
-	public static function spritei(surface:Bitmap, sprite:Sprite, ?x:Int = 0, ?y:Int = 0, ?opts:DrawSpriteOptions, ?colorMap:IndexMap) {
-		opts = opts == null ? {} : opts;
+	public static function sprite(surface:Bitmap, sprite:Sprite, opts:DrawSpriteOptions, ?colorMap:IndexMap) {
+		final frameIndex = opts.frame ?? 0;
 
-		final frameIndex = opts.frame == null ? 0 : opts.frame;
+		final frame:SpriteFrame = sprite.frames[frameIndex];
 
-		final frame = sprite.frames[frameIndex];
+		final width:Float = opts.width ?? sprite.width;
+		final height:Float = opts.height ?? sprite.height;
 
-		final lines:Int = opts.height == null ? sprite.height : surface.round(opts.height);
-		final cols:Int = opts.width == null ? sprite.width : surface.round(opts.width);
+		final lines:Int = surface.round(height);
+		final cols:Int = surface.round(width);
 
-		final flipX = opts.flipX == null ? false : opts.flipX;
-		final flipY = opts.flipY == null ? false : opts.flipY;
+		final flipX:Bool = opts.flipX ?? false;
+		final flipY:Bool = opts.flipY ?? false;
 
 		final _wrap = opts.wrap == null ? false : opts.wrap;
 
-		final scrollX = opts.scrollX == null ? 0 : opts.scrollX;
-		final scrollY = opts.scrollY == null ? 0 : opts.scrollY;
+		final scrollX = opts.scrollX ?? 0;
+		final scrollY = opts.scrollY ?? 0;
 
-		final fromX:Int = x;
-		final fromY:Int = y;
+		final fromX:Int = -(opts.anchorX ?? 0) + surface.round((opts.x ?? 0) - (opts.pivotX == null ? 0 : width * opts.pivotX));
+		final fromY:Int = -(opts.anchorY ?? 0) + surface.round((opts.y ?? 0) - (opts.pivotY == null ? 0 : height * opts.pivotY));
 
 		for (scanline in 0...lines) {
 			if (!((!_wrap && (scanline < 0 || scanline >= surface.height)))) {
@@ -160,7 +170,7 @@ class Sprite {
 	}
 
 	/**
-		Draw a sprite
+		Draw a sprite specifying the position by `x` and `y` coordinates
 
 		@param surface
 		@param sprite
@@ -177,8 +187,10 @@ class Sprite {
 		@param opts.wrap
 		@param colorMap
 	 */
-	public static function sprite(surface:Bitmap, sprite:Sprite, ?x:Float = 0, ?y:Float = 0, ?opts:DrawSpriteOptions, ?colorMap:IndexMap) {
-		return spritei(surface, sprite, surface.round(x), surface.round(y), opts, colorMap);
+	public static function sprite_xy(surface:Bitmap, sprite:Sprite, ?x:Float = 0, ?y:Float = 0, ?opts:DrawSpriteOptions, ?colorMap:IndexMap) {
+		opts = opts ?? {x: x, y: y};
+
+		return Sprite.sprite(surface, sprite, opts, colorMap);
 	}
 
 	/**
@@ -191,31 +203,17 @@ class Sprite {
 		@param width The width of the rectangle to draw to 
 		@param height The height of the rectangle to draw to 
 	**/
-	public static function spriteRecti(surface:Bitmap, sprite:Sprite, x:Int, y:Int, width:Int, height:Int, ?frame:Int = 0) {
+	public static function sprite_rect(surface:Bitmap, sprite:Sprite, x:Float, y:Float, width:Int, height:Int, ?frame:Int = 0) {
 		for (line in 0...height) {
 			for (col in 0...width) {
 				final sprite_x = Math.floor(lerp(0, sprite.width, param(0, width, col)));
 				final sprite_y = Math.floor(lerp(0, sprite.height, param(0, height, line)));
 				final px = sprite.get(frame, sprite_x, sprite_y);
-				surface.seti(x + col, y + line, px);
+				surface.set(x + col, y + line, px);
 			}
 		}
 
 		return surface;
-	}
-
-	/**
-		Draw a sprite into a rectangle with arbitrary width and height
-
-		@param surface Surface to draw sprite to
-		@param sprite Sprite to draw
-		@param x X of the rectangle to draw to
-		@param y Y of the rectangle to draw to
-		@param width The width of the rectangle to draw to 
-		@param height The height of the rectangle to draw to 
-	**/
-	public static function spriteRect(surface:Bitmap, sprite:Sprite, x:Float, y:Float, width:Float, height:Float, ?frame:Int = 0) {
-		return spriteRecti(surface, sprite, surface.round(x), surface.round(y), surface.round(width), surface.round(height), frame);
 	}
 
 	/**
@@ -283,8 +281,30 @@ class Sprite {
 		@param opts.wrap
 		@param colorMap
 	 */
-	public static function spritePivot(surface:Bitmap, sprite:Sprite, x:Float, y:Float, ?px:Float = 0.5, ?py:Float = 0.5, ?opts, ?colorMap) {
-		return Sprite.sprite(surface, sprite, x - sprite.width * px, y - sprite.height * py, opts, colorMap);
+	public static function sprite_pivot(surface:Bitmap, sprite:Sprite, opts:DrawSpriteOptions, ?px:Float = 0.5, ?py:Float = 0.5, ?colorMap) {
+		opts.pivotX = px;
+		opts.pivotY = py;
+		return Sprite.sprite(surface, sprite, opts, colorMap);
+	}
+
+	public static function sprite_pivot_xy(surface:Bitmap, sprite:Sprite, x:Float, y:Float, ?opts:DrawSpriteOptions, ?px:Float = 0.5, ?py:Float = 0.5,
+			?colorMap) {
+		opts = opts ?? {x: x, y: y};
+		opts.x = x;
+		opts.y = y;
+		opts.pivotX = px;
+		opts.pivotY = py;
+		return Sprite.sprite(surface, sprite, opts, colorMap);
+	}
+
+	public static function sprite_pivot_v(surface:Bitmap, sprite:Sprite, v:{x:Float, y:Float}, ?opts:DrawSpriteOptions, ?px:Float = 0.5, ?py:Float = 0.5,
+			?colorMap) {
+		opts = opts ?? {x: v.x, y: v.y};
+		opts.x = v.x;
+		opts.y = v.y;
+		opts.pivotX = px;
+		opts.pivotY = py;
+		return Sprite.sprite(surface, sprite, opts, colorMap);
 	}
 
 	/**
@@ -297,7 +317,16 @@ class Sprite {
 		@param ax X position inside the sprite to use as it's origin
 		@param ay Y position inside the sprite to use as it's origin
 	 */
-	public static function spriteAnchor(surface:Bitmap, sprite:Sprite, x:Float, y:Float, ax:Float = 0, ay:Float = 0, ?opts, ?colorMap) {
-		return Sprite.sprite(surface, sprite, x - ax, y - ay, opts, colorMap);
+	public static function sprite_anchor(surface:Bitmap, sprite:Sprite, opts:DrawSpriteOptions, ?ax:Int = 0, ?ay:Int = 0, ?colorMap) {
+		opts.anchorX = ax;
+		opts.anchorY = ay;
+		return Sprite.sprite(surface, sprite, opts, colorMap);
+	}
+
+	public static function sprite_anchor_xy(surface:Bitmap, sprite:Sprite, x:Float, y:Float, ?opts:DrawSpriteOptions, ?ax:Int = 0, ?ay:Int = 0, ?colorMap) {
+		opts = opts ?? {x: x, y: y};
+		opts.anchorX = ax;
+		opts.anchorY = ay;
+		return Sprite.sprite(surface, sprite, opts, colorMap);
 	}
 }

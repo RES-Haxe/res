@@ -51,5 +51,5 @@ class Text {
 	}
 
 	public function render(surface:Bitmap)
-		font.drawPivot(surface, text, x.floor(), y.floor(), hAlign, vAlign, colorMap);
+		font.draw_pivot(surface, text, x.floor(), y.floor(), hAlign, vAlign, colorMap);
 }

@@ -211,6 +211,8 @@ class Entity {
 		y = y ?? ety.y;
 
 		final opts:DrawSpriteOptions = {
+			x: x,
+			y: y,
 			width: ety.width,
 			height: ety.height,
 			frame: ety.currentFrameIndex,
@@ -223,11 +225,11 @@ class Entity {
 
 		switch (ety.offset) {
 			case NONE:
-				Sprite.sprite(surface, ety.sprite, x, y, opts, ety.colorMap);
+				Sprite.sprite(surface, ety.sprite, opts, ety.colorMap);
 			case PIVOT(px, py):
-				Sprite.spritePivot(surface, ety.sprite, x, y, px, py, opts, ety.colorMap);
+				Sprite.sprite_pivot(surface, ety.sprite, opts, px, py, ety.colorMap);
 			case ANCHOR(ax, ay):
-				Sprite.spriteAnchor(surface, ety.sprite, x, y, ax, ay, opts, ety.colorMap);
+				Sprite.sprite_anchor(surface, ety.sprite, opts, ax, ay, ety.colorMap);
 		}
 	}
 
