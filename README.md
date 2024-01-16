@@ -5,10 +5,6 @@
   - [Installation](#installation)
   - [General concepts and architecture](#general-concepts-and-architecture)
     - [Initialization code example](#initialization-code-example)
-    - [BIOS](#bios)
-    - [ROM](#rom)
-    - [FrameBuffer](#framebuffer)
-    - [State](#state)
 
 ## Overview
 
@@ -59,13 +55,13 @@ RES is written in Haxe and extremely portable.
 4. To initialize a project use:
 
    ```
-   res init MyGame 
+   res init MyGame
    ```
 
    This command will create a new directory called "MyGame" and initialize a project within it.
 
 5. To run the project, use the following command in the project directory:
-   
+
    ```
    res run
    ```
@@ -74,12 +70,11 @@ RES is written in Haxe and extremely portable.
 
    ![](readme/res-run.png)
 
-
 ## General concepts and architecture
 
 Think of RES as a virtual gaming console. Your program runs inside this console and has access to its resources, such as the frame buffer, read-only memory with game data, audio output device, and user input devices.
 
-### Initialization code example 
+### Initialization code example
 
 Let's have a look at the most basic code that initializes an instance of RES:
 
@@ -128,7 +123,6 @@ function main() {
 
    More details in the [ROM](#rom) section of this documentation.
 
-
 4. `main`. This parameter determines the entry point to your game. It is a function that takes an instance of RES as an argument and returns an object with an `update` method, which accepts a single `Float` argument representing the time delta (in seconds), and a `render` method that takes a `FrameBuffer` as an argument. Whenever an instance of RES is booted and ready, this function will be called, passing the instance of RES as an argument.
 
    The returned object can be of any type as long as it has the `update` and `render` methods with the required signatures. It can be an instance of a class or an object with a different set of members. Additionally, you can utilize an instance of the `State` class provided by RES, which offers various utilities for managing the game state. For more details on this, please refer to the [State](#state) section of this documentation.
@@ -136,19 +130,3 @@ function main() {
 5. The `update` method will be called whenever there is a need to update the game state. The frequency of this update is determined by the BIOS.
 
 6. The `render` method will be called each time the game needs to be rendered onto a [FrameBuffer](#framebuffer).
-
-### BIOS
-
-TBD
-
-### ROM
-
-TBD
-
-### FrameBuffer
-
-TBD
-
-### State
-
-TBD
