@@ -49,7 +49,8 @@ class Dist extends Command {
 			createDirectory(hlDistPath);
 
 			println('Copy runtime files...');
-			copyTree(Path.join([resCli.runtimeDir, 'hashlink']), hlDistPath, (path:String) -> path != 'include' && !path.toLowerCase().endsWith('.lib'));
+			copyTree(Path.join([resCli.baseDir, 'bin', 'hl', Sys.systemName().toLowerCase()]), hlDistPath,
+				(path:String) -> path != 'include' && !path.toLowerCase().endsWith('.lib'));
 			wipeDirectory(Path.join([hlDistPath, 'include']));
 
 			final exeName = appExt(Path.join([hlDistPath, 'game']));

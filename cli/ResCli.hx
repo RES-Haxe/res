@@ -12,7 +12,6 @@ import cli.commands.Run;
 import cli.commands.Setup;
 import cli.commands.Tools;
 import haxe.io.Path;
-import sys.FileSystem;
 
 final CLI_CONFIG_FILENAME:String = '.res-cli.json';
 
@@ -23,21 +22,19 @@ class ResCli {
 	public final tools:cli.Tools;
 	public final baseDir:String;
 	public final resHomeDir:String;
-	public final runtimeDir:String;
 
 	public function new(args:Array<String>, baseDir:String) {
 		resHomeDir = Path.join([getHomeDir(), '.res']);
-		runtimeDir = Path.join([getHomeDir(), '.res', 'runtime']);
-
-		if (FileSystem.exists(runtimeDir)) {
-			final PATH = Sys.getEnv('PATH');
-			final addPath = [PATH];
-			for (tool in FileSystem.readDirectory(runtimeDir))
-				addPath.push(Path.join([runtimeDir, tool]));
-			Sys.putEnv('PATH', addPath.join(Sys.systemName().toLowerCase() == 'windows' ? ';' : ':'));
-		}
 
 		this.baseDir = baseDir;
+
+		final osname = Sys.systemName().toLowerCase();
+		final PATH = Sys.getEnv('PATH');
+		final addPath = [PATH];
+
+		addPath.push(Path.join([baseDir, 'bin', 'hl', osname]));
+
+		Sys.putEnv('PATH', addPath.join(osname == 'windows' ? ';' : ':'));
 
 		tools = new cli.Tools(this);
 
@@ -62,6 +59,7 @@ class ResCli {
 		cmdArgs = getArguments(args, command.expectedArgs(this));
 	}
 
-	public function run()
+	public function run() {
 		command.run(cmdArgs);
+	}
 }
