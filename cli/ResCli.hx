@@ -7,7 +7,7 @@ import cli.commands.Bootstrap;
 import cli.commands.Build;
 import cli.commands.Dist;
 import cli.commands.Help;
-import cli.commands.Init;
+import cli.commands.New;
 import cli.commands.Run;
 import cli.commands.Setup;
 import cli.commands.Tools;
@@ -43,7 +43,7 @@ class ResCli {
 			'build' => new Build(this),
 			'dist' => new Dist(this),
 			'help' => new Help(this),
-			'init' => new Init(this),
+			'new' => new New(this),
 			'run' => new Run(this),
 			'setup' => new Setup(this),
 			'tools' => new Tools(this),

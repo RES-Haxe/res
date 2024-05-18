@@ -55,7 +55,7 @@ RES is written in Haxe and extremely portable.
 4. To initialize a project use:
 
    ```
-   res init MyGame
+   res new MyGame
    ```
 
    This command will create a new directory called "MyGame" and initialize a project within it.
