@@ -52,6 +52,8 @@ class Converter extends res.rom.converters.Converter {
 			final bo = new BytesOutput();
 			bo.writeByte(tilesetName.length);
 			bo.writeString(tilesetName);
+			bo.writeInt32(celChunk.xPosition);
+			bo.writeInt32(celChunk.yPosition);
 			bo.writeInt32(celChunk.width);
 			bo.writeInt32(celChunk.height);
 

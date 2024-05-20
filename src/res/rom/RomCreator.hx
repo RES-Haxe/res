@@ -129,7 +129,7 @@ class RomCreator {
 
 		if (firmware) {
 			final firmwarePath = getFirmwarePath();
-			sourceDirs.push(firmwarePath);
+			sourceDirs.unshift(firmwarePath);
 		}
 
 		var palette:Palette;

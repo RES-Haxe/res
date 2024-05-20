@@ -15,9 +15,14 @@ class TilemapChunk extends RomChunk {
 
 		final tilesetName = bytesInput.readString(bytesInput.readByte());
 
+		final x:Int = bytesInput.readInt32();
+		final y:Int = bytesInput.readInt32();
 		final cols:Int = bytesInput.readInt32();
 		final lines:Int = bytesInput.readInt32();
 		final tilemap = new Tilemap(tilesets[tilesetName], cols, lines);
+
+		tilemap.x = x;
+		tilemap.y = y;
 
 		for (line in 0...lines) {
 			for (col in 0...cols) {

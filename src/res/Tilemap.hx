@@ -260,7 +260,7 @@ class Tilemap {
 		@param more.scrollX
 		@param more.scrollY
 	**/
-	public static function tilemap(surface:Bitmap, tilemap:Tilemap, ?x:Int = 0, ?y:Int = 0, ?width:Int, ?height:Int, ?colorMap:IndexMap, ?more:TilemapOptions) {
+	public static function tilemap(surface:Bitmap, tilemap:Tilemap, ?x:Int, ?y:Int, ?width:Int, ?height:Int, ?colorMap:IndexMap, ?more:TilemapOptions) {
 		final tileset = tilemap.tileset;
 
 		if (tileset == null)
@@ -268,6 +268,9 @@ class Tilemap {
 
 		if (more == null)
 			more = {};
+
+		x = x ?? tilemap.x;
+		y = y ?? tilemap.y;
 
 		// The following will be drasticly improved after migrating to Haxe 4.3+
 		final rasterInrpt = more.rasterInterrupt == null ? tilemap.rasterInrpt : more.rasterInterrupt;
