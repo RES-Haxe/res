@@ -203,9 +203,9 @@ class Sprite {
 		@param width The width of the rectangle to draw to 
 		@param height The height of the rectangle to draw to 
 	**/
-	public static function sprite_rect(surface:Bitmap, sprite:Sprite, x:Float, y:Float, width:Int, height:Int, ?frame:Int = 0) {
-		for (line in 0...height) {
-			for (col in 0...width) {
+	public static function sprite_rect(surface:Bitmap, sprite:Sprite, x:Float, y:Float, width:Float, height:Float, ?frame:Int = 0) {
+		for (line in 0...Math.floor(height)) {
+			for (col in 0...Math.floor(width)) {
 				final sprite_x = Math.floor(lerp(0, sprite.width, param(0, width, col)));
 				final sprite_y = Math.floor(lerp(0, sprite.height, param(0, height, line)));
 				final px = sprite.get(frame, sprite_x, sprite_y);

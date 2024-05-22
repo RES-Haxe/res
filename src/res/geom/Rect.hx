@@ -15,6 +15,18 @@ class Rect {
 	public var width:Float;
 	public var height:Float;
 
+	public var right(get, never):Float;
+
+	inline function get_right() {
+		return x + width;
+	}
+
+	public var bottom(get, never):Float;
+
+	inline function get_bottom() {
+		return y + height;
+	}
+
 	public inline function new(x:Float, y:Float, width:Float, height:Float) {
 		set(x, y, width, height);
 	}

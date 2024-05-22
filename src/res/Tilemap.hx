@@ -260,11 +260,11 @@ class Tilemap {
 		@param more.scrollX
 		@param more.scrollY
 	**/
-	public static function tilemap(surface:Bitmap, tilemap:Tilemap, ?x:Int, ?y:Int, ?width:Int, ?height:Int, ?colorMap:IndexMap, ?more:TilemapOptions) {
+	public static function tilemap(surface:Bitmap, tilemap:Tilemap, ?x:Int, ?y:Int, ?width:Int, ?height:Int, ?colorMap:IndexMap, ?more:TilemapOptions):Bitmap {
 		final tileset = tilemap.tileset;
 
 		if (tileset == null)
-			return;
+			return surface;
 
 		if (more == null)
 			more = {};
@@ -339,5 +339,7 @@ class Tilemap {
 				}
 			}
 		}
+
+		return surface;
 	}
 }
