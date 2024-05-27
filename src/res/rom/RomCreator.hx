@@ -47,6 +47,32 @@ class RomCreator {
 	}
 
 	/**
+		Find a supported Palette file in the given directory and return
+		a `PaletteChunk` after parsing it or `null` otherwise.
+
+		@param src Path to the directory containing Palette file
+	**/
+	static function createPalette(src:String):Null<PaletteChunk> {
+		for (ext => converter in CONVERTERS['palette']) {
+			final fileNameParts = [Path.join([src, 'palette'])];
+
+			if (ext != '')
+				fileNameParts.push(ext);
+
+			final paletteFile = fileNameParts.join('.');
+
+			if (exists(paletteFile)) {
+				Sys.println('Palette file: $paletteFile');
+				var paletteConverter:PaletteConverter = cast converter;
+				paletteConverter.process(paletteFile, null);
+				return cast paletteConverter.getChunks()[0];
+			}
+		}
+
+		return null;
+	}
+
+	/**
 		Convert a directory to an array of chunks
 
 		@param  src
@@ -54,36 +80,11 @@ class RomCreator {
 		@param  palette
 				Palette to use
 	 */
-	static function createChunks(src:String, ?palette:Palette):Array<RomChunk> {
+	static function createChunks(src:String, palette:Palette):Array<RomChunk> {
 		final result = [];
 
 		if (!exists(src))
 			return result;
-
-		if (palette == null) {
-			var paletteConverter:PaletteConverter = null;
-
-			for (ext => converter in CONVERTERS['palette']) {
-				final fileNameParts = [Path.join([src, 'palette'])];
-
-				if (ext != '')
-					fileNameParts.push(ext);
-
-				final paletteFile = fileNameParts.join('.');
-
-				if (exists(paletteFile)) {
-					paletteConverter = cast converter;
-					paletteConverter.process(paletteFile, null);
-
-					palette = new Palette(paletteConverter.colors);
-
-					for (chunk in paletteConverter.getChunks())
-						result.push(chunk);
-
-					break;
-				}
-			}
-		}
 
 		for (resourceType => converters in CONVERTERS) {
 			final path = Path.join([src, resourceType]);
@@ -132,15 +133,29 @@ class RomCreator {
 			sourceDirs.unshift(firmwarePath);
 		}
 
-		var palette:Palette;
+		var paletteChunk:Null<PaletteChunk> = null;
+
+		var i = sourceDirs.length - 1;
+
+		while (i >= 0) {
+			paletteChunk = createPalette(sourceDirs[i]);
+			if (paletteChunk != null)
+				break;
+			i--;
+		}
+
+		if (paletteChunk == null) {
+			throw "Missing Palette in the ROM data";
+		}
+
+		paletteChunk.write(byteOutput);
+
+		final palette = paletteChunk.getPalette();
 
 		for (dir in sourceDirs) {
 			final chunks = createChunks(dir, palette);
 
 			for (chunk in chunks) {
-				if (palette == null && chunk.chunkType == PALETTE)
-					palette = cast(chunk, PaletteChunk).getPalette();
-
 				chunk.write(byteOutput);
 			}
 		}
