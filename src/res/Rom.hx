@@ -10,7 +10,7 @@ import res.audio.AudioData;
 typedef RomContent = {
 	?audio:Map<String, AudioData>,
 	?tilesets:Map<String, Tileset>,
-	?tilemaps:Map<String, Tilemap>,
+	?tilemaps:Map<String, Tilemap<Any>>,
 	?sprites:Map<String, Sprite>,
 	?fonts:Map<String, Font>,
 	?data:Map<String, Bytes>
@@ -25,7 +25,7 @@ class Rom {
 	public final data:Map<String, Bytes>;
 	public final fonts:Map<String, Font>;
 	public final sprites:Map<String, Sprite>;
-	public final tilemaps:Map<String, Tilemap>;
+	public final tilemaps:Map<String, Tilemap<Any>>;
 	public final tilesets:Map<String, Tileset>;
 
 	public function new(palette:Palette, content:RomContent) {

@@ -19,13 +19,13 @@ enum InterruptResult {
 
 final noneInterruptFunc:InterruptFunc = (_, _) -> NONE;
 
-typedef TilePlace = {
+typedef TilePlace<D> = {
 	index:Int,
 	?flipX:Bool,
 	?flipY:Bool,
 	?rot90cw:Bool,
 	?colorMap:IndexMap,
-	?data:Dynamic
+	?data:D
 }
 
 typedef TilemapOptions = {
@@ -36,8 +36,8 @@ typedef TilemapOptions = {
 	?scrollY:Float,
 };
 
-class Tilemap {
-	var map:Array<Array<TilePlace>> = [[]];
+class Tilemap<D> {
+	var map:Array<Array<TilePlace<D>>> = [[]];
 
 	public var tileset:Tileset;
 
@@ -90,7 +90,7 @@ class Tilemap {
 
 		Useful for creating tilemap instances from tilemaps in ROM
 	 */
-	public static function create(src:Tilemap, ?tileset:Tileset) {
+	public static function create<D>(src:Tilemap<D>, ?tileset:Tileset) {
 		final tilemap = src.clone();
 		tilemap.tileset = tileset != null ? tileset : tilemap.tileset;
 		return tilemap;
@@ -117,8 +117,8 @@ class Tilemap {
 		}
 	}
 
-	public function clone():Tilemap {
-		var cloned = new Tilemap(tileset, hTiles, vTiles, colorMap);
+	public function clone():Tilemap<D> {
+		var cloned = new Tilemap<D>(tileset, hTiles, vTiles, colorMap);
 		for (line in 0...vTiles) {
 			for (col in 0...hTiles) {
 				final t = get(col, line);
@@ -151,7 +151,7 @@ class Tilemap {
 		return (tileLine >= 0 && tileLine < vTiles && tileCol >= 0 && tileCol < hTiles);
 	}
 
-	public function get(tileCol:Int, tileLine:Int):Null<TilePlace> {
+	public function get(tileCol:Int, tileLine:Int):Null<TilePlace<D>> {
 		if (inBounds(tileCol, tileLine))
 			return map[tileLine][tileCol];
 		else
@@ -162,7 +162,7 @@ class Tilemap {
 		map[tileLine][tileCol] = null;
 	}
 
-	public function place(x:Int, y:Int, place:TilePlace) {
+	public function place(x:Int, y:Int, place:TilePlace<D>) {
 		if (inBounds(x, y)) {
 			map[y][x] = place;
 		} else
@@ -184,7 +184,7 @@ class Tilemap {
 		return NONE;
 
 	public function set(tileCol:Int, tileLine:Int, tileIndex:Int, flipX:Bool = false, flipY:Bool = false, rot90cw:Bool = false, ?colorMap:IndexMap,
-			?data:Dynamic) {
+			?data:D) {
 		place(tileCol, tileLine, {
 			index: tileIndex,
 			flipX: flipX,
@@ -260,7 +260,7 @@ class Tilemap {
 		@param more.scrollX
 		@param more.scrollY
 	**/
-	public static function tilemap(surface:Bitmap, tilemap:Tilemap, ?x:Int, ?y:Int, ?width:Int, ?height:Int, ?colorMap:IndexMap, ?more:TilemapOptions):Bitmap {
+	public static function tilemap<D>(surface:Bitmap, tilemap:Tilemap<D>, ?x:Int, ?y:Int, ?width:Int, ?height:Int, ?colorMap:IndexMap, ?more:TilemapOptions):Bitmap {
 		final tileset = tilemap.tileset;
 
 		if (tileset == null)

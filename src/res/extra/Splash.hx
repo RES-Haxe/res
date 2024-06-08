@@ -22,7 +22,7 @@ class Splash extends State {
 	var phase:Float = 0;
 	var timeline = new Timeline();
 
-	var bgMap:Tilemap;
+	var bgMap:Tilemap<Any>;
 
 	public function new(res, stateFn:Void->State) {
 		super(res);
@@ -49,7 +49,7 @@ class Splash extends State {
 
 		final tileset = new Tileset(BAR_SIZE, BAR_SIZE, tilesBytes.getBytes());
 
-		bgMap = new Tilemap(tileset, res.rom.palette.numColors, 1, res.width, res.height);
+		bgMap = new Tilemap<Any>(tileset, res.rom.palette.numColors, 1, res.width, res.height);
 
 		bgMap.rasterInrpt = (screenLine, _) -> {
 			bgMap.scrollX = Math.sin(phase + Math.PI * (screenLine / res.height * (res.height / 64))) * 16;

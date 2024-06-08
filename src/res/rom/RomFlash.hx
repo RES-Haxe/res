@@ -36,7 +36,7 @@ class RomFlash {
 		final audio:Map<String, AudioData> = add != null ? et(add.audio) : [];
 		final sprites:Map<String, Sprite> = add != null ? et(add.sprites) : [];
 		final tilesets:Map<String, Tileset> = add != null ? et(add.tilesets) : [];
-		final tilemaps:Map<String, Tilemap> = add != null ? et(add.tilemaps) : [];
+		final tilemaps:Map<String, Tilemap<Any>> = add != null ? et(add.tilemaps) : [];
 		final fonts:Map<String, Font> = add != null ? et(add.fonts) : [];
 		final data:Map<String, Bytes> = add != null ? et(add.data) : [];
 

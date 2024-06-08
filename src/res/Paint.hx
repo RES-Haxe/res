@@ -40,12 +40,12 @@ class Paint {
 		@param strokeIndex Stroke color index
 		@param fillIndex Fill color index
 	 */
-	public static inline function circle(surface:Bitmap, cx:Float, cy:Float, r:Float, strokeIndex:Int, ?fillIndex:Int) {
-		return ellipse(surface, cx, cy, r, r, strokeIndex, fillIndex);
+	public static inline function circle(surface:Bitmap, cx:Float, cy:Float, r:Float, strokeIndex:Int, ?fillIndex:Int, ?transparency:Bool = true) {
+		return ellipse(surface, cx, cy, r, r, strokeIndex, fillIndex, transparency);
 	}
 
-	public static inline function circlev(surface:Bitmap, v:Vec, r:Float, strokeIndex:Int, ?fillIndex:Int) {
-		return circle(surface, v.x, v.y, r, strokeIndex, fillIndex);
+	public static inline function circlev(surface:Bitmap, v:Vec, r:Float, strokeIndex:Int, ?fillIndex:Int, ?transparency:Bool = true) {
+		return circle(surface, v.x, v.y, r, strokeIndex, fillIndex, transparency);
 	}
 
 	/**
@@ -61,7 +61,7 @@ class Paint {
 
 		@see https://www.geeksforgeeks.org/midpoint-ellipse-drawing-algorithm/
 	 */
-	public static function ellipsei(surface:Bitmap, cx:Int, cy:Int, rx:Int, ry:Int, strokeIndex:Int, ?fillIndex:Int) {
+	public static function ellipsei(surface:Bitmap, cx:Int, cy:Int, rx:Int, ry:Int, strokeIndex:Int, ?fillIndex:Int, ?transparency:Bool = true) {
 		if (cx == 0 || cy == 0)
 			return surface;
 
@@ -89,14 +89,14 @@ class Paint {
 				for (px in fx...tx + 1) {
 					final index = px == fx || px == tx ? strokeIndex : fillIndex;
 
-					surface.set(px, y + cy, index, false);
-					surface.set(px, -y + cy, index, false);
+					surface.set(px, y + cy, index, transparency);
+					surface.set(px, -y + cy, index, transparency);
 				}
 			} else {
-				surface.set(x + cx, y + cy, strokeIndex, false);
-				surface.set(-x + cx, y + cy, strokeIndex, false);
-				surface.set(x + cx, -y + cy, strokeIndex, false);
-				surface.set(-x + cx, -y + cy, strokeIndex, false);
+				surface.set(x + cx, y + cy, strokeIndex, transparency);
+				surface.set(-x + cx, y + cy, strokeIndex, transparency);
+				surface.set(x + cx, -y + cy, strokeIndex, transparency);
+				surface.set(-x + cx, -y + cy, strokeIndex, transparency);
 			}
 		}
 
@@ -137,8 +137,8 @@ class Paint {
 		return surface;
 	}
 
-	public static inline function ellipse(surface:Bitmap, cx:Float, cy:Float, rx:Float, ry:Float, strokeIndex:Int, ?fillIndex:Int) {
-		return ellipsei(surface, surface.round(cx), surface.round(cy), surface.round(rx), surface.round(ry), strokeIndex, fillIndex);
+	public static inline function ellipse(surface:Bitmap, cx:Float, cy:Float, rx:Float, ry:Float, strokeIndex:Int, ?fillIndex:Int, ?transparency:Bool = true) {
+		return ellipsei(surface, surface.round(cx), surface.round(cy), surface.round(rx), surface.round(ry), strokeIndex, fillIndex, transparency);
 	}
 
 	/**
@@ -216,7 +216,7 @@ class Paint {
 		@param strokeIndex Stroke color index 
 		@param fillIndex Fill color index
 	 */
-	public static function recti(surface:Bitmap, x:Int, y:Int, w:Int, h:Int, strokeIndex:Int, ?fillIndex:Int) {
+	public static function recti(surface:Bitmap, x:Int, y:Int, w:Int, h:Int, strokeIndex:Int, ?fillIndex:Int, ?transparency:Bool = true) {
 		if (!Rect.intersect(0, 0, surface.width, surface.height, x, y, w, h))
 			return surface;
 
@@ -233,9 +233,9 @@ class Paint {
 			for (line in fy...ty) {
 				for (col in fx...tx) {
 					if (line == fy || line == ty - 1 || col == fx || col == tx - 1)
-						surface.set(col, line, strokeIndex, false);
+						surface.set(col, line, strokeIndex, transparency);
 					else if (fillIndex != null)
-						surface.set(col, line, fillIndex, false);
+						surface.set(col, line, fillIndex, transparency);
 				}
 			}
 		}
@@ -254,24 +254,24 @@ class Paint {
 		@param strokeIndex Stroke color index 
 		@param fillIndex Fill color index
 	 */
-	public static inline function rect(surface:Bitmap, x:Float, y:Float, w:Float, h:Float, strokeIndex:Int, ?fillIndex:Int) {
-		return recti(surface, surface.round(x), surface.round(y), surface.round(w), surface.round(h), strokeIndex, fillIndex);
+	public static inline function rect(surface:Bitmap, x:Float, y:Float, w:Float, h:Float, strokeIndex:Int, ?fillIndex:Int, ?transparency:Bool = true) {
+		return recti(surface, surface.round(x), surface.round(y), surface.round(w), surface.round(h), strokeIndex, fillIndex, transparency);
 	}
 
-	public static inline function rect_v(surface:Bitmap, v:Vec, w:Float, h:Float, strokeIndex:Int, ?fillIndex:Int) {
-		return rect(surface, v.x, v.y, w, h, strokeIndex, fillIndex);
+	public static inline function rect_v(surface:Bitmap, v:Vec, w:Float, h:Float, strokeIndex:Int, ?fillIndex:Int, ?transparency:Bool = true) {
+		return rect(surface, v.x, v.y, w, h, strokeIndex, fillIndex, transparency);
 	}
 
-	public static inline function rect_c(surface:Bitmap, x:Float, y:Float, w:Float, h:Float, strokeIndex:Int, ?fillIndex:Int) {
-		return rect(surface, x - w / 2, y - h / 2, w, h, strokeIndex, fillIndex);
+	public static inline function rect_c(surface:Bitmap, x:Float, y:Float, w:Float, h:Float, strokeIndex:Int, ?fillIndex:Int, ?transparency:Bool = true) {
+		return rect(surface, x - w / 2, y - h / 2, w, h, strokeIndex, fillIndex, transparency);
 	}
 
-	public static inline function rect_cv(surface:Bitmap, v:Vec, w:Float, h:Float, strokeIndex:Int, ?fillIndex:Int) {
-		return rect(surface, v.x - w / 2, v.y - h / 2, w, h, strokeIndex, fillIndex);
+	public static inline function rect_cv(surface:Bitmap, v:Vec, w:Float, h:Float, strokeIndex:Int, ?fillIndex:Int, ?transparency:Bool = true) {
+		return rect(surface, v.x - w / 2, v.y - h / 2, w, h, strokeIndex, fillIndex, transparency);
 	}
 
-	public static inline function rect_r(surface:Bitmap, rect:Rect, strokeIndex:Int, ?fillIndex:Int) {
-		return Paint.rect(surface, rect.x, rect.y, rect.width, rect.height, strokeIndex, fillIndex);
+	public static inline function rect_r(surface:Bitmap, rect:Rect, strokeIndex:Int, ?fillIndex:Int, ?transparency:Bool = true) {
+		return Paint.rect(surface, rect.x, rect.y, rect.width, rect.height, strokeIndex, fillIndex, transparency);
 	}
 
 	/**

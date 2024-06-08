@@ -84,7 +84,7 @@ class Font {
 	**/
 	public function draw_pivot(surface:Bitmap, text:String, x:Float = 0, y:Float = 0, px:Float = 0.5, py:Float = 0.5, ?colorMap:IndexMap) {
 		final m = measure(text); // TODO: Doing this on each frame... not good. Should this only be allowed on Text class?
-		draw(surface, text, x - m.width * px, y - m.height * py, colorMap);
+		return draw(surface, text, x - m.width * px, y - m.height * py, colorMap);
 	}
 
 	public static inline function text(surface:Bitmap, font:Font, text:String, x:Float = 0, y:Float = 0, ?colorMap:IndexMap) {

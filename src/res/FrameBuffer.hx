@@ -25,7 +25,7 @@ class FrameBuffer extends Bitmap {
 	 */
 	override public function seti(x:Int, y:Int, index:Int, transparency:Bool = true) {
 		if (transparency && index == 0)
-			return;
+			return this;
 
 		x += scrollX;
 		y += scrollY;
@@ -37,13 +37,15 @@ class FrameBuffer extends Bitmap {
 			y = wrap(y, height);
 
 		if (!isInBounds(x, y))
-			return;
+			return this;
 
 		if (mask != null && x < mask.width && y < mask.height) {
 			if (mask.get(x, y) == 0)
-				return;
+				return this;
 		}
 
 		super.seti(x, y, index, transparency);
+
+		return this;
 	}
 }

@@ -68,12 +68,14 @@ class Bitmap {
 	 */
 	public function seti(x:Int, y:Int, index:Int, transparency:Bool = true) {
 		if (!isInBounds(x, y))
-			return;
+			return this;
 
 		if (transparency && index == 0)
-			return;
+			return this;
 
 		data.set(y * width + x, index);
+
+		return this;
 	}
 
 	/**
@@ -85,7 +87,7 @@ class Bitmap {
 		@param transparency whether transparency index should be skipped or set
 	 */
 	inline public function set(x:Float, y:Float, index:Int, transparency:Bool = true) {
-		seti(round(x), round(y), index, transparency);
+		return seti(round(x), round(y), index, transparency);
 	}
 
 	/**

@@ -14,7 +14,7 @@ class Keyboard extends Emitter<KeyboardEvent> {
 	/** Store Button -> Key mapping by controller index e.g. `keyMap[controllerIndex][button] = key` **/
 	private final keyMap:Map<Int, Map<ControllerButton, Key>> = [];
 
-	/** Store Key -> [controllerIndex, button] associatino here **/
+	/** Store Key -> [controllerIndex, button] association here **/
 	private final ctrlMap:Map<Key, {index:Int, btn:ControllerButton}> = [];
 
 	@:allow(res)
@@ -85,6 +85,8 @@ class Keyboard extends Emitter<KeyboardEvent> {
 
 		keyMap[ctrlIndex] = keyMap[ctrlIndex] ?? [];
 		keyMap[ctrlIndex][btn] = key;
+
+		return this;
 	}
 
 	/**
@@ -129,5 +131,7 @@ class Keyboard extends Emitter<KeyboardEvent> {
 		map(NUMPAD_5, Y, 1);
 		map(RSHIFT, SELECT, 1);
 		map(ENTER, START, 1);
+
+		return this;
 	}
 }

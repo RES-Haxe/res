@@ -10,7 +10,7 @@ class TilemapChunk extends RomChunk {
 		super(TILEMAP, name, data);
 	}
 
-	public function getTilemap(tilesets:Map<String, Tileset>):Tilemap {
+	public function getTilemap<D>(tilesets:Map<String, Tileset>):Tilemap<D> {
 		final bytesInput = new BytesInput(data);
 
 		final tilesetName = bytesInput.readString(bytesInput.readByte());
@@ -19,7 +19,7 @@ class TilemapChunk extends RomChunk {
 		final y:Int = bytesInput.readInt32();
 		final cols:Int = bytesInput.readInt32();
 		final lines:Int = bytesInput.readInt32();
-		final tilemap = new Tilemap(tilesets[tilesetName], cols, lines);
+		final tilemap = new Tilemap<D>(tilesets[tilesetName], cols, lines);
 
 		tilemap.x = x;
 		tilemap.y = y;
