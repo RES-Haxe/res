@@ -67,6 +67,8 @@ class Tilemap<D> {
 	function get_pixelHeight():Int
 		return vTiles * tileset.tileHeight;
 
+  public var name:String;
+
 	/** X screen coordinate of the left-top corner of the area to draw tilemap at */
 	public var x:Int = 0;
 

@@ -166,6 +166,7 @@ class Sprite {
 				}
 			}
 		}
+
 		return surface;
 	}
 
@@ -206,8 +207,8 @@ class Sprite {
 	public static function sprite_rect(surface:Bitmap, sprite:Sprite, x:Float, y:Float, width:Float, height:Float, ?frame:Int = 0) {
 		for (line in 0...Math.floor(height)) {
 			for (col in 0...Math.floor(width)) {
-				final sprite_x = Math.floor(lerp(0, sprite.width, param(0, width, col)));
-				final sprite_y = Math.floor(lerp(0, sprite.height, param(0, height, line)));
+				final sprite_x = surface.round(lerp(0, sprite.width, param(0, width, col)));
+				final sprite_y = surface.round(lerp(0, sprite.height, param(0, height, line)));
 				final px = sprite.get(frame, sprite_x, sprite_y);
 				surface.set(x + col, y + line, px);
 			}
@@ -230,7 +231,7 @@ class Sprite {
 		@param frame Frame number
 		@param colorMap Color map
 	**/
-	public static function spriteRegion(surface:Bitmap, sprite:Sprite, fx:Int, fy:Int, width:Int, height:Int, atx:Int, aty:Int, ?frame:Int = 0,
+	public static function sprite_region(surface:Bitmap, sprite:Sprite, fx:Int, fy:Int, width:Int, height:Int, atx:Int, aty:Int, ?frame:Int = 0,
 			?colorMap:IndexMap) {
 		final frameData = sprite.frames[frame].data;
 

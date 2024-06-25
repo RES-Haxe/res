@@ -62,7 +62,7 @@ class Paint {
 		@see https://www.geeksforgeeks.org/midpoint-ellipse-drawing-algorithm/
 	 */
 	public static function ellipsei(surface:Bitmap, cx:Int, cy:Int, rx:Int, ry:Int, strokeIndex:Int, ?fillIndex:Int, ?transparency:Bool = true) {
-		if (cx == 0 || cy == 0)
+		if (rx == 0 || ry == 0)
 			return surface;
 
 		fillIndex = fillIndex ?? strokeIndex;
@@ -217,9 +217,6 @@ class Paint {
 		@param fillIndex Fill color index
 	 */
 	public static function recti(surface:Bitmap, x:Int, y:Int, w:Int, h:Int, strokeIndex:Int, ?fillIndex:Int, ?transparency:Bool = true) {
-		if (!Rect.intersect(0, 0, surface.width, surface.height, x, y, w, h))
-			return surface;
-
 		if (fillIndex == null)
 			fillIndex = strokeIndex;
 

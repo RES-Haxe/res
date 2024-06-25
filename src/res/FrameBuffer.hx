@@ -44,7 +44,7 @@ class FrameBuffer extends Bitmap {
 				return this;
 		}
 
-		super.seti(x, y, index, transparency);
+		data.set(y * width + x, index);
 
 		return this;
 	}
