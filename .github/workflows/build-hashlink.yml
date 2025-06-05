@@ -16,8 +16,6 @@ jobs:
         include:
           - os: ubuntu-latest   # Linux x86-64 bottle
             triplet: linux64
-          - os: macos-14        # Apple Silicon & Intel universal
-            triplet: macos
           - os: windows-2022    # Win-64
             triplet: win64
     runs-on: ${{ matrix.os }}
@@ -34,8 +32,8 @@ jobs:
         id: set_version
         shell: bash
         run: |
-            echo "HL_VERSION=${{ steps.vars.outputs.hashlink_version }}" >> $GITHUB_ENV
-            echo "hl_version=${{ steps.vars.outputs.hashlink_version }}" >> $GITHUB_OUTPUT
+          echo "HL_VERSION=${{ steps.vars.outputs.hashlink_version }}" >> $GITHUB_ENV
+          echo "hl_version=${{ steps.vars.outputs.hashlink_version }}" >> $GITHUB_OUTPUT
 
       - name: Debug HL_VERSION
         shell: bash
@@ -63,9 +61,7 @@ jobs:
             libuv1-dev \
             libvorbis-dev \
             libsqlite3-dev
-      - name: macOS build deps
-        if: runner.os == 'macOS'
-        run: brew install cmake libpng sdl2 openal-soft libvorbis mbedtls libuv
+
       - name: Windows build deps
         if: runner.os == 'Windows'
         run: |
@@ -84,8 +80,8 @@ jobs:
         run: |
           cd external/hashlink
           msbuild hl.sln /p:Configuration=Release /p:Platform=x64
-      - name: Build (Unix)
-        if: runner.os != 'Windows'
+      - name: Build (Linux)
+        if: runner.os == 'Linux'
         shell: bash
         run: |
           cd external/hashlink
