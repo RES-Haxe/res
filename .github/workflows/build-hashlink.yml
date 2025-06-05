@@ -100,24 +100,29 @@ jobs:
       - name: Package
         shell: bash
         run: |
-          mkdir dist
-          cp external/hashlink/LICENSE dist/     # keep MIT licence
+          pkgdir="hashlink-$HL_VERSION"
+          mkdir "$pkgdir"
+          cp external/hashlink/LICENSE "$pkgdir/"
           if [[ "${{ runner.os }}" == "Windows" ]]; then
-            cp external/hashlink/x64/Release/hl.exe dist/
-            cp external/hashlink/x64/Release/*.dll dist/ || true
-            cp external/hashlink/x64/Release/*.hdll dist/ || true
-            7z a hl-$HL_VERSION-${{ matrix.triplet }}.zip dist/*
+            cp external/hashlink/x64/Release/hl.exe "$pkgdir/"
+            cp external/hashlink/x64/Release/"*.dll" "$pkgdir/" || true
+            cp external/hashlink/x64/Release/"*.hdll" "$pkgdir/" || true
+            7z a "hashlink-$HL_VERSION-${{ matrix.triplet }}.zip" "$pkgdir"/*
           else
-            cp external/hashlink/hl dist/
-            cp external/hashlink/libhl.* dist/
-            cp external/hashlink/*.so dist/ || true
-            cp external/hashlink/*.hdll dist/ || true
-            tar -czf hl-$HL_VERSION-${{ matrix.triplet }}.tar.gz -C dist .
+            cp external/hashlink/hl "$pkgdir/"
+            cp external/hashlink/libhl.* "$pkgdir/" || true
+            cp external/hashlink/*.so "$pkgdir/" || true
+            cp external/hashlink/*.hdll "$pkgdir/" || true
+            tar -czf "hashlink-$HL_VERSION-${{ matrix.triplet }}.tar.gz" "$pkgdir"
           fi
 
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v4
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v2
         with:
-          name: hl-${{ steps.set_version.outputs.hl_version }}-${{ matrix.triplet }}
-          path: |
-            hl-${{ steps.set_version.outputs.hl_version }}-${{ matrix.triplet }}.*
+          tag_name: hashlink-${{ steps.set_version.outputs.hl_version }}
+          name: "HashLink runtime ${{ steps.set_version.outputs.hl_version }}"
+          body: "Pre-built HashLink ${{ steps.set_version.outputs.hl_version }} binaries."
+          files: |
+            hashlink-${{ steps.set_version.outputs.hl_version }}-${{ matrix.triplet }}.*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
