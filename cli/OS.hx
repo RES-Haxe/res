@@ -83,8 +83,14 @@ function appExt(name:String)
 	return Sys.systemName().toLowerCase() == 'windows' ? '$name.exe' : name;
 
 function relativizePath(basePath:String, path:String):String {
-	final baseParts = Path.normalize(basePath).split('/');
-	final pathParts = Path.normalize(path).split('/');
+	final normBase = Path.normalize(basePath);
+	final normPath = Path.normalize(path);
+
+	if (normBase == normPath)
+		return '.';
+
+	final baseParts = normBase.split('/');
+	final pathParts = normPath.split('/');
 
 	final result:Array<String> = [];
 

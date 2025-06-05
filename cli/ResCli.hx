@@ -11,6 +11,7 @@ import cli.commands.New;
 import cli.commands.Run;
 import cli.commands.Setup;
 import cli.commands.Tools;
+import cli.commands.Version;
 import haxe.io.Path;
 
 final CLI_CONFIG_FILENAME:String = '.res-cli.json';
@@ -47,6 +48,7 @@ class ResCli {
 			'run' => new Run(this),
 			'setup' => new Setup(this),
 			'tools' => new Tools(this),
+			'version' => new Version(this),
 		];
 
 		final cmdName = args.length > 0 ? args.shift().toLowerCase() : 'help';

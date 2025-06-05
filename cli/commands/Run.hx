@@ -36,7 +36,7 @@ class Run extends Command {
 		final trgHl = hxml.getSwitch('hl');
 
 		if (trgHl.length != 0) {
-			if (!resCli.tools.hl.available)
+			if (!resCli.tools.hl.isAvailable())
 				return error('${resCli.tools.hl.name} is not available');
 
 			println('HashLink target');
@@ -52,7 +52,7 @@ class Run extends Command {
 		final trgJs = hxml.getSwitch('js');
 
 		if (trgJs.length != 0) {
-			if (!resCli.tools.node.available)
+			if (!resCli.tools.node.isAvailable())
 				return error('Node.JS is required to run the `js` target');
 
 			println('JavaScript (Browser) target');

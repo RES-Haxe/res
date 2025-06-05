@@ -114,9 +114,9 @@ function ask(arg:Argument):String {
 	while (true) {
 		final result:Null<String> = switch (arg.type) {
 			case BOOL:
-				final ans = String.fromCharCode(Sys.getChar(true)).toLowerCase();
-				println('');
-				'${ans == 'y'}';
+				final ans = Sys.stdin().readLine().trim();
+				final result = ["y", "yes", "true", "1"].indexOf(ans.toLowerCase()) != -1;
+				return result ? "true" : "false";
 			case ENUM(values):
 				println('');
 				final preselect:Array<String> = [defaultAnswer];

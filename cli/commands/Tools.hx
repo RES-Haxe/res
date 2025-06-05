@@ -12,6 +12,7 @@ class Tools extends Command {
 
 	public function run(args:Map<String, String>) {
 		final allTools = [
+			resCli.tools.res,
 			resCli.tools.haxe,
 			resCli.tools.haxelib,
 			resCli.tools.hl,
@@ -22,7 +23,8 @@ class Tools extends Command {
 
 		printTable([['Tool', 'Command', 'Version', 'Which']].concat([
 			for (tl in allTools) {
-				[tl.name, tl.cmdPath, tl.available ? tl.version : 'N/A', tl.which];
+				final version = tl.getVersion();
+				[tl.name, tl.cmdPath, version != null ? version : 'N/A', tl.which()];
 			}
 		]), 1, ' |', true);
 	}

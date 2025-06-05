@@ -2,7 +2,7 @@ package cli.commands;
 
 import Sys.println;
 import cli.CLI.Argument;
-import cli.CLI.ask;
+import cli.CLI.ask_yn;
 import cli.CLI.error;
 import cli.OS.copyTree;
 import cli.OS.relativizePath;
@@ -25,13 +25,13 @@ class New extends Command {
 	public function expectedArgs(resCli:ResCli):Array<Argument>
 		return [
 			{
-				name: 'name',
+				name: 'dir',
 				type: STRING,
-				desc: 'Project name',
+				desc: 'Project directory',
 				defaultValue: null,
 				requred: true,
 				interactive: true,
-				example: 'My Game'
+				example: 'my_res_project',
 			},
 			{
 				name: 'template',
@@ -45,7 +45,10 @@ class New extends Command {
 		];
 
 	public function run(args:Map<String, String>) {
-		final dir = Path.normalize(Path.join([Sys.getCwd(), args['name']]));
+		final dir = Path.normalize(Path.join([Sys.getCwd(), args['dir']]));
+
+		if (!ask_yn('Create a new RES project in $dir?', false))
+			return;
 
 		if (!FileSystem.exists(dir)) {
 			try {
@@ -56,14 +59,10 @@ class New extends Command {
 		}
 
 		if (FileSystem.readDirectory(dir).length > 0) {
-			if (ask({
-				desc: 'Directory $dir is not empty. Are you sure you want to proceed?',
-				type: BOOL,
-				requred: true,
-				interactive: true,
-				defaultValue: (?prev) -> 'false'
-			}) == 'false')
+			if (!ask_yn('Directory $dir is not empty. Are you sure you want to proceed?', false)) {
 				Sys.exit(0);
+				return;
+			}
 		}
 
 		final template = args['template'];
@@ -85,8 +84,10 @@ class New extends Command {
 
 			println('Done! Now you can test the newly created project by running:');
 
-			if (currentDir != dir)
-				println('  cd ${relativizePath(currentDir, dir)}');
+			final relativePath = relativizePath(currentDir, dir);
+
+			if (relativePath != '.')
+				println('  cd ${relativePath}');
 
 			println('  res run');
 		} catch (error) {
