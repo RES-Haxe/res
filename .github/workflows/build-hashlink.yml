@@ -1,0 +1,101 @@
+name: Build-HashLink-Runtime
+
+# ❶ Triggers ────────────────
+on:
+  push:                       # automatic trigger:
+    branches: [main]          # …only on main
+    paths:                    # …only if this file changed
+      - ".github/hashlink_version"
+  workflow_dispatch:          # manual “Run workflow” button
+    inputs:
+      hl_version:
+        description: "Override HashLink version tag (e.g. 1.16-rc)"
+        required: false
+
+jobs:
+  build:
+    # ❷ Matrix for the three OSes
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest   # Linux x86-64 bottle
+            triplet: linux64
+          - os: macos-14        # Apple Silicon & Intel universal
+            triplet: macos
+          - os: windows-2022    # Win-64
+            triplet: win64
+    runs-on: ${{ matrix.os }}
+
+    # ❸ Global env
+    env:
+      HL_VERSION: ${{ github.event.inputs.hl_version || hashlink_version }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: vars
+        run: echo "hashlink_version=$(cat .github/hashlink_version)" >> "$GITHUB_OUTPUT"
+
+      - name: Set HL_VERSION
+        id: set_version
+        run: |
+          if [ -z "${{ github.event.inputs.hl_version }}" ]; then
+            echo "HL_VERSION=${{ steps.vars.outputs.hashlink_version }}" >> $GITHUB_ENV
+            echo "hl_version=${{ steps.vars.outputs.hashlink_version }}" >> $GITHUB_OUTPUT
+          else
+            echo "HL_VERSION=${{ github.event.inputs.hl_version }}" >> $GITHUB_ENV
+            echo "hl_version=${{ github.event.inputs.hl_version }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Clone HashLink
+        run: |
+          git clone --depth 1 --branch $HL_VERSION \
+            https://github.com/HaxeFoundation/hashlink.git external/hashlink
+
+      # 4. Install per-OS build deps
+      - name: Linux build deps
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y \
+             build-essential cmake libpng-dev libsdl2-dev libopenal-dev \
+             libvorbis-dev libmbedtls-dev libuv1-dev
+      - name: macOS build deps
+        if: runner.os == 'macOS'
+        run: brew install cmake libpng sdl2 openal-soft libvorbis mbedtls libuv
+      - name: MSVC
+        if: runner.os == 'Windows'
+        uses: microsoft/setup-msbuild@v2
+
+      # 5. Build HashLink
+      - name: Build
+        shell: bash
+        run: |
+          cd external/hashlink
+          case "${{ runner.os }}" in
+            Windows*) msbuild hl.sln /p:Configuration=Release /p:Platform=x64 ;;
+            *)        make -j$(nproc) all ;;
+          esac
+
+      # 6. Package runtime (+ MIT LICENSE)
+      - name: Package
+        shell: bash
+        run: |
+          mkdir dist
+          cp external/hashlink/LICENSE dist/     # keep MIT licence
+          if [[ "${{ runner.os }}" == "Windows" ]]; then
+            cp external/hashlink/bin/Windows/hl.exe dist/
+            7z a hl-${{ env.HL_VERSION }}-${{ matrix.triplet }}.zip dist/*
+          else
+            cp external/hashlink/hl dist/
+            cp external/hashlink/libhl.* dist/
+            tar -czf hl-${{ env.HL_VERSION }}-${{ matrix.triplet }}.tar.gz -C dist .
+          fi
+
+      # 7. Create (or update) a GitHub Release and upload the file
+      - name: Upload to release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: hl-${{ steps.set_version.outputs.hl_version }}
+          name: "HashLink runtime ${{ steps.set_version.outputs.hl_version }}"
+          body: "Pre-built HashLink ${{ steps.set_version.outputs.hl_version }} binaries for all platforms."
+          files: |
+            hl-${{ steps.set_version.outputs.hl_version }}-${{ matrix.triplet }}.*
