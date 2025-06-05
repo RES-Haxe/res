@@ -1,5 +1,6 @@
 package res;
 
+import res.algo.Bresenham;
 import Math.abs;
 import res.Mth.max;
 import res.Mth.min;
@@ -152,41 +153,9 @@ class Paint {
 		@param colorIndex
 	 */
 	public static function linei(surface:Bitmap, x0:Int, y0:Int, x1:Int, y1:Int, colorIndex:Int) {
-		final dx:Int = surface.round(abs(x1 - x0));
-		final dy:Int = surface.round(abs(y1 - y0));
-
-		if (dx == 0 && dy == 0)
-			return surface;
-
-		var x:Int = x0;
-		var y:Int = y0;
-
-		var ox:Int = x1 > x0 ? 1 : -1;
-		var oy:Int = y1 > y0 ? 1 : -1;
-
-		var error:Float = 0;
-
-		do {
-			surface.set(x, y, colorIndex, false);
-
-			if (dx > dy) {
-				x += ox;
-				error += dy / dx;
-
-				if (error > 0.5) {
-					y += oy;
-					error -= 1;
-				}
-			} else {
-				y += oy;
-				error += dx / dy;
-
-				if (error > 0.5) {
-					x += ox;
-					error -= 1;
-				}
-			}
-		} while (!(x == x1 && y == y1));
+		for (px in Bresenham.line(x0, y0, x1, y1)) {
+			surface.seti(px.x, px.y, colorIndex, false);
+		}
 
 		return surface;
 	}

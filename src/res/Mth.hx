@@ -47,6 +47,18 @@ class Mth {
 		return a + (b - a) * t;
 
 	/**
+		Linear interpolation with parameter bounds
+
+		@param a From value
+		@param b To value
+		@param param_from From parameter
+		@param param_to To parameter
+		@param v Parameter
+	 */
+	public static inline function lerp_ab(a:Float, b:Float, param_from:Float, param_to:Float, v:Float):Float
+		return a + (b - a) * param(param_from, param_to, v);
+
+	/**
 		Type aware `max` function
 	 */
 	public static inline function max<T:Float>(a:T, b:T):T
