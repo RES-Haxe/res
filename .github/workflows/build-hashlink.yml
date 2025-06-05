@@ -26,7 +26,9 @@ jobs:
       - uses: actions/checkout@v4
 
       - id: vars
-        run: echo "hashlink_version=$(cat .github/hashlink_version)" >> "$GITHUB_OUTPUT"
+        run: |
+            cat .github/hashlink_version
+            echo "hashlink_version=$(cat .github/hashlink_version)" >> "$GITHUB_OUTPUT"
 
       - name: Set HL_VERSION
         id: set_version
