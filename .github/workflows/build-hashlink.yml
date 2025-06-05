@@ -101,7 +101,7 @@ jobs:
           mkdir dist
           cp external/hashlink/LICENSE dist/     # keep MIT licence
           if [[ "${{ runner.os }}" == "Windows" ]]; then
-            cp external/hashlink/bin/Windows/hl.exe dist/
+            cp external/hashlink/x64/Release/hl.exe dist/
             7z a hl-$HL_VERSION-${{ matrix.triplet }}.zip dist/*
           else
             cp external/hashlink/hl dist/
