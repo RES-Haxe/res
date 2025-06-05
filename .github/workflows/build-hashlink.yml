@@ -26,10 +26,6 @@ jobs:
             triplet: win64
     runs-on: ${{ matrix.os }}
 
-    # ❸ Global env
-    env:
-      HL_VERSION: ${{ github.event.inputs.hl_version || hashlink_version }}
-
     steps:
       - uses: actions/checkout@v4
 
