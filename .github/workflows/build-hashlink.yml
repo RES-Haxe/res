@@ -60,7 +60,9 @@ jobs:
             libturbojpeg-dev \
             libuv1-dev \
             libvorbis-dev \
-            libsqlite3-dev
+            libsqlite3-dev \
+            libglu1-mesa-dev \
+            freeglut3-dev
 
       - name: Windows build deps
         if: runner.os == 'Windows'
@@ -102,19 +104,20 @@ jobs:
           cp external/hashlink/LICENSE dist/     # keep MIT licence
           if [[ "${{ runner.os }}" == "Windows" ]]; then
             cp external/hashlink/x64/Release/hl.exe dist/
+            cp external/hashlink/x64/Release/*.dll dist/ || true
+            cp external/hashlink/x64/Release/*.hdll dist/ || true
             7z a hl-$HL_VERSION-${{ matrix.triplet }}.zip dist/*
           else
             cp external/hashlink/hl dist/
             cp external/hashlink/libhl.* dist/
+            cp external/hashlink/*.so dist/ || true
+            cp external/hashlink/*.hdll dist/ || true
             tar -czf hl-$HL_VERSION-${{ matrix.triplet }}.tar.gz -C dist .
           fi
 
-      # 7. Create (or update) a GitHub Release and upload the file
-      - name: Upload to release
-        uses: softprops/action-gh-release@v2
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
         with:
-          tag_name: hl-${{ steps.set_version.outputs.hl_version }}
-          name: "HashLink runtime ${{ steps.set_version.outputs.hl_version }}"
-          body: "Pre-built HashLink ${{ steps.set_version.outputs.hl_version }} binaries for all platforms."
-          files: |
+          name: hl-${{ steps.set_version.outputs.hl_version }}-${{ matrix.triplet }}
+          path: |
             hl-${{ steps.set_version.outputs.hl_version }}-${{ matrix.triplet }}.*
