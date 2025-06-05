@@ -45,6 +45,7 @@ jobs:
           fi
 
       - name: Clone HashLink
+        shell: bash
         run: |
           git clone --depth 1 --branch $HL_VERSION \
             https://github.com/HaxeFoundation/hashlink.git external/hashlink
