@@ -34,6 +34,7 @@ jobs:
 
       - name: Set HL_VERSION
         id: set_version
+        shell: bash
         run: |
           if [ -z "${{ github.event.inputs.hl_version }}" ]; then
             echo "HL_VERSION=${{ steps.vars.outputs.hashlink_version }}" >> $GITHUB_ENV
