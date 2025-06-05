@@ -44,11 +44,15 @@ jobs:
             echo "hl_version=${{ github.event.inputs.hl_version }}" >> $GITHUB_OUTPUT
           fi
 
+      - name: Debug HL_VERSION
+        shell: bash
+        run: |
+          echo "HL_VERSION is: $HL_VERSION"
+
       - name: Clone HashLink
         shell: bash
         run: |
-          git clone --depth 1 --branch $HL_VERSION \
-            https://github.com/HaxeFoundation/hashlink.git external/hashlink
+          git clone --depth 1 --branch $HL_VERSION https://github.com/HaxeFoundation/hashlink.git external/hashlink
 
       # 4. Install per-OS build deps
       - name: Linux build deps
@@ -91,11 +95,11 @@ jobs:
           cp external/hashlink/LICENSE dist/     # keep MIT licence
           if [[ "${{ runner.os }}" == "Windows" ]]; then
             cp external/hashlink/bin/Windows/hl.exe dist/
-            7z a hl-${{ env.HL_VERSION }}-${{ matrix.triplet }}.zip dist/*
+            7z a hl-$HL_VERSION-${{ matrix.triplet }}.zip dist/*
           else
             cp external/hashlink/hl dist/
             cp external/hashlink/libhl.* dist/
-            tar -czf hl-${{ env.HL_VERSION }}-${{ matrix.triplet }}.tar.gz -C dist .
+            tar -czf hl-$HL_VERSION-${{ matrix.triplet }}.tar.gz -C dist .
           fi
 
       # 7. Create (or update) a GitHub Release and upload the file
