@@ -33,7 +33,7 @@ class ResCli {
 		final PATH = Sys.getEnv('PATH');
 		final addPath = [PATH];
 
-		addPath.push(Path.join([baseDir, 'bin', 'hl', osname]));
+		addPath.push(Path.join([resHomeDir, 'bin', 'runtime', 'hl', cli.commands.Setup.HL_VERSION]));
 
 		Sys.putEnv('PATH', addPath.join(osname == 'windows' ? ';' : ':'));
 

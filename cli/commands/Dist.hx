@@ -1,5 +1,6 @@
 package cli.commands;
 
+import cli.commands.Setup.HL_VERSION;
 import Sys.println;
 import cli.CLI.Argument;
 import cli.CLI.error;
@@ -49,7 +50,7 @@ class Dist extends Command {
 			createDirectory(hlDistPath);
 
 			println('Copy runtime files...');
-			copyTree(Path.join([resCli.baseDir, 'bin', 'hl', Sys.systemName().toLowerCase()]), hlDistPath,
+			copyTree(Path.join([resCli.resHomeDir, 'bin', 'runtime', 'hl', HL_VERSION]), hlDistPath,
 				(path:String) -> path != 'include' && !path.toLowerCase().endsWith('.lib'));
 			wipeDirectory(Path.join([hlDistPath, 'include']));
 
