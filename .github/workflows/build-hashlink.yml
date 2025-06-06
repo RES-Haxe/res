@@ -1,6 +1,5 @@
 name: Build-HashLink-Runtime
 
-# ❶ Triggers ────────────────
 on:
   push:                       # automatic trigger:
     branches: [main]          # …only on main
@@ -10,7 +9,6 @@ on:
 
 jobs:
   build:
-    # ❷ Matrix for the three OSes
     strategy:
       matrix:
         include:
@@ -45,7 +43,6 @@ jobs:
         run: |
           git clone --depth 1 --branch $HL_VERSION https://github.com/HaxeFoundation/hashlink.git external/hashlink
 
-      # 4. Install per-OS build deps
       - name: Linux build deps
         if: runner.os == 'Linux'
         run: |
@@ -82,7 +79,6 @@ jobs:
         if: runner.os == 'Windows'
         uses: microsoft/setup-msbuild@v2
 
-      # 5. Build HashLink
       - name: Build (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
@@ -96,7 +92,6 @@ jobs:
           cd external/hashlink
           make -j$(nproc) all
 
-      # 6. Package runtime (+ MIT LICENSE)
       - name: Package
         shell: bash
         run: |
@@ -105,8 +100,8 @@ jobs:
           cp external/hashlink/LICENSE "$pkgdir/"
           if [[ "${{ runner.os }}" == "Windows" ]]; then
             cp external/hashlink/x64/Release/hl.exe "$pkgdir/"
-            cp external/hashlink/x64/Release/*.dll" "$pkgdir/" || true
-            cp external/hashlink/x64/Release/*.hdll" "$pkgdir/" || true
+            cp external/hashlink/x64/Release/*.dll "$pkgdir/" || true
+            cp external/hashlink/x64/Release/*.hdll "$pkgdir/" || true
             7z a "hashlink-$HL_VERSION-${{ matrix.triplet }}.zip" "$pkgdir"/*
           else
             cp external/hashlink/hl "$pkgdir/"
