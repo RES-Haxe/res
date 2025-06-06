@@ -105,12 +105,11 @@ jobs:
           cp external/hashlink/LICENSE "$pkgdir/"
           if [[ "${{ runner.os }}" == "Windows" ]]; then
             cp external/hashlink/x64/Release/hl.exe "$pkgdir/"
-            cp external/hashlink/x64/Release/"*.dll" "$pkgdir/" || true
-            cp external/hashlink/x64/Release/"*.hdll" "$pkgdir/" || true
+            cp external/hashlink/x64/Release/*.dll" "$pkgdir/" || true
+            cp external/hashlink/x64/Release/*.hdll" "$pkgdir/" || true
             7z a "hashlink-$HL_VERSION-${{ matrix.triplet }}.zip" "$pkgdir"/*
           else
             cp external/hashlink/hl "$pkgdir/"
-            cp external/hashlink/libhl.* "$pkgdir/" || true
             cp external/hashlink/*.so "$pkgdir/" || true
             cp external/hashlink/*.hdll "$pkgdir/" || true
             tar -czf "hashlink-$HL_VERSION-${{ matrix.triplet }}.tar.gz" "$pkgdir"
