@@ -1,0 +1,8 @@
+-cp test
+-cp src
+-lib utest
+-lib ase
+-lib format
+-D no-deprecation-warnings
+-main TestMain
+--interp
