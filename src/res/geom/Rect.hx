@@ -111,4 +111,41 @@ class Rect {
 	public static inline function inside(rx:Float, ry:Float, rw:Float, rh:Float, x:Float, y:Float):Bool {
 		return x >= rx && x <= rx + rw && y >= ry && y <= ry + rh;
 	}
+	/**
+	 * Computes the smallest rectangle that fully contains all rectangles in the given array.
+	 *
+	 * @param rects An array of `TRect` rectangles to compute the union of.
+	 * @return A new `TRect` representing the bounding rectangle that covers all input rectangles.
+	 *         If the array is empty, returns a rectangle at (0, 0) with zero width and height.
+	 *
+	 * The union is the minimal bounding box that encloses all rectangles in the array.
+	 */
+	public static function union(rects:Array<TRect>):TRect {
+		if (rects.length == 0)
+			return {
+				x: 0,
+				y: 0,
+				width: 0,
+				height: 0
+			};
+
+		var x1 = rects[0].x;
+		var y1 = rects[0].y;
+		var x2 = rects[0].x + rects[0].width;
+		var y2 = rects[0].y + rects[0].height;
+
+		for (r in rects) {
+			x1 = Math.min(x1, r.x);
+			y1 = Math.min(y1, r.y);
+			x2 = Math.max(x2, r.x + r.width);
+			y2 = Math.max(y2, r.y + r.height);
+		}
+
+		return {
+			x: x1,
+			y: y1,
+			width: x2 - x1,
+			height: y2 - y1
+		};
+	}
 }
