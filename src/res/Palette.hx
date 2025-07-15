@@ -3,6 +3,12 @@ package res;
 import res.Color32.ColorComponent;
 
 class Palette {
+	public final red:Int;
+	public final orange:Int;
+	public final yellow:Int;
+	public final green:Int;
+	public final blue:Int;
+
 	public final colors:Array<Color32>;
 
 	final _indecies:Array<Int>;
@@ -179,5 +185,10 @@ class Palette {
 			else
 				return -1;
 		});
+		red = closest(Color32.ofRGB8(0xff0000));
+		orange = closest(Color32.ofRGB8(0xffa500));
+		yellow = closest(Color32.ofRGB8(0xffff00));
+		green = closest(Color32.ofRGB8(0x00ff00));
+		blue = closest(Color32.ofRGB8(0x0000ff));
 	}
 }
